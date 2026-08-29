@@ -1,6 +1,7 @@
-// Placeholder content only — Phase 1 is a visual shell with no backend.
-// Every export here is sample data and will be replaced by real state/queries
-// in later phases without needing to touch the components that render it.
+// Placeholder content for pages/sections still out of scope (Content Command,
+// Auto-Engage, Spend & Usage, Agents, Knowledge Library, and each workspace's
+// bespoke non-Project sections). SAMPLE_PROJECTS/SAMPLE_ASSETS are also used as
+// first-run seed data by AppDataProvider — see lib/providers/app-data-provider.tsx.
 
 import type { Workspace } from "@/lib/workspace";
 
@@ -54,45 +55,6 @@ export const SAMPLE_PROJECTS: SampleProject[] = [
     dueDate: "Aug 30",
     description: "Updated Brand Kit intake form for new client businesses.",
   },
-];
-
-export interface SampleActivityItem {
-  id: string;
-  label: string;
-  detail: string;
-  timestamp: string;
-}
-
-export const SAMPLE_ACTIVITY: SampleActivityItem[] = [
-  { id: "a1", label: "Project updated", detail: "Fall lookbook shoot moved to In Progress", timestamp: "12m ago" },
-  { id: "a2", label: "Asset added", detail: "hero-frame-04.png uploaded to AI-Cinematic", timestamp: "48m ago" },
-  { id: "a3", label: "Task completed", detail: "Draft Gap Diagnostic questions", timestamp: "2h ago" },
-  { id: "a4", label: "Note added", detail: "Client call notes — Oceanview listing", timestamp: "5h ago" },
-  { id: "a5", label: "Project created", detail: "Design DNA — carousel style codification", timestamp: "Yesterday" },
-];
-
-export interface SampleBusinessPulse {
-  workspace: Workspace;
-  label: string;
-  status: string;
-  metric: string;
-}
-
-export const SAMPLE_BUSINESS_PULSE: SampleBusinessPulse[] = [
-  { workspace: "clothing-brand", label: "Clothing Brand", status: "2 projects in progress", metric: "5 sample assets" },
-  { workspace: "ai-cinematic", label: "AI-Cinematic", status: "1 in review", metric: "3 sample assets" },
-  { workspace: "money-gap", label: "Money Gap System", status: "1 in progress", metric: "0 live clients" },
-];
-
-export interface SampleTaskCount {
-  label: string;
-  count: number;
-}
-
-export const SAMPLE_TASK_PROGRESS: SampleTaskCount[] = [
-  { label: "To Do", count: 6 },
-  { label: "In Progress", count: 3 },
-  { label: "Done", count: 4 },
 ];
 
 export interface KnowledgeNode {
@@ -209,12 +171,6 @@ export const CLOTHING_CAMPAIGNS = [
   { id: "cc1", title: "Fall Drop — Street Luxury", status: "In Progress" },
   { id: "cc2", title: "Instagram Carousel — Gold Word Series", status: "Not Started" },
   { id: "cc3", title: "Lookbook Vol. 3", status: "Review" },
-];
-
-export const CINEMATIC_PIPELINE = [
-  { stage: "Client Brief", count: 2 },
-  { stage: "Shot List", count: 1 },
-  { stage: "Delivery", count: 1 },
 ];
 
 export const CONTENT_COMMAND_TABS = [

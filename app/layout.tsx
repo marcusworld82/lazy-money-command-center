@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import "@xyflow/react/dist/style.css";
 import { ThemeProvider } from "@/lib/providers/theme-provider";
 import { SidebarProvider } from "@/lib/providers/sidebar-provider";
 import { WorkspaceProvider } from "@/lib/providers/workspace-provider";
+import { AppDataProvider } from "@/lib/providers/app-data-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AppShell } from "@/components/layout/app-shell";
 
@@ -34,7 +36,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           <TooltipProvider delayDuration={200}>
             <SidebarProvider>
               <WorkspaceProvider>
-                <AppShell>{children}</AppShell>
+                <AppDataProvider>
+                  <AppShell>{children}</AppShell>
+                </AppDataProvider>
               </WorkspaceProvider>
             </SidebarProvider>
           </TooltipProvider>
