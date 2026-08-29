@@ -19,7 +19,7 @@ export function Logo({ className, size = "md" }: LogoProps) {
   return (
     <div
       className={cn(
-        "flex shrink-0 items-center justify-center rounded-lg border border-white/15 bg-brand-black font-heading font-bold tracking-tight text-brand-white",
+        "flex shrink-0 items-center justify-center rounded-lg border border-white/15 bg-accent-green font-heading font-bold tracking-tight text-surface-white",
         "skew-x-[-4deg]",
         SIZES[size],
         className,

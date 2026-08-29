@@ -10,9 +10,9 @@
   --font-sans: var(--font-sans);
   --font-mono: var(--font-geist-mono);
   --font-heading: var(--font-sans);
-  --color-brand-green: var(--brand-green);
-  --color-brand-black: var(--brand-black);
-  --color-brand-white: var(--brand-white);
+  --color-accent-green: var(--accent-green);
+  --color-surface-black: var(--surface-black);
+  --color-surface-white: var(--surface-white);
   --color-on-dark: var(--on-dark);
   --color-on-light: var(--on-light);
   --color-glass: var(--glass);
@@ -57,12 +57,15 @@
 }
 
 :root {
-  /* Brand palette — the only three colors used across the OS (per master spec §2). */
-  --brand-green: #166e16;
-  --brand-black: #000000;
-  --brand-white: #ffffff;
+  /* Brand palette. Black/white are the dominant surface + text colors; green is an
+     accent reserved for active states, buttons, hover/focus borders, key metric
+     numbers, and highlight moments — never a large surface fill (master spec §2,
+     corrected). */
+  --surface-black: #000000;
+  --surface-white: #ffffff;
+  --accent-green: #166e16;
 
-  /* Adaptive text rule: fixed regardless of theme mode — white text on dark/green/black
+  /* Adaptive text rule: fixed regardless of theme mode — white text on dark/black
      surfaces, black text on white surfaces. */
   --on-dark: #ffffff;
   --on-light: #000000;
@@ -70,15 +73,15 @@
   --radius: 0.625rem;
 }
 
-/* Dark mode (default). Background is the literal brand green; everything else is a
-   translucent black "glass" surface floating on top of it. */
+/* Dark mode (default). Background is literal black; panels are a faint white-tinted
+   "glass" overlay so they read as elevated black, not colored. */
 :root,
 .dark {
-  --background: var(--brand-green);
+  --background: var(--surface-black);
   --foreground: var(--on-dark);
 
-  --glass: rgb(0 0 0 / 34%);
-  --glass-strong: rgb(8 20 8 / 92%);
+  --glass: rgb(255 255 255 / 6%);
+  --glass-strong: rgb(10 10 10 / 96%);
   --glass-border: rgb(255 255 255 / 14%);
 
   --card: var(--glass);
@@ -86,20 +89,20 @@
   --popover: var(--glass-strong);
   --popover-foreground: var(--on-dark);
 
-  --primary: var(--brand-black);
-  --primary-foreground: var(--brand-white);
+  --primary: var(--accent-green);
+  --primary-foreground: var(--surface-white);
   --secondary: rgb(255 255 255 / 10%);
   --secondary-foreground: var(--on-dark);
   --muted: rgb(255 255 255 / 8%);
   --muted-foreground: rgb(255 255 255 / 65%);
-  --accent: rgb(255 255 255 / 14%);
+  --accent: rgb(22 110 22 / 22%);
   --accent-foreground: var(--on-dark);
-  --destructive: var(--brand-black);
-  --destructive-foreground: var(--brand-white);
+  --destructive: var(--surface-black);
+  --destructive-foreground: var(--surface-white);
 
   --border: var(--glass-border);
   --input: rgb(255 255 255 / 16%);
-  --ring: rgb(255 255 255 / 50%);
+  --ring: rgb(22 110 22 / 65%);
 
   --chart-1: rgb(255 255 255 / 90%);
   --chart-2: rgb(255 255 255 / 70%);
@@ -107,23 +110,24 @@
   --chart-4: rgb(255 255 255 / 40%);
   --chart-5: rgb(255 255 255 / 25%);
 
-  --sidebar: rgb(0 0 0 / 30%);
+  --sidebar: rgb(255 255 255 / 5%);
   --sidebar-foreground: var(--on-dark);
-  --sidebar-primary: var(--brand-black);
-  --sidebar-primary-foreground: var(--brand-white);
-  --sidebar-accent: rgb(255 255 255 / 10%);
+  --sidebar-primary: var(--accent-green);
+  --sidebar-primary-foreground: var(--surface-white);
+  --sidebar-accent: rgb(22 110 22 / 18%);
   --sidebar-accent-foreground: var(--on-dark);
   --sidebar-border: rgb(255 255 255 / 12%);
-  --sidebar-ring: rgb(255 255 255 / 50%);
+  --sidebar-ring: rgb(22 110 22 / 65%);
 }
 
-/* Light mode: same brand hue, lightened — never a different palette (master spec §2). */
+/* Light mode: same palette, roles mirrored — white dominant surface, black text,
+   green still confined to accents only. */
 .light {
-  --background: #cfe4cf;
+  --background: var(--surface-white);
   --foreground: var(--on-light);
 
-  --glass: rgb(255 255 255 / 55%);
-  --glass-strong: rgb(255 255 255 / 96%);
+  --glass: rgb(0 0 0 / 4%);
+  --glass-strong: rgb(255 255 255 / 97%);
   --glass-border: rgb(0 0 0 / 12%);
 
   --card: var(--glass);
@@ -131,20 +135,20 @@
   --popover: var(--glass-strong);
   --popover-foreground: var(--on-light);
 
-  --primary: var(--brand-black);
-  --primary-foreground: var(--brand-white);
+  --primary: var(--accent-green);
+  --primary-foreground: var(--surface-white);
   --secondary: rgb(0 0 0 / 6%);
   --secondary-foreground: var(--on-light);
   --muted: rgb(0 0 0 / 5%);
   --muted-foreground: rgb(0 0 0 / 60%);
-  --accent: rgb(0 0 0 / 8%);
+  --accent: rgb(22 110 22 / 12%);
   --accent-foreground: var(--on-light);
-  --destructive: var(--brand-black);
-  --destructive-foreground: var(--brand-white);
+  --destructive: var(--surface-black);
+  --destructive-foreground: var(--surface-white);
 
   --border: var(--glass-border);
   --input: rgb(0 0 0 / 14%);
-  --ring: rgb(0 0 0 / 40%);
+  --ring: rgb(22 110 22 / 55%);
 
   --chart-1: rgb(0 0 0 / 85%);
   --chart-2: rgb(0 0 0 / 65%);
@@ -152,14 +156,14 @@
   --chart-4: rgb(0 0 0 / 35%);
   --chart-5: rgb(0 0 0 / 20%);
 
-  --sidebar: rgb(255 255 255 / 55%);
+  --sidebar: rgb(0 0 0 / 4%);
   --sidebar-foreground: var(--on-light);
-  --sidebar-primary: var(--brand-black);
-  --sidebar-primary-foreground: var(--brand-white);
-  --sidebar-accent: rgb(0 0 0 / 6%);
+  --sidebar-primary: var(--accent-green);
+  --sidebar-primary-foreground: var(--surface-white);
+  --sidebar-accent: rgb(22 110 22 / 12%);
   --sidebar-accent-foreground: var(--on-light);
   --sidebar-border: rgb(0 0 0 / 10%);
-  --sidebar-ring: rgb(0 0 0 / 40%);
+  --sidebar-ring: rgb(22 110 22 / 55%);
 }
 
 @layer base {

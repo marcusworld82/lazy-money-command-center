@@ -19,7 +19,9 @@ export function StatCard({ label, value, detail, icon: Icon, className }: StatCa
         </span>
         {Icon ? <Icon className="size-4 text-foreground/50" /> : null}
       </div>
-      <span className="font-heading text-2xl font-semibold tracking-tight">{value}</span>
+      <span className="font-heading text-2xl font-semibold tracking-tight text-accent-green">
+        {value}
+      </span>
       {detail ? <span className="text-xs text-foreground/55">{detail}</span> : null}
     </GlassPanel>
   );

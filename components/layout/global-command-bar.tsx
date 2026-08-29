@@ -62,7 +62,7 @@ export function GlobalCommandBar() {
       >
         <Search className="size-4" />
         <span className="text-sm">Search…</span>
-        <kbd className="ml-auto hidden rounded border border-glass-border bg-black/20 px-1.5 py-0.5 text-[10px] font-medium sm:inline-block">
+        <kbd className="ml-auto hidden rounded border border-glass-border bg-white/10 px-1.5 py-0.5 text-[10px] font-medium sm:inline-block">
           ⌘K
         </kbd>
       </Button>

@@ -34,7 +34,7 @@ export function BusinessSwitcher({ collapsed }: { collapsed: boolean }) {
           )}
         >
           <span className="flex min-w-0 items-center gap-2">
-            <span className="flex size-6 shrink-0 items-center justify-center rounded-md bg-brand-black text-[10px] font-bold text-brand-white">
+            <span className="flex size-6 shrink-0 items-center justify-center rounded-md bg-accent-green text-[10px] font-bold text-surface-white">
               {active.shortLabel.slice(0, 2).toUpperCase()}
             </span>
             {!collapsed && (
