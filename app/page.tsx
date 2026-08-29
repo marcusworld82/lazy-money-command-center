@@ -7,6 +7,7 @@ import { StatCard } from "@/components/ui/stat-card";
 import { ProjectCard } from "@/components/ui/project-card";
 import { ActivityFeedItem } from "@/components/ui/activity-feed-item";
 import { PlaceholderEmptyState } from "@/components/ui/placeholder-empty-state";
+import { CardGridSkeleton, ListSkeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Lightbulb, ListChecks, StickyNote, Workflow, FolderPlus, ImagePlus } from "lucide-react";
@@ -18,7 +19,7 @@ const PULSE_WORKSPACES: Workspace[] = ["clothing-brand", "ai-cinematic", "money-
 
 export default function CommandCenterPage() {
   const router = useRouter();
-  const { projects, tasks, assets, activity, createTask, createNote } = useAppData();
+  const { projects, tasks, assets, activity, createTask, createNote, loading, error } = useAppData();
   const [ideaDraft, setIdeaDraft] = React.useState("");
   const [taskDraft, setTaskDraft] = React.useState("");
   const [noteDraft, setNoteDraft] = React.useState("");
@@ -59,8 +60,8 @@ export default function CommandCenterPage() {
           Run every business from one command center.
         </h1>
         <p className="max-w-2xl text-sm text-foreground/60 md:text-base">
-          Live local data — everything here persists in this browser. A real backend connects
-          in Phase 3.
+          Backed by Supabase — everything here persists across sessions, devices, and
+          deployments.
         </p>
       </GlassPanel>
 
@@ -69,7 +70,11 @@ export default function CommandCenterPage() {
           <h2 className="font-heading text-sm font-semibold uppercase tracking-wider text-foreground/60">
             Priority Projects
           </h2>
-          {priorityProjects.length === 0 ? (
+          {error ? (
+            <PlaceholderEmptyState title="Couldn't load projects" description={error} />
+          ) : loading ? (
+            <CardGridSkeleton count={4} />
+          ) : priorityProjects.length === 0 ? (
             <PlaceholderEmptyState title="No projects yet" description="Create one from Build > Projects." />
           ) : (
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -124,17 +129,23 @@ export default function CommandCenterPage() {
           <h2 className="font-heading text-sm font-semibold uppercase tracking-wider text-foreground/60">
             Command Activity Feed
           </h2>
-          <GlassPanel className="p-4">
-            {activity.length === 0 ? (
-              <p className="p-2 text-sm text-foreground/55">No activity yet.</p>
-            ) : (
-              <ul className="flex flex-col">
-                {activity.slice(0, 8).map((item) => (
-                  <ActivityFeedItem key={item.id} item={item} />
-                ))}
-              </ul>
-            )}
-          </GlassPanel>
+          {error ? (
+            <PlaceholderEmptyState title="Couldn't load activity" description={error} />
+          ) : loading ? (
+            <ListSkeleton count={5} />
+          ) : (
+            <GlassPanel className="p-4">
+              {activity.length === 0 ? (
+                <p className="p-2 text-sm text-foreground/55">No activity yet.</p>
+              ) : (
+                <ul className="flex flex-col">
+                  {activity.slice(0, 8).map((item) => (
+                    <ActivityFeedItem key={item.id} item={item} />
+                  ))}
+                </ul>
+              )}
+            </GlassPanel>
+          )}
         </section>
 
         <section className="flex flex-col gap-3">

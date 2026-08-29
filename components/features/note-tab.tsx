@@ -6,12 +6,13 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { PlaceholderEmptyState } from "@/components/ui/placeholder-empty-state";
+import { CardGridSkeleton } from "@/components/ui/skeleton";
 import { Plus, StickyNote, Trash2, Search } from "lucide-react";
 import { useAppData } from "@/lib/providers/app-data-provider";
 import { formatRelativeTime } from "@/lib/utils";
 
 export function NoteTab() {
-  const { notes, createNote, updateNote, deleteNote } = useAppData();
+  const { notes, createNote, updateNote, deleteNote, loading, error } = useAppData();
   const [draft, setDraft] = React.useState("");
   const [query, setQuery] = React.useState("");
   const [editingId, setEditingId] = React.useState<string | null>(null);
@@ -65,7 +66,11 @@ export function NoteTab() {
         />
       </div>
 
-      {filtered.length === 0 ? (
+      {error ? (
+        <PlaceholderEmptyState icon={StickyNote} title="Couldn't load notes" description={error} />
+      ) : loading ? (
+        <CardGridSkeleton count={4} />
+      ) : filtered.length === 0 ? (
         <PlaceholderEmptyState
           icon={StickyNote}
           title={notes.length === 0 ? "No notes yet" : "No matching notes"}

@@ -5,11 +5,11 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { GlassPanel } from "@/components/ui/glass-panel";
 import { PlaceholderEmptyState } from "@/components/ui/placeholder-empty-state";
+import { CardGridSkeleton } from "@/components/ui/skeleton";
 import { useAppData } from "@/lib/providers/app-data-provider";
 import { useWorkspace } from "@/lib/providers/workspace-provider";
 import { getWorkspaceMeta } from "@/lib/workspace";
-import type { AssetType } from "@/lib/types";
-import { FileImage, FileVideo, FileText, ImagePlus, X } from "lucide-react";
+import { FileImage, FileVideo, FileText, ImagePlus, X, Loader2 } from "lucide-react";
 
 const TYPE_ICON = {
   image: FileImage,
@@ -17,27 +17,25 @@ const TYPE_ICON = {
   document: FileText,
 } as const;
 
-function inferAssetType(file: File): AssetType {
-  if (file.type.startsWith("image/")) return "image";
-  if (file.type.startsWith("video/")) return "video";
-  return "document";
-}
-
 export default function AssetsPage() {
-  const { assets, addAsset, removeAsset } = useAppData();
+  const { assets, addAsset, removeAsset, loading, error } = useAppData();
   const { activeWorkspace } = useWorkspace();
   const inputRef = React.useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = React.useState(false);
 
-  function handleFiles(fileList: FileList | null) {
-    if (!fileList) return;
-    Array.from(fileList).forEach((file) => {
-      addAsset({
-        filename: file.name,
-        type: inferAssetType(file),
-        workspace: activeWorkspace,
-        url: URL.createObjectURL(file),
-      });
-    });
+  async function handleFiles(fileList: FileList | null) {
+    if (!fileList || fileList.length === 0) return;
+    setUploading(true);
+    try {
+      for (const file of Array.from(fileList)) {
+        const formData = new FormData();
+        formData.set("file", file);
+        formData.set("workspace", activeWorkspace);
+        await addAsset(formData);
+      }
+    } finally {
+      setUploading(false);
+    }
   }
 
   const sorted = [...assets].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
@@ -53,17 +51,23 @@ export default function AssetsPage() {
             Assets
           </h1>
           <p className="max-w-xl text-sm text-foreground/60">
-            Local asset library. Real uploads to cloud storage arrive in a later phase — files
-            stay in this browser session.
+            Asset library backed by Supabase Storage. Uploads are private, served via
+            signed URLs.
           </p>
         </div>
         <Button
           size="sm"
           variant="secondary"
           className="gap-1.5"
+          disabled={uploading}
           onClick={() => inputRef.current?.click()}
         >
-          <ImagePlus className="size-3.5" /> Add Asset
+          {uploading ? (
+            <Loader2 className="size-3.5 animate-spin" />
+          ) : (
+            <ImagePlus className="size-3.5" />
+          )}
+          {uploading ? "Uploading…" : "Add Asset"}
         </Button>
         <input
           ref={inputRef}
@@ -77,11 +81,15 @@ export default function AssetsPage() {
         />
       </header>
 
-      {sorted.length === 0 ? (
+      {error ? (
+        <PlaceholderEmptyState icon={ImagePlus} title="Couldn't load assets" description={error} />
+      ) : loading ? (
+        <CardGridSkeleton />
+      ) : sorted.length === 0 ? (
         <PlaceholderEmptyState
           icon={ImagePlus}
           title="No assets yet"
-          description="Add an image, video, or document — it stays local to this session."
+          description="Add an image, video, or document."
         />
       ) : (
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">

@@ -14,6 +14,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { PlaceholderEmptyState } from "@/components/ui/placeholder-empty-state";
+import { ListSkeleton } from "@/components/ui/skeleton";
 import { Plus, ListChecks, Trash2 } from "lucide-react";
 import type { TaskStatus } from "@/lib/types";
 import { useAppData } from "@/lib/providers/app-data-provider";
@@ -26,7 +27,7 @@ const TASK_STATUS_LABEL: Record<TaskStatus, string> = {
 };
 
 export function TaskTab({ workspace }: { workspace?: Workspace }) {
-  const { tasks, projects, createTask, updateTask, deleteTask } = useAppData();
+  const { tasks, projects, createTask, updateTask, deleteTask, loading, error } = useAppData();
   const [title, setTitle] = React.useState("");
 
   function handleAdd(e: React.FormEvent) {
@@ -52,7 +53,11 @@ export function TaskTab({ workspace }: { workspace?: Workspace }) {
         </Button>
       </form>
 
-      {sorted.length === 0 ? (
+      {error ? (
+        <PlaceholderEmptyState icon={ListChecks} title="Couldn't load tasks" description={error} />
+      ) : loading ? (
+        <ListSkeleton />
+      ) : sorted.length === 0 ? (
         <PlaceholderEmptyState
           icon={ListChecks}
           title="No tasks yet"

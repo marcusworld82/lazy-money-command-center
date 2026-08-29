@@ -7,12 +7,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { GlassPanel } from "@/components/ui/glass-panel";
 import { PlaceholderEmptyState } from "@/components/ui/placeholder-empty-state";
+import { ListSkeleton } from "@/components/ui/skeleton";
 import { Workflow, Plus, Trash2, Save } from "lucide-react";
 import { useAppData } from "@/lib/providers/app-data-provider";
 import { WorkflowCanvas } from "@/components/features/workflow-canvas";
 
 export default function WorkflowsPage() {
-  const { workflows, saveWorkflow, deleteWorkflow } = useAppData();
+  const { workflows, saveWorkflow, deleteWorkflow, loading, error } = useAppData();
   const [activeId, setActiveId] = React.useState<string | null>(null);
   const [creating, setCreating] = React.useState(false);
   const [nameDraft, setNameDraft] = React.useState("");
@@ -21,10 +22,10 @@ export default function WorkflowsPage() {
 
   const active = workflows.find((w) => w.id === activeId) ?? null;
 
-  function handleCreate(e: React.FormEvent) {
+  async function handleCreate(e: React.FormEvent) {
     e.preventDefault();
     if (!nameDraft.trim()) return;
-    const canvas = saveWorkflow({ name: nameDraft.trim(), nodes: [], edges: [] });
+    const canvas = await saveWorkflow({ name: nameDraft.trim(), nodes: [], edges: [] });
     setNameDraft("");
     setCreating(false);
     setActiveId(canvas.id);
@@ -76,7 +77,13 @@ export default function WorkflowsPage() {
         </GlassPanel>
       )}
 
-      {workflows.length > 0 && (
+      {error && (
+        <PlaceholderEmptyState icon={Workflow} title="Couldn't load workflows" description={error} />
+      )}
+
+      {loading && <ListSkeleton count={3} />}
+
+      {!loading && !error && workflows.length > 0 && (
         <div className="flex flex-wrap items-center gap-1.5">
           {workflows.map((w) => (
             <Button
@@ -93,7 +100,7 @@ export default function WorkflowsPage() {
         </div>
       )}
 
-      {active ? (
+      {!loading && !error && (active ? (
         <div className="flex flex-col gap-3">
           <div className="flex items-center justify-between">
             <h2 className="font-heading text-sm font-semibold">{active.name}</h2>
@@ -137,7 +144,7 @@ export default function WorkflowsPage() {
             )
           }
         />
-      )}
+      ))}
     </div>
   );
 }

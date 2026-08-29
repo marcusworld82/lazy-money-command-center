@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { GlassPanel } from "@/components/ui/glass-panel";
 import { ProjectCard } from "@/components/ui/project-card";
 import { PlaceholderEmptyState } from "@/components/ui/placeholder-empty-state";
+import { CardGridSkeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Select,
@@ -27,7 +28,7 @@ import { cn } from "@/lib/utils";
 const STATUSES: ProjectStatus[] = ["not-started", "in-progress", "review", "done"];
 
 export default function ProjectsPage() {
-  const { projects } = useAppData();
+  const { projects, loading, error } = useAppData();
   const [view, setView] = React.useState<"list" | "board">("board");
   const [workspaceFilter, setWorkspaceFilter] = React.useState<Workspace | "all">("all");
   const [statusFilter, setStatusFilter] = React.useState<ProjectStatus | "all">("all");
@@ -62,8 +63,8 @@ export default function ProjectsPage() {
           Projects
         </h1>
         <p className="max-w-xl text-sm text-foreground/60">
-          Organize work across every business — projects, tasks, and notes, all local to this
-          session.
+          Organize work across every business — projects, tasks, and notes, saved to
+          Supabase.
         </p>
       </header>
 
@@ -135,7 +136,15 @@ export default function ProjectsPage() {
             </div>
           </div>
 
-          {filtered.length === 0 ? (
+          {error ? (
+            <PlaceholderEmptyState
+              icon={FolderKanban}
+              title="Couldn't load projects"
+              description={error}
+            />
+          ) : loading ? (
+            <CardGridSkeleton />
+          ) : filtered.length === 0 ? (
             <PlaceholderEmptyState
               icon={FolderKanban}
               title="No projects match"

@@ -5,6 +5,7 @@ import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ProjectCard } from "@/components/ui/project-card";
 import { PlaceholderEmptyState } from "@/components/ui/placeholder-empty-state";
+import { CardGridSkeleton } from "@/components/ui/skeleton";
 import { ProjectFormDialog } from "@/components/features/project-form-dialog";
 import { ProjectDetailSheet } from "@/components/features/project-detail-sheet";
 import { TaskTab } from "@/components/features/task-tab";
@@ -14,7 +15,7 @@ import type { Project } from "@/lib/types";
 import { FolderKanban } from "lucide-react";
 
 export function WorkspaceLivePanel({ workspace }: { workspace: Workspace }) {
-  const { projects } = useAppData();
+  const { projects, loading, error } = useAppData();
   const [formOpen, setFormOpen] = React.useState(false);
   const [editingProject, setEditingProject] = React.useState<Project | undefined>(undefined);
   const [detailProject, setDetailProject] = React.useState<Project | null>(null);
@@ -46,7 +47,11 @@ export function WorkspaceLivePanel({ workspace }: { workspace: Workspace }) {
             <Plus className="size-3.5" /> New Project
           </Button>
         </div>
-        {scoped.length === 0 ? (
+        {error ? (
+          <PlaceholderEmptyState icon={FolderKanban} title="Couldn't load projects" description={error} />
+        ) : loading ? (
+          <CardGridSkeleton count={3} />
+        ) : scoped.length === 0 ? (
           <PlaceholderEmptyState
             icon={FolderKanban}
             title="No projects yet"
