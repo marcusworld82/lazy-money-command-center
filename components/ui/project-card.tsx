@@ -1,19 +1,24 @@
 import { GlassPanel } from "@/components/ui/glass-panel";
 import { Badge } from "@/components/ui/badge";
-import type { SampleProject } from "@/lib/sample-data";
+import type { Project } from "@/lib/types";
 import { getWorkspaceMeta } from "@/lib/workspace";
+import { STATUS_LABEL } from "@/lib/providers/app-data-provider";
 
-const STATUS_LABEL: Record<SampleProject["status"], string> = {
-  "Not Started": "Not Started",
-  "In Progress": "In Progress",
-  Review: "Review",
-  Done: "Done",
-};
-
-export function ProjectCard({ project }: { project: SampleProject }) {
+export function ProjectCard({
+  project,
+  onClick,
+}: {
+  project: Project;
+  onClick?: () => void;
+}) {
   const workspace = getWorkspaceMeta(project.workspace);
   return (
-    <GlassPanel interactive className="flex flex-col gap-3 p-4">
+    <GlassPanel
+      as={onClick ? "button" : "div"}
+      interactive
+      onClick={onClick}
+      className="flex w-full flex-col gap-3 p-4 text-left"
+    >
       <div className="flex items-start justify-between gap-2">
         <h3 className="font-heading text-sm font-semibold leading-snug">{project.title}</h3>
         <Badge variant="secondary" className="shrink-0">
@@ -23,7 +28,7 @@ export function ProjectCard({ project }: { project: SampleProject }) {
       <p className="text-xs text-foreground/60">{project.description}</p>
       <div className="mt-auto flex items-center justify-between pt-1 text-xs text-foreground/50">
         <span>{workspace.shortLabel}</span>
-        <span>Due {project.dueDate}</span>
+        {project.dueDate ? <span>Due {project.dueDate}</span> : <span />}
       </div>
     </GlassPanel>
   );
