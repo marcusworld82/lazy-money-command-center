@@ -21,7 +21,12 @@ export function Sidebar() {
         collapsed ? "w-[68px]" : "w-64",
       )}
     >
-      <div className="flex items-center gap-2 px-3 pt-4 pb-3">
+      <div
+        className={cn(
+          "flex items-center gap-2 border-b border-glass-border px-3 pt-4 pb-3",
+          collapsed ? "flex-col" : "justify-between",
+        )}
+      >
         <Link href="/" className="flex min-w-0 items-center gap-2">
           <Logo size="sm" />
           {!collapsed && (
@@ -30,9 +35,21 @@ export function Sidebar() {
             </span>
           )}
         </Link>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={toggle}
+          aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+        >
+          {collapsed ? (
+            <PanelLeftOpen className="size-4" />
+          ) : (
+            <PanelLeftClose className="size-4" />
+          )}
+        </Button>
       </div>
 
-      <div className="px-3 pb-3">
+      <div className="px-3 pt-3 pb-3">
         <BusinessSwitcher collapsed={collapsed} />
       </div>
 
@@ -58,25 +75,6 @@ export function Sidebar() {
           )}
         </nav>
       </ScrollArea>
-
-      <div className="border-t border-glass-border p-3">
-        <Button
-          variant="ghost"
-          size={collapsed ? "icon" : "sm"}
-          onClick={toggle}
-          className={cn("w-full", !collapsed && "justify-start gap-2")}
-          aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-        >
-          {collapsed ? (
-            <PanelLeftOpen className="size-4" />
-          ) : (
-            <>
-              <PanelLeftClose className="size-4" />
-              <span className="text-xs">Collapse</span>
-            </>
-          )}
-        </Button>
-      </div>
     </aside>
   );
 }
