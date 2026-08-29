@@ -1,0 +1,45 @@
+import type { Metadata } from "next";
+import { Geist, Geist_Mono } from "next/font/google";
+import "./globals.css";
+import { ThemeProvider } from "@/lib/providers/theme-provider";
+import { SidebarProvider } from "@/lib/providers/sidebar-provider";
+import { WorkspaceProvider } from "@/lib/providers/workspace-provider";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { AppShell } from "@/components/layout/app-shell";
+
+const geistSans = Geist({
+  variable: "--font-sans",
+  subsets: ["latin"],
+});
+
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
+});
+
+export const metadata: Metadata = {
+  title: "Lazy Money OS Command Center",
+  description: "Personal operating system for running multiple businesses.",
+};
+
+export default function RootLayout({ children }: LayoutProps<"/">) {
+  return (
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+    >
+      <body className="flex min-h-full flex-col">
+        <ThemeProvider>
+          <TooltipProvider delayDuration={200}>
+            <SidebarProvider>
+              <WorkspaceProvider>
+                <AppShell>{children}</AppShell>
+              </WorkspaceProvider>
+            </SidebarProvider>
+          </TooltipProvider>
+        </ThemeProvider>
+      </body>
+    </html>
+  );
+}

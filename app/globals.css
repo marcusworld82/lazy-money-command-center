@@ -1,0 +1,193 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-geist-mono);
+  --font-heading: var(--font-sans);
+  --color-brand-green: var(--brand-green);
+  --color-brand-black: var(--brand-black);
+  --color-brand-white: var(--brand-white);
+  --color-on-dark: var(--on-dark);
+  --color-on-light: var(--on-light);
+  --color-glass: var(--glass);
+  --color-glass-border: var(--glass-border);
+  --color-glass-strong: var(--glass-strong);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+:root {
+  /* Brand palette — the only three colors used across the OS (per master spec §2). */
+  --brand-green: #166e16;
+  --brand-black: #000000;
+  --brand-white: #ffffff;
+
+  /* Adaptive text rule: fixed regardless of theme mode — white text on dark/green/black
+     surfaces, black text on white surfaces. */
+  --on-dark: #ffffff;
+  --on-light: #000000;
+
+  --radius: 0.625rem;
+}
+
+/* Dark mode (default). Background is the literal brand green; everything else is a
+   translucent black "glass" surface floating on top of it. */
+:root,
+.dark {
+  --background: var(--brand-green);
+  --foreground: var(--on-dark);
+
+  --glass: rgb(0 0 0 / 34%);
+  --glass-strong: rgb(8 20 8 / 92%);
+  --glass-border: rgb(255 255 255 / 14%);
+
+  --card: var(--glass);
+  --card-foreground: var(--on-dark);
+  --popover: var(--glass-strong);
+  --popover-foreground: var(--on-dark);
+
+  --primary: var(--brand-black);
+  --primary-foreground: var(--brand-white);
+  --secondary: rgb(255 255 255 / 10%);
+  --secondary-foreground: var(--on-dark);
+  --muted: rgb(255 255 255 / 8%);
+  --muted-foreground: rgb(255 255 255 / 65%);
+  --accent: rgb(255 255 255 / 14%);
+  --accent-foreground: var(--on-dark);
+  --destructive: var(--brand-black);
+  --destructive-foreground: var(--brand-white);
+
+  --border: var(--glass-border);
+  --input: rgb(255 255 255 / 16%);
+  --ring: rgb(255 255 255 / 50%);
+
+  --chart-1: rgb(255 255 255 / 90%);
+  --chart-2: rgb(255 255 255 / 70%);
+  --chart-3: rgb(255 255 255 / 55%);
+  --chart-4: rgb(255 255 255 / 40%);
+  --chart-5: rgb(255 255 255 / 25%);
+
+  --sidebar: rgb(0 0 0 / 30%);
+  --sidebar-foreground: var(--on-dark);
+  --sidebar-primary: var(--brand-black);
+  --sidebar-primary-foreground: var(--brand-white);
+  --sidebar-accent: rgb(255 255 255 / 10%);
+  --sidebar-accent-foreground: var(--on-dark);
+  --sidebar-border: rgb(255 255 255 / 12%);
+  --sidebar-ring: rgb(255 255 255 / 50%);
+}
+
+/* Light mode: same brand hue, lightened — never a different palette (master spec §2). */
+.light {
+  --background: #cfe4cf;
+  --foreground: var(--on-light);
+
+  --glass: rgb(255 255 255 / 55%);
+  --glass-strong: rgb(255 255 255 / 96%);
+  --glass-border: rgb(0 0 0 / 12%);
+
+  --card: var(--glass);
+  --card-foreground: var(--on-light);
+  --popover: var(--glass-strong);
+  --popover-foreground: var(--on-light);
+
+  --primary: var(--brand-black);
+  --primary-foreground: var(--brand-white);
+  --secondary: rgb(0 0 0 / 6%);
+  --secondary-foreground: var(--on-light);
+  --muted: rgb(0 0 0 / 5%);
+  --muted-foreground: rgb(0 0 0 / 60%);
+  --accent: rgb(0 0 0 / 8%);
+  --accent-foreground: var(--on-light);
+  --destructive: var(--brand-black);
+  --destructive-foreground: var(--brand-white);
+
+  --border: var(--glass-border);
+  --input: rgb(0 0 0 / 14%);
+  --ring: rgb(0 0 0 / 40%);
+
+  --chart-1: rgb(0 0 0 / 85%);
+  --chart-2: rgb(0 0 0 / 65%);
+  --chart-3: rgb(0 0 0 / 50%);
+  --chart-4: rgb(0 0 0 / 35%);
+  --chart-5: rgb(0 0 0 / 20%);
+
+  --sidebar: rgb(255 255 255 / 55%);
+  --sidebar-foreground: var(--on-light);
+  --sidebar-primary: var(--brand-black);
+  --sidebar-primary-foreground: var(--brand-white);
+  --sidebar-accent: rgb(0 0 0 / 6%);
+  --sidebar-accent-foreground: var(--on-light);
+  --sidebar-border: rgb(0 0 0 / 10%);
+  --sidebar-ring: rgb(0 0 0 / 40%);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+    background-image: radial-gradient(
+        circle at 15% -10%,
+        rgb(255 255 255 / 8%),
+        transparent 55%
+      ),
+      radial-gradient(circle at 100% 0%, rgb(0 0 0 / 20%), transparent 45%);
+    background-attachment: fixed;
+    transition:
+      background-color 0.2s ease,
+      color 0.2s ease;
+  }
+  .light body {
+    background-image: radial-gradient(
+        circle at 15% -10%,
+        rgb(255 255 255 / 60%),
+        transparent 55%
+      ),
+      radial-gradient(circle at 100% 0%, rgb(0 0 0 / 6%), transparent 45%);
+  }
+  html {
+    @apply font-sans;
+  }
+}
