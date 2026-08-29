@@ -1,12 +1,16 @@
+"use client";
+
 import { WorkspaceDashboard } from "@/components/workspace/workspace-dashboard";
+import { WorkspaceLivePanel } from "@/components/workspace/workspace-live-panel";
 import { StatCard } from "@/components/ui/stat-card";
-import { ProjectCard } from "@/components/ui/project-card";
 import { getWorkspaceMeta } from "@/lib/workspace";
-import { CINEMATIC_PIPELINE, SAMPLE_PROJECTS } from "@/lib/sample-data";
+import { STATUS_LABEL, useAppData } from "@/lib/providers/app-data-provider";
+import { countProjectsByStatus } from "@/lib/selectors";
 import { Clapperboard } from "lucide-react";
 
 export default function AiCinematicPage() {
-  const projects = SAMPLE_PROJECTS.filter((p) => p.workspace === "ai-cinematic");
+  const { projects } = useAppData();
+  const counts = countProjectsByStatus(projects, "ai-cinematic");
 
   return (
     <WorkspaceDashboard workspace={getWorkspaceMeta("ai-cinematic")}>
@@ -14,28 +18,23 @@ export default function AiCinematicPage() {
         <h2 className="font-heading text-sm font-semibold uppercase tracking-wider text-foreground/60">
           Client Pipeline
         </h2>
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-          {CINEMATIC_PIPELINE.map((stage) => (
-            <StatCard
-              key={stage.stage}
-              label={stage.stage}
-              value={String(stage.count)}
-              icon={Clapperboard}
-            />
-          ))}
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+          <StatCard
+            label={STATUS_LABEL["not-started"]}
+            value={String(counts["not-started"])}
+            icon={Clapperboard}
+          />
+          <StatCard
+            label={STATUS_LABEL["in-progress"]}
+            value={String(counts["in-progress"])}
+            icon={Clapperboard}
+          />
+          <StatCard label={STATUS_LABEL.review} value={String(counts.review)} icon={Clapperboard} />
+          <StatCard label={STATUS_LABEL.done} value={String(counts.done)} icon={Clapperboard} />
         </div>
       </section>
 
-      <section className="flex flex-col gap-3">
-        <h2 className="font-heading text-sm font-semibold uppercase tracking-wider text-foreground/60">
-          Projects
-        </h2>
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
-          {projects.map((project) => (
-            <ProjectCard key={project.id} project={project} />
-          ))}
-        </div>
-      </section>
+      <WorkspaceLivePanel workspace="ai-cinematic" />
     </WorkspaceDashboard>
   );
 }

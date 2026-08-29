@@ -1,98 +1,218 @@
 "use client";
 
 import * as React from "react";
-import { List, LayoutGrid } from "lucide-react";
+import { List, LayoutGrid, Plus, FolderKanban } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { GlassPanel } from "@/components/ui/glass-panel";
 import { ProjectCard } from "@/components/ui/project-card";
-import { SAMPLE_PROJECTS, type SampleProject } from "@/lib/sample-data";
-import { getWorkspaceMeta } from "@/lib/workspace";
+import { PlaceholderEmptyState } from "@/components/ui/placeholder-empty-state";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { STATUS_LABEL, useAppData } from "@/lib/providers/app-data-provider";
+import { WORKSPACES, getWorkspaceMeta, type Workspace } from "@/lib/workspace";
+import type { Project, ProjectStatus } from "@/lib/types";
+import { ProjectFormDialog } from "@/components/features/project-form-dialog";
+import { ProjectDetailSheet } from "@/components/features/project-detail-sheet";
+import { TaskTab } from "@/components/features/task-tab";
+import { NoteTab } from "@/components/features/note-tab";
 import { cn } from "@/lib/utils";
 
-const STATUSES: SampleProject["status"][] = ["Not Started", "In Progress", "Review", "Done"];
+const STATUSES: ProjectStatus[] = ["not-started", "in-progress", "review", "done"];
 
 export default function ProjectsPage() {
+  const { projects } = useAppData();
   const [view, setView] = React.useState<"list" | "board">("board");
+  const [workspaceFilter, setWorkspaceFilter] = React.useState<Workspace | "all">("all");
+  const [statusFilter, setStatusFilter] = React.useState<ProjectStatus | "all">("all");
+  const [formOpen, setFormOpen] = React.useState(false);
+  const [editingProject, setEditingProject] = React.useState<Project | undefined>(undefined);
+  const [detailProject, setDetailProject] = React.useState<Project | null>(null);
+
+  const filtered = projects.filter(
+    (p) =>
+      (workspaceFilter === "all" || p.workspace === workspaceFilter) &&
+      (statusFilter === "all" || p.status === statusFilter),
+  );
+
+  function openCreate() {
+    setEditingProject(undefined);
+    setFormOpen(true);
+  }
+
+  function openEdit(project: Project) {
+    setDetailProject(null);
+    setEditingProject(project);
+    setFormOpen(true);
+  }
 
   return (
     <div className="flex flex-col gap-6">
-      <header className="flex flex-wrap items-start justify-between gap-4">
-        <div className="flex flex-col gap-2">
-          <Badge variant="secondary" className="w-fit text-[11px] uppercase tracking-wider">
-            Build
-          </Badge>
-          <h1 className="font-heading text-2xl font-semibold tracking-tight md:text-3xl">
-            Projects
-          </h1>
-          <p className="max-w-xl text-sm text-foreground/60">
-            Sample projects across every workspace. Full CRUD arrives in Phase 2.
-          </p>
-        </div>
-        <div className="flex items-center gap-1 rounded-lg border border-glass-border bg-glass p-1">
-          <Button
-            size="sm"
-            variant={view === "list" ? "secondary" : "ghost"}
-            onClick={() => setView("list")}
-            className="gap-1.5"
-          >
-            <List className="size-3.5" /> List
-          </Button>
-          <Button
-            size="sm"
-            variant={view === "board" ? "secondary" : "ghost"}
-            onClick={() => setView("board")}
-            className="gap-1.5"
-          >
-            <LayoutGrid className="size-3.5" /> Board
-          </Button>
-        </div>
+      <header className="flex flex-col gap-2">
+        <Badge variant="secondary" className="w-fit text-[11px] uppercase tracking-wider">
+          Build
+        </Badge>
+        <h1 className="font-heading text-2xl font-semibold tracking-tight md:text-3xl">
+          Projects
+        </h1>
+        <p className="max-w-xl text-sm text-foreground/60">
+          Organize work across every business — projects, tasks, and notes, all local to this
+          session.
+        </p>
       </header>
 
-      {view === "board" ? (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          {STATUSES.map((status) => (
-            <div key={status} className="flex flex-col gap-3">
-              <h2 className="text-xs font-semibold uppercase tracking-wider text-foreground/50">
-                {status}
-                <span className="ml-1.5 text-foreground/30">
-                  {SAMPLE_PROJECTS.filter((p) => p.status === status).length}
-                </span>
-              </h2>
-              <div className="flex flex-col gap-3">
-                {SAMPLE_PROJECTS.filter((p) => p.status === status).map((project) => (
-                  <ProjectCard key={project.id} project={project} />
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-      ) : (
-        <GlassPanel className="flex flex-col divide-y divide-glass-border">
-          {SAMPLE_PROJECTS.map((project) => {
-            const workspace = getWorkspaceMeta(project.workspace);
-            return (
-              <div
-                key={project.id}
-                className={cn(
-                  "flex flex-wrap items-center justify-between gap-3 px-4 py-3 text-sm",
-                )}
+      <Tabs defaultValue="projects">
+        <TabsList>
+          <TabsTrigger value="projects">Projects</TabsTrigger>
+          <TabsTrigger value="tasks">Tasks</TabsTrigger>
+          <TabsTrigger value="notes">Notes</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="projects" className="flex flex-col gap-4">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="flex flex-wrap items-center gap-2">
+              <Select
+                value={workspaceFilter}
+                onValueChange={(v) => setWorkspaceFilter(v as Workspace | "all")}
               >
-                <div className="flex min-w-0 flex-col">
-                  <span className="font-medium">{project.title}</span>
-                  <span className="truncate text-xs text-foreground/50">
-                    {workspace.label}
-                  </span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <Badge variant="secondary">{project.status}</Badge>
-                  <span className="text-xs text-foreground/50">Due {project.dueDate}</span>
-                </div>
+                <SelectTrigger size="sm" className="w-[150px]">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All workspaces</SelectItem>
+                  {WORKSPACES.map((w) => (
+                    <SelectItem key={w.slug} value={w.slug}>
+                      {w.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Select
+                value={statusFilter}
+                onValueChange={(v) => setStatusFilter(v as ProjectStatus | "all")}
+              >
+                <SelectTrigger size="sm" className="w-[140px]">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All statuses</SelectItem>
+                  {STATUSES.map((s) => (
+                    <SelectItem key={s} value={s}>
+                      {STATUS_LABEL[s]}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1 rounded-lg border border-glass-border bg-glass p-1">
+                <Button
+                  size="sm"
+                  variant={view === "list" ? "secondary" : "ghost"}
+                  onClick={() => setView("list")}
+                  className="gap-1.5"
+                >
+                  <List className="size-3.5" /> List
+                </Button>
+                <Button
+                  size="sm"
+                  variant={view === "board" ? "secondary" : "ghost"}
+                  onClick={() => setView("board")}
+                  className="gap-1.5"
+                >
+                  <LayoutGrid className="size-3.5" /> Board
+                </Button>
               </div>
-            );
-          })}
-        </GlassPanel>
-      )}
+              <Button size="sm" className="gap-1.5" onClick={openCreate}>
+                <Plus className="size-3.5" /> New Project
+              </Button>
+            </div>
+          </div>
+
+          {filtered.length === 0 ? (
+            <PlaceholderEmptyState
+              icon={FolderKanban}
+              title="No projects match"
+              description="Try a different filter, or create a new project."
+            />
+          ) : view === "board" ? (
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+              {STATUSES.map((status) => (
+                <div key={status} className="flex flex-col gap-3">
+                  <h2 className="text-xs font-semibold uppercase tracking-wider text-foreground/50">
+                    {STATUS_LABEL[status]}
+                    <span className="ml-1.5 text-foreground/30">
+                      {filtered.filter((p) => p.status === status).length}
+                    </span>
+                  </h2>
+                  <div className="flex flex-col gap-3">
+                    {filtered
+                      .filter((p) => p.status === status)
+                      .map((project) => (
+                        <ProjectCard
+                          key={project.id}
+                          project={project}
+                          onClick={() => setDetailProject(project)}
+                        />
+                      ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <GlassPanel className="flex flex-col divide-y divide-glass-border">
+              {filtered.map((project) => {
+                const workspace = getWorkspaceMeta(project.workspace);
+                return (
+                  <button
+                    key={project.id}
+                    onClick={() => setDetailProject(project)}
+                    className={cn(
+                      "flex flex-wrap items-center justify-between gap-3 px-4 py-3 text-left text-sm transition-colors hover:bg-white/5",
+                    )}
+                  >
+                    <div className="flex min-w-0 flex-col">
+                      <span className="font-medium">{project.title}</span>
+                      <span className="truncate text-xs text-foreground/50">
+                        {workspace.label}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <Badge variant="secondary">{STATUS_LABEL[project.status]}</Badge>
+                      {project.dueDate && (
+                        <span className="text-xs text-foreground/50">
+                          Due {project.dueDate}
+                        </span>
+                      )}
+                    </div>
+                  </button>
+                );
+              })}
+            </GlassPanel>
+          )}
+        </TabsContent>
+
+        <TabsContent value="tasks">
+          <TaskTab />
+        </TabsContent>
+
+        <TabsContent value="notes">
+          <NoteTab />
+        </TabsContent>
+      </Tabs>
+
+      <ProjectFormDialog open={formOpen} onOpenChange={setFormOpen} project={editingProject} />
+      <ProjectDetailSheet
+        project={detailProject}
+        onOpenChange={(open) => !open && setDetailProject(null)}
+        onEdit={openEdit}
+      />
     </div>
   );
 }

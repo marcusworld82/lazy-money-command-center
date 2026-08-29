@@ -1,12 +1,10 @@
 import { WorkspaceDashboard } from "@/components/workspace/workspace-dashboard";
+import { WorkspaceLivePanel } from "@/components/workspace/workspace-live-panel";
 import { GlassPanel } from "@/components/ui/glass-panel";
 import { getWorkspaceMeta } from "@/lib/workspace";
-import { SHARED_OS_ITEMS, SAMPLE_PROJECTS } from "@/lib/sample-data";
-import { ProjectCard } from "@/components/ui/project-card";
+import { SHARED_OS_ITEMS } from "@/lib/sample-data";
 
 export default function SharedOsPage() {
-  const projects = SAMPLE_PROJECTS.filter((p) => p.workspace === "shared-os");
-
   return (
     <WorkspaceDashboard workspace={getWorkspaceMeta("shared-os")}>
       <section className="flex flex-col gap-3">
@@ -23,18 +21,7 @@ export default function SharedOsPage() {
         </div>
       </section>
 
-      {projects.length > 0 && (
-        <section className="flex flex-col gap-3">
-          <h2 className="font-heading text-sm font-semibold uppercase tracking-wider text-foreground/60">
-            Projects
-          </h2>
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
-            {projects.map((project) => (
-              <ProjectCard key={project.id} project={project} />
-            ))}
-          </div>
-        </section>
-      )}
+      <WorkspaceLivePanel workspace="shared-os" />
     </WorkspaceDashboard>
   );
 }
