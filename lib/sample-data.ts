@@ -1,61 +1,7 @@
 // Placeholder content for pages/sections still out of scope (Content Command,
 // Auto-Engage, Spend & Usage, Agents, Knowledge Library, and each workspace's
-// bespoke non-Project sections). SAMPLE_PROJECTS/SAMPLE_ASSETS are also used as
-// first-run seed data by AppDataProvider — see lib/providers/app-data-provider.tsx.
-
-import type { Workspace } from "@/lib/workspace";
-
-export interface SampleProject {
-  id: string;
-  title: string;
-  workspace: Workspace;
-  status: "Not Started" | "In Progress" | "Review" | "Done";
-  dueDate: string;
-  description: string;
-}
-
-export const SAMPLE_PROJECTS: SampleProject[] = [
-  {
-    id: "p1",
-    title: "Fall lookbook shoot",
-    workspace: "clothing-brand",
-    status: "In Progress",
-    dueDate: "Sep 12",
-    description: "Sample product photography for the fall streetwear drop.",
-  },
-  {
-    id: "p2",
-    title: "Oceanview listing — cinematic package",
-    workspace: "ai-cinematic",
-    status: "Review",
-    dueDate: "Sep 8",
-    description: "Shot list approved, awaiting client sign-off on edit.",
-  },
-  {
-    id: "p3",
-    title: "HVAC audit funnel v2",
-    workspace: "money-gap",
-    status: "In Progress",
-    dueDate: "Sep 15",
-    description: "Rebuilding the 10-question Gap Diagnostic intake.",
-  },
-  {
-    id: "p4",
-    title: "Design DNA — carousel style codification",
-    workspace: "shared-os",
-    status: "Not Started",
-    dueDate: "Sep 20",
-    description: "Reserve the folder structure for the gold-word carousel skill.",
-  },
-  {
-    id: "p5",
-    title: "Client onboarding template refresh",
-    workspace: "shared-os",
-    status: "Done",
-    dueDate: "Aug 30",
-    description: "Updated Brand Kit intake form for new client businesses.",
-  },
-];
+// bespoke non-Project sections). Projects/Tasks/Notes/Assets/Workflows are real
+// data now — see lib/providers/app-data-provider.tsx and lib/actions/*.
 
 export interface KnowledgeNode {
   id: string;
@@ -97,22 +43,6 @@ export const KNOWLEDGE_TREE: KnowledgeNode[] = [
     ],
   },
   { id: "templates", label: "Templates" },
-];
-
-export interface SampleAsset {
-  id: string;
-  filename: string;
-  type: "image" | "video" | "document";
-  workspace: Workspace;
-}
-
-export const SAMPLE_ASSETS: SampleAsset[] = [
-  { id: "as1", filename: "hero-frame-04.png", type: "image", workspace: "ai-cinematic" },
-  { id: "as2", filename: "lookbook-cover.jpg", type: "image", workspace: "clothing-brand" },
-  { id: "as3", filename: "listing-teaser.mp4", type: "video", workspace: "ai-cinematic" },
-  { id: "as4", filename: "gap-audit-brief.pdf", type: "document", workspace: "money-gap" },
-  { id: "as5", filename: "streetwear-flat-01.png", type: "image", workspace: "clothing-brand" },
-  { id: "as6", filename: "onboarding-sop.pdf", type: "document", workspace: "shared-os" },
 ];
 
 export interface SampleAgent {
