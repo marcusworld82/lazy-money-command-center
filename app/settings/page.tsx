@@ -47,14 +47,14 @@ export default function SettingsPage() {
 
       <section className="flex flex-col gap-3">
         <h2 className="font-heading text-sm font-semibold uppercase tracking-wider text-foreground/60">
-          API Keys
+          Connections &amp; API Keys
         </h2>
         <GlassPanel className="flex flex-col gap-3 p-4 opacity-60">
-          {["OpenRouter", "fal", "Meta / Instagram", "Facebook"].map((service) => (
+          {["OpenRouter", "fal", "Supabase", "Telegram", "Connections / MCPs"].map((service) => (
             <div key={service} className="flex items-center justify-between gap-4">
               <span className="text-sm font-medium">{service}</span>
               <Badge variant="secondary" className="text-[10px]">
-                Coming in a later phase
+                Connect in Phase 5
               </Badge>
             </div>
           ))}
