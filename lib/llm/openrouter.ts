@@ -11,8 +11,16 @@ import "server-only";
 
 const OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions";
 
-/** Sensible default; Phase 5 will make this configurable per call type. */
-export const DEFAULT_MODEL = "anthropic/claude-3.5-sonnet";
+/**
+ * Default model, overridable with OPENROUTER_MODEL in .env.local.
+ *
+ * Verified against OpenRouter's live model list — slugs do get retired, so this
+ * has to be a currently-served id rather than a familiar-looking one. The
+ * override exists so a free model can be used while an account has no credits,
+ * without editing code. Phase 5 makes routing per call type.
+ */
+export const DEFAULT_MODEL =
+  process.env.OPENROUTER_MODEL ?? "anthropic/claude-sonnet-4.5";
 
 export class MissingLLMKeyError extends Error {
   constructor() {
@@ -78,11 +86,29 @@ export async function complete({
   return content;
 }
 
-/** Parses a JSON completion, tolerating models that wrap output in code fences. */
+/**
+ * Parses a JSON completion.
+ *
+ * Not every model honours response_format (free models especially), so this
+ * tolerates code fences and surrounding prose by falling back to the outermost
+ * {...} span before giving up.
+ */
 export function parseJsonCompletion<T>(raw: string): T {
   const cleaned = raw
     .trim()
     .replace(/^```(?:json)?\s*/i, "")
     .replace(/\s*```$/, "");
-  return JSON.parse(cleaned) as T;
+
+  try {
+    return JSON.parse(cleaned) as T;
+  } catch {
+    const start = cleaned.indexOf("{");
+    const end = cleaned.lastIndexOf("}");
+    if (start !== -1 && end > start) {
+      return JSON.parse(cleaned.slice(start, end + 1)) as T;
+    }
+    throw new Error(
+      `Model did not return JSON. First 200 chars: ${cleaned.slice(0, 200)}`,
+    );
+  }
 }

@@ -199,27 +199,43 @@ export async function runAdapters(
   const created: ContentVersion[] = [];
 
   for (const platform of platforms) {
-    const payload = await adaptForPlatform({
-      platform,
-      analysis: item.analysis,
-      brandVoice,
-      goal: item.goal,
-      audience: item.audience,
-      cta: item.cta,
-    });
+    // Each platform is isolated: one bad model response (malformed JSON, a
+    // provider hiccup) must not discard the adaptations that already succeeded.
+    // Failures are recorded as a `failed` version so they're visible and
+    // individually regenerable, rather than vanishing.
+    let finalPayload: ContentVersionPayload;
+    let status: VersionStatus = "ready_for_review";
 
-    const missing = findMissingFacts(item.analysis, payload);
-    const finalPayload: ContentVersionPayload = missing.length
-      ? {
-          ...payload,
-          notes: [
-            payload.notes,
-            `REVIEW NEEDED — these facts may not have carried through verbatim: ${missing.join(" | ")}`,
-          ]
-            .filter(Boolean)
-            .join("\n\n"),
-        }
-      : payload;
+    try {
+      const payload = await adaptForPlatform({
+        platform,
+        analysis: item.analysis,
+        brandVoice,
+        goal: item.goal,
+        audience: item.audience,
+        cta: item.cta,
+      });
+
+      const missing = findMissingFacts(item.analysis, payload);
+      finalPayload = missing.length
+        ? {
+            ...payload,
+            notes: [
+              payload.notes,
+              `REVIEW NEEDED — these facts may not have carried through verbatim: ${missing.join(" | ")}`,
+            ]
+              .filter(Boolean)
+              .join("\n\n"),
+          }
+        : payload;
+    } catch (e) {
+      status = "failed";
+      finalPayload = {
+        notes: `Adaptation failed: ${
+          e instanceof Error ? e.message : "unknown error"
+        }\n\nRegenerate this platform to try again.`,
+      };
+    }
 
     // Regenerating replaces the existing version for this platform rather than
     // adding a duplicate (unique on content_id + platform).
@@ -230,7 +246,7 @@ export async function runAdapters(
           content_id: itemId,
           platform,
           payload: finalPayload,
-          status: "ready_for_review",
+          status,
           approved_at: null,
         },
         { onConflict: "content_id,platform" },
