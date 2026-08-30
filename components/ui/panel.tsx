@@ -7,8 +7,9 @@ import { cn } from "@/lib/utils";
  * treatment wholesale (Phase 4.5).
  */
 const PANEL_CLASSES = "rounded-xl border border-subtle bg-surface-card";
-const INTERACTIVE_CLASSES =
-  "transition-colors duration-150 hover:border-accent-brand/60";
+/** Lift + soft red edge glow. Defined as a utility in globals.css so every
+ *  card gets the identical curve rather than each page inventing one. */
+const INTERACTIVE_CLASSES = "glow-lift";
 
 interface PanelDivProps extends React.HTMLAttributes<HTMLDivElement> {
   as?: "div" | "section" | "article";

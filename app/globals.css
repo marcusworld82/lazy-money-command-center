@@ -74,6 +74,42 @@
   --radius: 0.625rem;
 }
 
+/* Gradient tokens (Phase 4.5 rewrite).
+
+   These exist so red reads as a *glow* rather than a flat fill. Every colour
+   below is derived from --accent-brand via color-mix or an alpha channel — no
+   new hexes enter the system. Redefined per theme further down, because a glow
+   tuned for #1A1818 blows out on a light ground. */
+:root {
+  /* Hero glow: deep red bleeding out of the top edge, fading to nothing.
+     Sits behind hero headlines and large empty states. */
+  --gradient-hero:
+    radial-gradient(
+      85% 120% at 50% -15%,
+      rgb(173 0 0 / 62%) 0%,
+      rgb(173 0 0 / 26%) 34%,
+      rgb(173 0 0 / 6%) 58%,
+      transparent 76%
+    ),
+    linear-gradient(180deg, rgb(0 0 0 / 45%) 0%, transparent 62%);
+
+  /* Low-opacity sibling: active nav items, card hover washes. */
+  --gradient-glow-subtle: linear-gradient(
+    92deg,
+    rgb(173 0 0 / 40%) 0%,
+    rgb(173 0 0 / 14%) 52%,
+    transparent 100%
+  );
+
+  /* Primary button hover: a lift in the middle rather than a flat darken. */
+  --gradient-accent-hover: linear-gradient(
+    100deg,
+    var(--accent-brand) 0%,
+    color-mix(in oklch, var(--accent-brand), var(--surface-white) 22%) 50%,
+    var(--accent-brand) 100%
+  );
+}
+
 /* Dark mode (default). Flat, dense, thin-bordered — no blur, no glass. */
 :root,
 .dark {
@@ -164,6 +200,23 @@
   --sidebar-accent-foreground: var(--on-light);
   --sidebar-border: var(--border-subtle);
   --sidebar-ring: rgb(173 0 0 / 55%);
+
+  /* Light mode dials the glow back — the same opacities that read as a soft
+     bleed on #1A1818 read as a stain on #F5F4F4. */
+  --gradient-hero:
+    radial-gradient(
+      85% 120% at 50% -15%,
+      rgb(173 0 0 / 34%) 0%,
+      rgb(173 0 0 / 12%) 36%,
+      transparent 70%
+    ),
+    linear-gradient(180deg, rgb(0 0 0 / 10%) 0%, transparent 60%);
+  --gradient-glow-subtle: linear-gradient(
+    92deg,
+    rgb(173 0 0 / 18%) 0%,
+    rgb(173 0 0 / 6%) 52%,
+    transparent 100%
+  );
 }
 
 @layer base {
@@ -185,5 +238,57 @@
      titles are uppercased at the call site. */
   .font-heading {
     letter-spacing: -0.01em;
+  }
+}
+
+@layer utilities {
+  /* Gradient tokens as utilities. Kept here rather than as @theme colors
+     because these are background *images*, not colours — Tailwind's color
+     namespace would generate text-/border- variants that make no sense. */
+  .bg-gradient-hero {
+    background-image: var(--gradient-hero);
+  }
+  .bg-gradient-glow-subtle {
+    background-image: var(--gradient-glow-subtle);
+  }
+
+  /* Oversized display headline: pushes toward the edges of its container
+     rather than sitting politely at heading size. */
+  .text-display {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: clamp(2.75rem, 7.5vw, 5.5rem);
+    line-height: 0.92;
+    letter-spacing: -0.03em;
+  }
+  .text-display-sm {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: clamp(2rem, 4.5vw, 3.25rem);
+    line-height: 0.95;
+    letter-spacing: -0.025em;
+  }
+
+  /* Card hover: a small lift plus a soft red glow bleeding off the edge.
+     Applied by <Panel interactive>, so cards don't hand-roll it. */
+  .glow-lift {
+    transition:
+      transform 0.18s ease,
+      box-shadow 0.18s ease,
+      border-color 0.18s ease;
+  }
+  .glow-lift:hover {
+    transform: translateY(-2px);
+    border-color: rgb(173 0 0 / 60%);
+    box-shadow:
+      0 0 0 1px rgb(173 0 0 / 30%),
+      0 10px 30px -10px rgb(173 0 0 / 55%),
+      0 0 24px -6px rgb(173 0 0 / 35%);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .glow-lift:hover {
+      transform: none;
+    }
   }
 }

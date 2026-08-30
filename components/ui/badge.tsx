@@ -14,6 +14,9 @@ const badgeVariants = cva(
           "bg-secondary text-secondary-foreground [a]:hover:bg-secondary/80",
         destructive:
           "bg-destructive/10 text-destructive focus-visible:ring-destructive/20 dark:bg-destructive/20 dark:focus-visible:ring-destructive/40 [a]:hover:bg-destructive/20",
+        // The secondary accent (#FF3D8A) has one job per the brand spec: tags
+        // like "New" / "Top" that must not be confused with a red CTA.
+        tag: "bg-accent-brand-secondary/15 text-accent-brand-secondary ring-1 ring-accent-brand-secondary/35 ring-inset",
         outline:
           "border-border text-foreground [a]:hover:bg-muted [a]:hover:text-muted-foreground",
         ghost:
