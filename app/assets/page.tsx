@@ -7,8 +7,7 @@ import { Panel } from "@/components/ui/panel";
 import { PlaceholderEmptyState } from "@/components/ui/placeholder-empty-state";
 import { CardGridSkeleton } from "@/components/ui/skeleton";
 import { useAppData } from "@/lib/providers/app-data-provider";
-import { useWorkspace } from "@/lib/providers/workspace-provider";
-import { getWorkspaceMeta } from "@/lib/workspace";
+import { DEFAULT_WORKSPACE } from "@/lib/workspace";
 import { FileImage, FileVideo, FileText, ImagePlus, X, Loader2 } from "lucide-react";
 
 const TYPE_ICON = {
@@ -19,7 +18,6 @@ const TYPE_ICON = {
 
 export default function AssetsPage() {
   const { assets, addAsset, removeAsset, loading, error } = useAppData();
-  const { activeWorkspace } = useWorkspace();
   const inputRef = React.useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = React.useState(false);
 
@@ -30,7 +28,7 @@ export default function AssetsPage() {
       for (const file of Array.from(fileList)) {
         const formData = new FormData();
         formData.set("file", file);
-        formData.set("workspace", activeWorkspace);
+        formData.set("workspace", DEFAULT_WORKSPACE);
         await addAsset(formData);
       }
     } finally {
@@ -95,7 +93,6 @@ export default function AssetsPage() {
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
           {sorted.map((asset) => {
             const Icon = TYPE_ICON[asset.type];
-            const workspace = asset.workspace ? getWorkspaceMeta(asset.workspace) : null;
             return (
               <Panel key={asset.id} interactive className="group relative flex flex-col gap-2 p-3">
                 <button
@@ -118,9 +115,6 @@ export default function AssetsPage() {
                   )}
                 </div>
                 <span className="truncate text-xs font-medium">{asset.filename}</span>
-                {workspace && (
-                  <span className="text-[11px] text-foreground/45">{workspace.shortLabel}</span>
-                )}
               </Panel>
             );
           })}

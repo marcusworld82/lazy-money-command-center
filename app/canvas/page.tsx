@@ -20,8 +20,10 @@ import {
   Bookmark,
 } from "lucide-react";
 import { useAppData } from "@/lib/providers/app-data-provider";
-import { useWorkspace } from "@/lib/providers/workspace-provider";
+import { DEFAULT_WORKSPACE } from "@/lib/workspace";
 import { WorkflowCanvas } from "@/components/features/workflow-canvas";
+import { AgentDock } from "@/components/features/agent-dock";
+import { PageHero } from "@/components/layout/page-hero";
 import { WorkflowPreview } from "@/components/features/workflow-preview";
 import { listRuns, appendRunEvent } from "@/lib/actions/workflows";
 import type { WorkflowCanvas as Canvas, WorkflowRun, WorkflowRunEventType } from "@/lib/types";
@@ -38,7 +40,6 @@ export default function WorkflowsPage() {
     loading,
     error,
   } = useAppData();
-  const { activeWorkspace } = useWorkspace();
 
   const [activeId, setActiveId] = React.useState<string | null>(null);
   const [creating, setCreating] = React.useState<null | { asTemplate: boolean }>(null);
@@ -94,7 +95,7 @@ export default function WorkflowsPage() {
     if (!nameDraft.trim() || !creating) return;
     const canvas = await saveWorkflow({
       name: nameDraft.trim(),
-      workspace: activeWorkspace,
+      workspace: DEFAULT_WORKSPACE,
       nodes: [],
       edges: [],
       isTemplate: creating.asTemplate,
@@ -169,40 +170,33 @@ export default function WorkflowsPage() {
   }
 
   return (
-    <div className="flex flex-col gap-6">
-      <header className="flex flex-wrap items-start justify-between gap-4">
-        <div className="flex flex-col gap-2">
-          <Badge variant="secondary" className="w-fit text-[11px] uppercase tracking-wider">
-            Build
-          </Badge>
-          <h1 className="font-heading text-2xl font-semibold tracking-tight md:text-3xl">
-            Workflows
-          </h1>
-          <p className="max-w-xl text-sm text-foreground/60">
-            Chain text, media, prompts, and approvals into reusable canvases. Save one as a
-            template, then duplicate it to start each new run.
-          </p>
-        </div>
-        {!creating && !active && (
-          <div className="flex items-center gap-2">
-            <Button
-              size="sm"
-              variant="secondary"
-              className="gap-1.5"
-              onClick={() => setCreating({ asTemplate: true })}
-            >
-              <Bookmark className="size-3.5" /> New Template
-            </Button>
-            <Button
-              size="sm"
-              className="gap-1.5"
-              onClick={() => setCreating({ asTemplate: false })}
-            >
-              <Plus className="size-3.5" /> New Workflow
-            </Button>
-          </div>
-        )}
-      </header>
+    <div className="flex flex-col gap-6 pb-16">
+      <PageHero
+        eyebrow="Build"
+        title="Canvas"
+        description="Chain text, media, prompts, and approvals into reusable node graphs. Save one as a template, then duplicate it to start each run — or ask the Canvas Agent to wire it for you."
+        actions={
+          !creating && !active ? (
+            <>
+              <Button
+                size="sm"
+                variant="secondary"
+                className="gap-1.5"
+                onClick={() => setCreating({ asTemplate: true })}
+              >
+                <Bookmark className="size-3.5" /> New Template
+              </Button>
+              <Button
+                size="sm"
+                className="gap-1.5"
+                onClick={() => setCreating({ asTemplate: false })}
+              >
+                <Plus className="size-3.5" /> New Canvas
+              </Button>
+            </>
+          ) : undefined
+        }
+      />
 
       {creating && (
         <Panel className="p-4">
@@ -396,6 +390,8 @@ export default function WorkflowsPage() {
             </section>
           </div>
         ))}
+
+      <AgentDock agentId="canvas" />
     </div>
   );
 }

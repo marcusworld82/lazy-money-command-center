@@ -7,7 +7,7 @@ import { Logo } from "@/components/ui/logo";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { SidebarNavItem } from "@/components/layout/sidebar-nav-item";
-import { BusinessSwitcher } from "@/components/layout/business-switcher";
+import { SidebarNavGroup } from "@/components/layout/sidebar-nav-group";
 import { useSidebar } from "@/lib/providers/sidebar-provider";
 import { cn } from "@/lib/utils";
 
@@ -49,26 +49,11 @@ export function Sidebar() {
         </Button>
       </div>
 
-      <div className="px-3 pt-3 pb-3">
-        <BusinessSwitcher collapsed={collapsed} />
-      </div>
-
-      <ScrollArea className="flex-1 px-3">
-        <nav className="flex flex-col gap-4 pb-4">
+      <ScrollArea className="flex-1 px-3 pt-3">
+        <nav className="flex flex-col gap-0.5 pb-4">
           {NAV_CONFIG.map((entry) =>
             isNavGroup(entry) ? (
-              <div key={entry.label} className="flex flex-col gap-1">
-                {!collapsed && (
-                  <span className="px-2.5 pb-1 text-[11px] font-semibold uppercase tracking-wider text-sidebar-foreground/40">
-                    {entry.label}
-                  </span>
-                )}
-                <div className="flex flex-col gap-0.5">
-                  {entry.items.map((item) => (
-                    <SidebarNavItem key={item.href} item={item} collapsed={collapsed} indent />
-                  ))}
-                </div>
-              </div>
+              <SidebarNavGroup key={entry.label} group={entry} collapsed={collapsed} />
             ) : (
               <SidebarNavItem key={entry.href} item={entry} collapsed={collapsed} />
             ),

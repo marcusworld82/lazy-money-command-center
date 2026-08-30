@@ -1,7 +1,6 @@
 import { Panel } from "@/components/ui/panel";
 import { Badge } from "@/components/ui/badge";
 import type { Project } from "@/lib/types";
-import { getWorkspaceMeta } from "@/lib/workspace";
 import { STATUS_LABEL } from "@/lib/providers/app-data-provider";
 
 export function ProjectCard({
@@ -11,7 +10,6 @@ export function ProjectCard({
   project: Project;
   onClick?: () => void;
 }) {
-  const workspace = getWorkspaceMeta(project.workspace);
   return (
     <Panel
       as={onClick ? "button" : "div"}
@@ -26,10 +24,11 @@ export function ProjectCard({
         </Badge>
       </div>
       <p className="text-xs text-foreground/60">{project.description}</p>
-      <div className="mt-auto flex items-center justify-between pt-1 text-xs text-foreground/50">
-        <span>{workspace.shortLabel}</span>
-        {project.dueDate ? <span>Due {project.dueDate}</span> : <span />}
-      </div>
+      {project.dueDate && (
+        <div className="mt-auto pt-1 text-xs text-foreground/50">
+          Due {project.dueDate}
+        </div>
+      )}
     </Panel>
   );
 }

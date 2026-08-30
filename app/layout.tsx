@@ -4,7 +4,6 @@ import "./globals.css";
 import "@xyflow/react/dist/style.css";
 import { ThemeProvider } from "@/lib/providers/theme-provider";
 import { SidebarProvider } from "@/lib/providers/sidebar-provider";
-import { WorkspaceProvider } from "@/lib/providers/workspace-provider";
 import { AppDataProvider } from "@/lib/providers/app-data-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AppShell } from "@/components/layout/app-shell";
@@ -42,11 +41,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <ThemeProvider>
           <TooltipProvider delayDuration={200}>
             <SidebarProvider>
-              <WorkspaceProvider>
-                <AppDataProvider>
-                  <AppShell>{children}</AppShell>
-                </AppDataProvider>
-              </WorkspaceProvider>
+              <AppDataProvider>
+                <AppShell>{children}</AppShell>
+              </AppDataProvider>
             </SidebarProvider>
           </TooltipProvider>
         </ThemeProvider>

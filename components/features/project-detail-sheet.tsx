@@ -18,7 +18,6 @@ import { Input } from "@/components/ui/input";
 import { Pencil, Trash2, Plus } from "lucide-react";
 import type { Project } from "@/lib/types";
 import { STATUS_LABEL, useAppData } from "@/lib/providers/app-data-provider";
-import { getWorkspaceMeta } from "@/lib/workspace";
 
 interface ProjectDetailSheetProps {
   project: Project | null;
@@ -39,7 +38,6 @@ export function ProjectDetailSheet({ project, onOpenChange, onEdit }: ProjectDet
   }, [project]);
 
   if (!project) return null;
-  const workspace = getWorkspaceMeta(project.workspace);
   const linkedTasks = tasks.filter((t) => t.projectId === project.id);
 
   function handleNotesBlur() {
@@ -61,7 +59,6 @@ export function ProjectDetailSheet({ project, onOpenChange, onEdit }: ProjectDet
         <SheetHeader>
           <div className="flex items-center gap-2">
             <Badge variant="secondary">{STATUS_LABEL[project.status]}</Badge>
-            <Badge variant="secondary">{workspace.label}</Badge>
           </div>
           <SheetTitle>{project.title}</SheetTitle>
           <SheetDescription>

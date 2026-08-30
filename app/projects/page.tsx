@@ -17,7 +17,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { STATUS_LABEL, useAppData } from "@/lib/providers/app-data-provider";
-import { WORKSPACES, getWorkspaceMeta, type Workspace } from "@/lib/workspace";
 import type { Project, ProjectStatus } from "@/lib/types";
 import { ProjectFormDialog } from "@/components/features/project-form-dialog";
 import { ProjectDetailSheet } from "@/components/features/project-detail-sheet";
@@ -30,16 +29,13 @@ const STATUSES: ProjectStatus[] = ["not-started", "in-progress", "review", "done
 export default function ProjectsPage() {
   const { projects, loading, error } = useAppData();
   const [view, setView] = React.useState<"list" | "board">("board");
-  const [workspaceFilter, setWorkspaceFilter] = React.useState<Workspace | "all">("all");
   const [statusFilter, setStatusFilter] = React.useState<ProjectStatus | "all">("all");
   const [formOpen, setFormOpen] = React.useState(false);
   const [editingProject, setEditingProject] = React.useState<Project | undefined>(undefined);
   const [detailProject, setDetailProject] = React.useState<Project | null>(null);
 
   const filtered = projects.filter(
-    (p) =>
-      (workspaceFilter === "all" || p.workspace === workspaceFilter) &&
-      (statusFilter === "all" || p.status === statusFilter),
+    (p) => statusFilter === "all" || p.status === statusFilter,
   );
 
   function openCreate() {
@@ -78,22 +74,6 @@ export default function ProjectsPage() {
         <TabsContent value="projects" className="flex flex-col gap-4">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="flex flex-wrap items-center gap-2">
-              <Select
-                value={workspaceFilter}
-                onValueChange={(v) => setWorkspaceFilter(v as Workspace | "all")}
-              >
-                <SelectTrigger size="sm" className="w-[150px]">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All workspaces</SelectItem>
-                  {WORKSPACES.map((w) => (
-                    <SelectItem key={w.slug} value={w.slug}>
-                      {w.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
               <Select
                 value={statusFilter}
                 onValueChange={(v) => setStatusFilter(v as ProjectStatus | "all")}
@@ -176,33 +156,32 @@ export default function ProjectsPage() {
             </div>
           ) : (
             <Panel className="flex flex-col divide-y divide-subtle">
-              {filtered.map((project) => {
-                const workspace = getWorkspaceMeta(project.workspace);
-                return (
-                  <button
-                    key={project.id}
-                    onClick={() => setDetailProject(project)}
-                    className={cn(
-                      "flex flex-wrap items-center justify-between gap-3 px-4 py-3 text-left text-sm transition-colors hover:bg-white/5",
-                    )}
-                  >
-                    <div className="flex min-w-0 flex-col">
-                      <span className="font-medium">{project.title}</span>
+              {filtered.map((project) => (
+                <button
+                  key={project.id}
+                  onClick={() => setDetailProject(project)}
+                  className={cn(
+                    "flex flex-wrap items-center justify-between gap-3 px-4 py-3 text-left text-sm transition-colors hover:bg-white/5",
+                  )}
+                >
+                  <div className="flex min-w-0 flex-col">
+                    <span className="font-medium">{project.title}</span>
+                    {project.description && (
                       <span className="truncate text-xs text-foreground/50">
-                        {workspace.label}
+                        {project.description}
                       </span>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <Badge variant="secondary">{STATUS_LABEL[project.status]}</Badge>
-                      {project.dueDate && (
-                        <span className="text-xs text-foreground/50">
-                          Due {project.dueDate}
-                        </span>
-                      )}
-                    </div>
-                  </button>
-                );
-              })}
+                    )}
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Badge variant="secondary">{STATUS_LABEL[project.status]}</Badge>
+                    {project.dueDate && (
+                      <span className="text-xs text-foreground/50">
+                        Due {project.dueDate}
+                      </span>
+                    )}
+                  </div>
+                </button>
+              ))}
             </Panel>
           )}
         </TabsContent>

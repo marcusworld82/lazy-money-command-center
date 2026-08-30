@@ -27,7 +27,7 @@ import type {
   ContentPlatform,
   BrandVoiceProfile,
 } from "@/lib/types";
-import { useWorkspace } from "@/lib/providers/workspace-provider";
+import { DEFAULT_WORKSPACE } from "@/lib/workspace";
 import { cn } from "@/lib/utils";
 
 const CONTENT_TYPES: ContentType[] = ["text", "link", "blog", "transcript", "image", "video"];
@@ -42,7 +42,6 @@ export function ContentCreate({
   llmConfigured: boolean;
   onCreated: () => void;
 }) {
-  const { activeWorkspace } = useWorkspace();
   const [title, setTitle] = React.useState("");
   const [content, setContent] = React.useState("");
   const [contentType, setContentType] = React.useState<ContentType>("text");
@@ -70,7 +69,7 @@ export function ContentCreate({
     try {
       setBusy("Saving content…");
       const item = await createContentItem({
-        workspace: activeWorkspace,
+        workspace: DEFAULT_WORKSPACE,
         title: title.trim() || "Untitled",
         originalContent: content.trim(),
         contentType,

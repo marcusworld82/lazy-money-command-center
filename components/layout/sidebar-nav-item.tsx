@@ -29,18 +29,28 @@ export function SidebarNavItem({
       href={item.href}
       aria-current={active ? "page" : undefined}
       className={cn(
-        "group flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm font-medium transition-colors",
+        "group relative flex items-center gap-2.5 overflow-hidden rounded-lg px-2.5 py-2 text-sm font-medium transition-colors",
         "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+        // Active state is the subtle glow gradient plus a red edge marker —
+        // not a solid red block (Phase 4.5 Part D).
         active
-          ? "bg-sidebar-primary text-sidebar-primary-foreground"
-          : "text-sidebar-foreground/75",
+          ? "bg-gradient-glow-subtle text-sidebar-foreground"
+          : "text-sidebar-foreground/70",
         collapsed ? "justify-center" : indent && "ml-1",
       )}
     >
-      <Icon className="size-4 shrink-0" />
+      {active && (
+        <span
+          aria-hidden
+          className="absolute inset-y-1 left-0 w-[3px] rounded-full bg-accent-brand"
+        />
+      )}
+      <Icon
+        className={cn("size-4 shrink-0", active && "text-accent-brand")}
+      />
       {!collapsed && <span className="truncate">{item.label}</span>}
       {!collapsed && item.badge ? (
-        <Badge variant="secondary" className="ml-auto shrink-0 text-[10px]">
+        <Badge variant="tag" className="ml-auto shrink-0 text-[10px]">
           {item.badge}
         </Badge>
       ) : null}

@@ -99,17 +99,16 @@ export default function AutoEngagePage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <header className="flex flex-wrap items-start justify-between gap-4">
-        <div className="flex flex-col gap-2">
-          <Badge variant="secondary" className="w-fit text-[11px] uppercase tracking-wider">
-            Module
-          </Badge>
-          <h1 className="font-heading text-2xl font-semibold tracking-tight md:text-3xl">
-            Auto-Engage
-          </h1>
-          <p className="max-w-xl text-sm text-foreground/60">
-            Keyword-triggered DM automation for Instagram and Facebook. Everything here runs
-            in simulation only — no messages are sent.
+      <header className="flex flex-wrap items-end justify-between gap-4">
+        <div className="flex flex-col gap-1">
+          <span className="font-heading text-[11px] font-semibold uppercase tracking-[0.2em] text-foreground/50">
+            Social
+          </span>
+          <h1 className="text-display-sm uppercase">Automations</h1>
+          <p className="max-w-2xl text-sm text-foreground/60">
+            Rule-based &ldquo;when… then…&rdquo; flows — keyword triggers, follow gates, and
+            DM sequences for Instagram and Facebook. This is where Auto-Engage lives.
+            Everything runs in simulation only; no messages are sent.
           </p>
         </div>
         {!editing && (

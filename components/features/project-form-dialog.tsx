@@ -19,7 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { WORKSPACES, type Workspace } from "@/lib/workspace";
+import { DEFAULT_WORKSPACE, type Workspace } from "@/lib/workspace";
 import type { Project, ProjectStatus } from "@/lib/types";
 import { STATUS_LABEL, useAppData } from "@/lib/providers/app-data-provider";
 
@@ -29,21 +29,19 @@ interface ProjectFormDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   project?: Project;
-  defaultWorkspace?: Workspace;
 }
 
 export function ProjectFormDialog({
   open,
   onOpenChange,
   project,
-  defaultWorkspace,
 }: ProjectFormDialogProps) {
   const { createProject, updateProject } = useAppData();
   const [title, setTitle] = React.useState("");
   const [description, setDescription] = React.useState("");
-  const [workspace, setWorkspace] = React.useState<Workspace>(
-    defaultWorkspace ?? "shared-os",
-  );
+  // Workspaces are retired from the UI (Phase 4.5); the column still exists,
+  // so new records carry the default until the Phase 6 migration drops it.
+  const [workspace, setWorkspace] = React.useState<Workspace>(DEFAULT_WORKSPACE);
   const [status, setStatus] = React.useState<ProjectStatus>("not-started");
   const [dueDate, setDueDate] = React.useState("");
 
@@ -53,11 +51,11 @@ export function ProjectFormDialog({
     /* eslint-disable react-hooks/set-state-in-effect */
     setTitle(project?.title ?? "");
     setDescription(project?.description ?? "");
-    setWorkspace(project?.workspace ?? defaultWorkspace ?? "shared-os");
+    setWorkspace(project?.workspace ?? DEFAULT_WORKSPACE);
     setStatus(project?.status ?? "not-started");
     setDueDate(project?.dueDate ?? "");
     /* eslint-enable react-hooks/set-state-in-effect */
-  }, [open, project, defaultWorkspace]);
+  }, [open, project]);
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -114,22 +112,6 @@ export function ProjectFormDialog({
           </div>
 
           <div className="grid grid-cols-2 gap-3">
-            <div className="flex flex-col gap-1.5">
-              <Label>Workspace</Label>
-              <Select value={workspace} onValueChange={(v) => setWorkspace(v as Workspace)}>
-                <SelectTrigger className="w-full">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {WORKSPACES.map((w) => (
-                    <SelectItem key={w.slug} value={w.slug}>
-                      {w.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
             <div className="flex flex-col gap-1.5">
               <Label>Status</Label>
               <Select value={status} onValueChange={(v) => setStatus(v as ProjectStatus)}>

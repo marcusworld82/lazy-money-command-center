@@ -18,7 +18,7 @@ import { ListSkeleton } from "@/components/ui/skeleton";
 import { Plus, ListChecks, Trash2 } from "lucide-react";
 import type { TaskStatus } from "@/lib/types";
 import { useAppData } from "@/lib/providers/app-data-provider";
-import { getWorkspaceMeta, type Workspace } from "@/lib/workspace";
+import type { Workspace } from "@/lib/workspace";
 
 const TASK_STATUS_LABEL: Record<TaskStatus, string> = {
   todo: "To Do",
@@ -87,9 +87,9 @@ export function TaskTab({ workspace }: { workspace?: Workspace }) {
                   >
                     {task.title}
                   </span>
-                  {(project || task.workspace) && (
+                  {project && (
                     <span className="truncate text-xs text-foreground/45">
-                      {project ? project.title : getWorkspaceMeta(task.workspace!).label}
+                      {project.title}
                     </span>
                   )}
                 </div>
