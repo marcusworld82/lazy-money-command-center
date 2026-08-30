@@ -1,5 +1,6 @@
 "use client";
 
+import * as React from "react";
 import { Badge } from "@/components/ui/badge";
 import { GlassPanel } from "@/components/ui/glass-panel";
 import { Switch } from "@/components/ui/switch";
@@ -7,10 +8,25 @@ import { Label } from "@/components/ui/label";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { useSidebar } from "@/lib/providers/sidebar-provider";
 import { useTheme } from "@/lib/providers/theme-provider";
+import { getPublishMode, setPublishMode } from "@/lib/actions/settings";
+import type { PublishMode } from "@/lib/types";
 
 export default function SettingsPage() {
   const { collapsed, setCollapsed } = useSidebar();
   const { theme } = useTheme();
+  const [publishMode, setMode] = React.useState<PublishMode | null>(null);
+
+  React.useEffect(() => {
+    // Initial fetch-on-mount; Server Actions can't run during SSR render.
+    getPublishMode()
+      .then(setMode)
+      .catch(() => setMode(null));
+  }, []);
+
+  async function updateMode(next: PublishMode) {
+    setMode(next);
+    await setPublishMode(next);
+  }
 
   return (
     <div className="flex flex-col gap-6">
@@ -44,6 +60,50 @@ export default function SettingsPage() {
         </div>
         <Switch checked={collapsed} onCheckedChange={setCollapsed} />
       </GlassPanel>
+
+      <section className="flex flex-col gap-3">
+        <h2 className="font-heading text-sm font-semibold uppercase tracking-wider text-foreground/60">
+          Publishing
+        </h2>
+        <GlassPanel className="flex items-center justify-between gap-4 p-4">
+          <div className="flex flex-col">
+            <Label className="text-sm font-medium">Require manual approval</Label>
+            <span className="text-xs text-foreground/55">
+              Nothing publishes until you approve it. This is the safe default and should
+              stay on unless you have a reason to change it.
+            </span>
+          </div>
+          <Switch
+            checked={publishMode?.humanApprovalRequired ?? true}
+            onCheckedChange={(checked) =>
+              updateMode({
+                humanApprovalRequired: checked,
+                // Auto-publish and manual approval are mutually exclusive.
+                autoPublish: checked ? false : (publishMode?.autoPublish ?? false),
+              })
+            }
+          />
+        </GlassPanel>
+        <GlassPanel className="flex items-center justify-between gap-4 p-4">
+          <div className="flex flex-col">
+            <Label className="text-sm font-medium">Auto-publish</Label>
+            <span className="text-xs text-foreground/55">
+              Publish approved versions without a final confirmation. Disabled while manual
+              approval is required.
+            </span>
+          </div>
+          <Switch
+            checked={publishMode?.autoPublish ?? false}
+            disabled={publishMode?.humanApprovalRequired ?? true}
+            onCheckedChange={(checked) =>
+              updateMode({
+                autoPublish: checked,
+                humanApprovalRequired: publishMode?.humanApprovalRequired ?? true,
+              })
+            }
+          />
+        </GlassPanel>
+      </section>
 
       <section className="flex flex-col gap-3">
         <h2 className="font-heading text-sm font-semibold uppercase tracking-wider text-foreground/60">

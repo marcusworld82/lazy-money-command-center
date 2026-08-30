@@ -72,6 +72,115 @@ export interface WorkflowCanvas {
   updatedAt: string;
 }
 
+export type ContentPlatform =
+  | "instagram"
+  | "tiktok"
+  | "youtube"
+  | "x"
+  | "linkedin"
+  | "threads"
+  | "facebook"
+  | "pinterest"
+  | "email"
+  | "blog";
+
+export type ContentType = "text" | "image" | "video" | "link" | "blog" | "transcript";
+export type ContentGoal = "awareness" | "saves" | "traffic" | "leads";
+
+export type VersionStatus =
+  | "draft"
+  | "ready_for_review"
+  | "approved"
+  | "scheduled"
+  | "published"
+  | "failed"
+  | "ready_to_post";
+
+/**
+ * Single source of truth extracted before any platform rewriting, per master
+ * spec section 5 — this is what stops meaning drift across adaptations.
+ */
+export interface ContentAnalysis {
+  core_idea: string;
+  hook: string;
+  key_points: string[];
+  facts_to_preserve: string[];
+}
+
+export interface ContentItem {
+  id: string;
+  workspace?: Workspace;
+  title: string;
+  originalContent: string;
+  contentType: ContentType;
+  goal?: ContentGoal;
+  audience?: string;
+  cta?: string;
+  analysis?: ContentAnalysis;
+  status: string;
+  createdAt: string;
+}
+
+/** Platform-specific fields; shape varies by platform adapter. */
+export interface ContentVersionPayload {
+  caption?: string;
+  hashtags?: string[];
+  script?: string;
+  title?: string;
+  body?: string;
+  subject?: string;
+  notes?: string;
+  /** Everything needed to post by hand when no publish connector exists. */
+  manualPostPack?: {
+    mediaSpec?: string;
+    suggestedTime?: string;
+    steps?: string[];
+  };
+}
+
+export interface ContentVersion {
+  id: string;
+  contentId: string;
+  platform: ContentPlatform;
+  payload: ContentVersionPayload;
+  status: VersionStatus;
+  approvedAt?: string;
+  createdAt: string;
+}
+
+export interface ScheduledPost {
+  id: string;
+  versionId: string;
+  scheduledFor?: string;
+  status: string;
+  idempotencyKey?: string;
+  attempts: number;
+}
+
+export interface BrandVoiceProfileData {
+  tone?: string;
+  style?: string;
+  hooks?: string;
+  ctaStyle?: string;
+  wordsToUse?: string[];
+  wordsToAvoid?: string[];
+  emojiRules?: string;
+  hashtagRules?: string;
+}
+
+export interface BrandVoiceProfile {
+  id: string;
+  workspace?: Workspace;
+  name: string;
+  profile: BrandVoiceProfileData;
+  createdAt: string;
+}
+
+export interface PublishMode {
+  autoPublish: boolean;
+  humanApprovalRequired: boolean;
+}
+
 /** Master spec section 6: Instagram and Facebook only. */
 export type AutomationPlatform = "instagram" | "facebook";
 export type AutomationStatus = "draft" | "active" | "paused";
