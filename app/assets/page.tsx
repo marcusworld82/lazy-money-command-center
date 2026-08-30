@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Panel } from "@/components/ui/panel";
 import { PlaceholderEmptyState } from "@/components/ui/placeholder-empty-state";
@@ -42,12 +41,10 @@ export default function AssetsPage() {
     <div className="flex flex-col gap-6">
       <header className="flex flex-wrap items-start justify-between gap-4">
         <div className="flex flex-col gap-2">
-          <Badge variant="secondary" className="w-fit text-[11px] uppercase tracking-wider">
-            Build
-          </Badge>
-          <h1 className="font-heading text-2xl font-semibold tracking-tight md:text-3xl">
-            Assets
-          </h1>
+          <span className="font-heading text-[11px] font-semibold uppercase tracking-[0.2em] text-foreground/50">
+          Library
+        </span>
+          <h1 className="text-display-sm uppercase">Assets</h1>
           <p className="max-w-xl text-sm text-foreground/60">
             Asset library backed by Supabase Storage. Uploads are private, served via
             signed URLs.

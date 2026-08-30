@@ -166,10 +166,10 @@ export function TextNode({ id, data, selected }: NodeProps) {
 }
 
 /**
- * Prompt node. Carries the same GenerationBar the Generate page uses, in its
- * inline variant — so Phase 5 can wire one component in both places rather than
- * reimplementing model/ratio/count controls per surface. Settings live in node
- * data, so they persist with the canvas like any other node field.
+ * Prompt node. Carries GenerationBar in its inline variant. Phase 4.5 moved the
+ * main Images/Video pages to the tool-rail studio, but the compact bar is still
+ * the right shape inside a node — so it stays, scoped here. Settings live in
+ * node data, so they persist with the canvas like any other node field.
  */
 export function PromptNode({ id, data, selected }: NodeProps) {
   const nodeData = data as WorkflowNodeData;

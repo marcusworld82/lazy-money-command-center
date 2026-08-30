@@ -1,6 +1,8 @@
 "use client";
 
 import * as React from "react";
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Panel } from "@/components/ui/panel";
 import { Switch } from "@/components/ui/switch";
@@ -31,12 +33,10 @@ export default function SettingsPage() {
   return (
     <div className="flex flex-col gap-6">
       <header className="flex flex-col gap-2">
-        <Badge variant="secondary" className="w-fit text-[11px] uppercase tracking-wider">
-          Module
-        </Badge>
-        <h1 className="font-heading text-2xl font-semibold tracking-tight md:text-3xl">
-          Settings
-        </h1>
+        <span className="font-heading text-[11px] font-semibold uppercase tracking-[0.2em] text-foreground/50">
+          System
+        </span>
+        <h1 className="text-display-sm uppercase">Settings</h1>
         <p className="max-w-xl text-sm text-foreground/60">
           Theme and sidebar behavior are functional now. API key management arrives in a
           later phase.
@@ -118,6 +118,28 @@ export default function SettingsPage() {
               </Badge>
             </div>
           ))}
+        </Panel>
+      </section>
+
+      {/* Spend & Usage is not in the Phase 4.5 tool-first sidebar, so it hangs
+          off Settings rather than becoming an unreachable route. */}
+      <section className="flex flex-col gap-3">
+        <h2 className="font-heading text-sm font-semibold uppercase tracking-wider text-foreground/60">
+          Spend
+        </h2>
+        <Panel interactive className="p-0">
+          <Link
+            href="/spend-usage"
+            className="flex items-center justify-between gap-4 p-4"
+          >
+            <div className="flex flex-col">
+              <span className="text-sm font-medium">Spend &amp; Usage</span>
+              <span className="text-xs text-foreground/55">
+                Per-model cost and run history. Populates once generation is wired up.
+              </span>
+            </div>
+            <ArrowRight className="size-4 shrink-0 text-accent-brand" />
+          </Link>
         </Panel>
       </section>
     </div>
