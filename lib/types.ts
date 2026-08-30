@@ -66,6 +66,32 @@ export interface WorkflowCanvas {
   workspace?: Workspace;
   nodes: Node[];
   edges: Edge[];
+  /** Templates are reusable starting points; instances are duplicated from one. */
+  isTemplate: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type WorkflowRunStatus = "draft" | "in-progress" | "completed";
+
+export type WorkflowRunEventType =
+  | "created"
+  | "node-updated"
+  | "approved"
+  | "rejected"
+  | "completed";
+
+export interface WorkflowRunEvent {
+  type: WorkflowRunEventType;
+  label: string;
+  at: string;
+}
+
+export interface WorkflowRun {
+  id: string;
+  canvasId: string;
+  status: WorkflowRunStatus;
+  log: WorkflowRunEvent[];
   createdAt: string;
   updatedAt: string;
 }

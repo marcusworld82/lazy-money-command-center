@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
-import { NODE_KINDS, type StubNodeKind } from "@/components/features/workflow-nodes";
+import { NODE_KINDS, type WorkflowNodeKind } from "@/components/features/workflow-nodes";
 
-export function WorkflowNodePalette({ onAdd }: { onAdd: (kind: StubNodeKind) => void }) {
+export function WorkflowNodePalette({ onAdd }: { onAdd: (kind: WorkflowNodeKind) => void }) {
   return (
     <div className="flex flex-wrap items-center gap-1.5">
       {NODE_KINDS.map(({ kind, label, icon: Icon }) => (

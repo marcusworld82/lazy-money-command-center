@@ -72,7 +72,10 @@ interface AppDataContextValue {
     workspace?: Workspace;
     nodes: Node[];
     edges: Edge[];
+    isTemplate?: boolean;
   }) => Promise<WorkflowCanvas>;
+  duplicateWorkflow: (canvasId: string, name?: string) => Promise<WorkflowCanvas>;
+  setWorkflowTemplate: (id: string, isTemplate: boolean) => Promise<void>;
   deleteWorkflow: (id: string) => Promise<void>;
 
   refresh: () => Promise<void>;
@@ -232,6 +235,25 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
     [refresh],
   );
 
+  const duplicateWorkflow = React.useCallback<AppDataContextValue["duplicateWorkflow"]>(
+    async (canvasId, name) => {
+      const workflow = await workflowActions.duplicateWorkflow(canvasId, name);
+      await refresh();
+      return workflow;
+    },
+    [refresh],
+  );
+
+  const setWorkflowTemplate = React.useCallback<
+    AppDataContextValue["setWorkflowTemplate"]
+  >(
+    async (id, isTemplate) => {
+      await workflowActions.setWorkflowTemplate(id, isTemplate);
+      await refresh();
+    },
+    [refresh],
+  );
+
   const deleteWorkflow = React.useCallback<AppDataContextValue["deleteWorkflow"]>(
     async (id) => {
       await workflowActions.deleteWorkflow(id);
@@ -262,6 +284,8 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
     addAsset,
     removeAsset,
     saveWorkflow,
+    duplicateWorkflow,
+    setWorkflowTemplate,
     deleteWorkflow,
     refresh,
   };
