@@ -72,6 +72,64 @@ export interface WorkflowCanvas {
   updatedAt: string;
 }
 
+export type KnowledgeCategory =
+  | "my-business"
+  | "client-business"
+  | "playbook"
+  | "reference"
+  | "design-system"
+  | "template";
+
+export type DocumentType =
+  | "brand-bible"
+  | "sop"
+  | "brand-kit"
+  | "design-dna"
+  | "general";
+
+export interface KnowledgeFolder {
+  id: string;
+  name: string;
+  parentId?: string;
+  workspace?: Workspace;
+  category?: KnowledgeCategory;
+  createdAt: string;
+}
+
+export interface KnowledgeDocument {
+  id: string;
+  folderId?: string;
+  title: string;
+  content: string;
+  documentType: DocumentType;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface BrandKitColors {
+  primary?: string;
+  secondary?: string;
+  neutrals?: string;
+  usageNotes?: string;
+}
+
+export interface ClientBrandKit {
+  id: string;
+  folderId?: string;
+  businessName: string;
+  industry?: string;
+  website?: string;
+  primaryContact?: string;
+  colors?: BrandKitColors;
+  typography?: string;
+  brandVoice?: string;
+  audience?: string;
+  offers?: string;
+  restrictions?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export type WorkflowRunStatus = "draft" | "in-progress" | "completed";
 
 export type WorkflowRunEventType =
