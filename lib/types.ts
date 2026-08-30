@@ -72,6 +72,35 @@ export interface WorkflowCanvas {
   updatedAt: string;
 }
 
+/** Master spec section 6: Instagram and Facebook only. */
+export type AutomationPlatform = "instagram" | "facebook";
+export type AutomationStatus = "draft" | "active" | "paused";
+export type AutomationResult = "sent" | "failed" | "gated_not_following";
+
+export interface AutomationStep {
+  message: string;
+}
+
+export interface AutomationFlow {
+  id: string;
+  platform: AutomationPlatform;
+  triggerKeyword: string;
+  requiresFollow: boolean;
+  steps: AutomationStep[];
+  status: AutomationStatus;
+  createdAt: string;
+}
+
+export interface AutomationLogEntry {
+  id: string;
+  flowId?: string;
+  contactIdentifier?: string;
+  triggeredAt: string;
+  result: AutomationResult;
+  /** False only once a real Meta Graph API call has actually run. */
+  simulated: boolean;
+}
+
 export type KnowledgeCategory =
   | "my-business"
   | "client-business"
