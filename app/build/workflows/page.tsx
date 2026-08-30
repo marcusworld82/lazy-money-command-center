@@ -5,7 +5,7 @@ import type { Node, Edge } from "@xyflow/react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { GlassPanel } from "@/components/ui/glass-panel";
+import { Panel } from "@/components/ui/panel";
 import { PlaceholderEmptyState } from "@/components/ui/placeholder-empty-state";
 import { ListSkeleton } from "@/components/ui/skeleton";
 import {
@@ -129,7 +129,7 @@ export default function WorkflowsPage() {
 
   function CanvasCard({ canvas }: { canvas: Canvas }) {
     return (
-      <GlassPanel interactive className="flex flex-col gap-3 p-4">
+      <Panel interactive className="flex flex-col gap-3 p-4">
         <button
           onClick={() => setActiveId(canvas.id)}
           className="flex flex-col gap-3 text-left"
@@ -164,7 +164,7 @@ export default function WorkflowsPage() {
             </Button>
           )}
         </div>
-      </GlassPanel>
+      </Panel>
     );
   }
 
@@ -205,7 +205,7 @@ export default function WorkflowsPage() {
       </header>
 
       {creating && (
-        <GlassPanel className="p-4">
+        <Panel className="p-4">
           <form onSubmit={handleCreate} className="flex items-center gap-2">
             <Input
               value={nameDraft}
@@ -227,7 +227,7 @@ export default function WorkflowsPage() {
               Cancel
             </Button>
           </form>
-        </GlassPanel>
+        </Panel>
       )}
 
       {error && (
@@ -262,7 +262,7 @@ export default function WorkflowsPage() {
                 )}
                 {dirty && (
                   <span className="flex items-center gap-1.5 text-[11px] text-foreground/50">
-                    <span className="size-1.5 rounded-full bg-accent-green" />
+                    <span className="size-1.5 rounded-full bg-accent-brand" />
                     Unsaved changes
                   </span>
                 )}
@@ -316,7 +316,7 @@ export default function WorkflowsPage() {
                 onNodeEvent={logRunEvent}
               />
 
-              <GlassPanel className="flex h-fit flex-col gap-3 p-4">
+              <Panel className="flex h-fit flex-col gap-3 p-4">
                 <div className="flex items-center justify-between">
                   <h3 className="font-heading text-xs font-semibold uppercase tracking-wider text-foreground/60">
                     Run History
@@ -345,7 +345,7 @@ export default function WorkflowsPage() {
                     ))}
                   </ol>
                 )}
-              </GlassPanel>
+              </Panel>
             </div>
           </div>
         ) : workflows.length === 0 ? (

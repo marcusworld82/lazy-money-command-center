@@ -1,4 +1,4 @@
-import { GlassPanel } from "@/components/ui/glass-panel";
+import { Panel } from "@/components/ui/panel";
 import { Badge } from "@/components/ui/badge";
 import type { Project } from "@/lib/types";
 import { getWorkspaceMeta } from "@/lib/workspace";
@@ -13,7 +13,7 @@ export function ProjectCard({
 }) {
   const workspace = getWorkspaceMeta(project.workspace);
   return (
-    <GlassPanel
+    <Panel
       as={onClick ? "button" : "div"}
       interactive
       onClick={onClick}
@@ -30,6 +30,6 @@ export function ProjectCard({
         <span>{workspace.shortLabel}</span>
         {project.dueDate ? <span>Due {project.dueDate}</span> : <span />}
       </div>
-    </GlassPanel>
+    </Panel>
   );
 }

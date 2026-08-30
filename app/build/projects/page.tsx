@@ -4,7 +4,7 @@ import * as React from "react";
 import { List, LayoutGrid, Plus, FolderKanban } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { GlassPanel } from "@/components/ui/glass-panel";
+import { Panel } from "@/components/ui/panel";
 import { ProjectCard } from "@/components/ui/project-card";
 import { PlaceholderEmptyState } from "@/components/ui/placeholder-empty-state";
 import { CardGridSkeleton } from "@/components/ui/skeleton";
@@ -112,7 +112,7 @@ export default function ProjectsPage() {
               </Select>
             </div>
             <div className="flex items-center gap-2">
-              <div className="flex items-center gap-1 rounded-lg border border-glass-border bg-glass p-1">
+              <div className="flex items-center gap-1 rounded-lg border border-subtle bg-surface-card p-1">
                 <Button
                   size="sm"
                   variant={view === "list" ? "secondary" : "ghost"}
@@ -175,7 +175,7 @@ export default function ProjectsPage() {
               ))}
             </div>
           ) : (
-            <GlassPanel className="flex flex-col divide-y divide-glass-border">
+            <Panel className="flex flex-col divide-y divide-subtle">
               {filtered.map((project) => {
                 const workspace = getWorkspaceMeta(project.workspace);
                 return (
@@ -203,7 +203,7 @@ export default function ProjectsPage() {
                   </button>
                 );
               })}
-            </GlassPanel>
+            </Panel>
           )}
         </TabsContent>
 

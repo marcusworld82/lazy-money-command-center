@@ -1,6 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import { StatCard } from "@/components/ui/stat-card";
-import { GlassPanel } from "@/components/ui/glass-panel";
+import { Panel } from "@/components/ui/panel";
 import {
   Table,
   TableBody,
@@ -47,7 +47,7 @@ export default function SpendUsagePage() {
         <h2 className="font-heading text-sm font-semibold uppercase tracking-wider text-foreground/60">
           Model Usage
         </h2>
-        <GlassPanel className="overflow-hidden p-0">
+        <Panel className="overflow-hidden p-0">
           <Table>
             <TableHeader>
               <TableRow>
@@ -66,14 +66,14 @@ export default function SpendUsagePage() {
               ))}
             </TableBody>
           </Table>
-        </GlassPanel>
+        </Panel>
       </section>
 
       <section className="flex flex-col gap-3">
         <h2 className="font-heading text-sm font-semibold uppercase tracking-wider text-foreground/60">
           Media Generation Log
         </h2>
-        <GlassPanel className="overflow-hidden p-0">
+        <Panel className="overflow-hidden p-0">
           <Table>
             <TableHeader>
               <TableRow>
@@ -94,18 +94,18 @@ export default function SpendUsagePage() {
               ))}
             </TableBody>
           </Table>
-        </GlassPanel>
+        </Panel>
       </section>
 
       <section className="flex flex-col gap-3">
         <h2 className="font-heading text-sm font-semibold uppercase tracking-wider text-foreground/60">
           Agent Usage Ranking
         </h2>
-        <GlassPanel className="p-4">
+        <Panel className="p-4">
           <p className="text-sm text-foreground/55">
             No agents active yet — ranking populates once agents exist in Phase 6.
           </p>
-        </GlassPanel>
+        </Panel>
       </section>
     </div>
   );

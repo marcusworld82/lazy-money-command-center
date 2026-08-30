@@ -54,7 +54,7 @@ export function GlobalCommandBar() {
   );
 
   return (
-    <div className="sticky top-0 z-30 flex items-center gap-3 border-b border-glass-border bg-background/70 px-4 py-3 backdrop-blur-xl md:px-6">
+    <div className="sticky top-0 z-30 flex items-center gap-3 border-b border-subtle bg-background px-4 py-3 md:px-6">
       <Button
         variant="secondary"
         onClick={() => setOpen(true)}
@@ -62,7 +62,7 @@ export function GlobalCommandBar() {
       >
         <Search className="size-4" />
         <span className="text-sm">Search…</span>
-        <kbd className="ml-auto hidden rounded border border-glass-border bg-white/10 px-1.5 py-0.5 text-[10px] font-medium sm:inline-block">
+        <kbd className="ml-auto hidden rounded border border-subtle bg-white/10 px-1.5 py-0.5 text-[10px] font-medium sm:inline-block">
           ⌘K
         </kbd>
       </Button>

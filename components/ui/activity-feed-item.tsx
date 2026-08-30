@@ -3,7 +3,7 @@ import { formatRelativeTime } from "@/lib/utils";
 
 export function ActivityFeedItem({ item }: { item: ActivityItem }) {
   return (
-    <li className="flex items-start gap-3 border-b border-glass-border py-3 last:border-b-0">
+    <li className="flex items-start gap-3 border-b border-subtle py-3 last:border-b-0">
       <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-foreground/50" />
       <div className="flex min-w-0 flex-1 flex-col">
         <span className="text-sm font-medium">{item.label}</span>

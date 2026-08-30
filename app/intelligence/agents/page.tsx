@@ -1,5 +1,5 @@
 import { Badge } from "@/components/ui/badge";
-import { GlassPanel } from "@/components/ui/glass-panel";
+import { Panel } from "@/components/ui/panel";
 import { SAMPLE_AGENTS } from "@/lib/sample-data";
 import { Bot } from "lucide-react";
 
@@ -21,8 +21,8 @@ export default function AgentsPage() {
 
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
         {SAMPLE_AGENTS.map((agent) => (
-          <GlassPanel key={agent.id} className="flex flex-col items-center gap-2 p-5 text-center">
-            <div className="flex size-14 items-center justify-center rounded-full border border-glass-border bg-white/5">
+          <Panel key={agent.id} className="flex flex-col items-center gap-2 p-5 text-center">
+            <div className="flex size-14 items-center justify-center rounded-full border border-subtle bg-white/5">
               <Bot className="size-6 text-foreground/50" />
             </div>
             <span className="font-heading text-sm font-semibold">{agent.name}</span>
@@ -30,7 +30,7 @@ export default function AgentsPage() {
             <Badge variant="secondary" className="text-[10px]">
               Coming Soon
             </Badge>
-          </GlassPanel>
+          </Panel>
         ))}
       </div>
     </div>

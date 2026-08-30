@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { GlassPanel } from "@/components/ui/glass-panel";
+import { Panel } from "@/components/ui/panel";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { PLATFORM_RULES } from "@/lib/content/platforms";
@@ -67,7 +67,7 @@ export function ContentCalendar({
   return (
     <div className="flex flex-col gap-3">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <div className="flex items-center gap-1 rounded-lg border border-glass-border bg-glass p-1">
+        <div className="flex items-center gap-1 rounded-lg border border-subtle bg-surface-card p-1">
           {(["today", "week", "month"] as Range[]).map((r) => (
             <Button
               key={r}
@@ -97,7 +97,7 @@ export function ContentCalendar({
         </div>
       </div>
 
-      <GlassPanel className="p-3">
+      <Panel className="p-3">
         {range === "month" && (
           <div className="mb-1 grid grid-cols-7 gap-1">
             {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((d) => (
@@ -125,17 +125,17 @@ export function ContentCalendar({
               <div
                 key={day.toISOString()}
                 className={cn(
-                  "flex min-h-20 flex-col gap-1 rounded-md border border-glass-border p-1.5",
+                  "flex min-h-20 flex-col gap-1 rounded-md border border-subtle p-1.5",
                   range === "today" && "min-h-40",
                   !inMonth && range === "month" && "opacity-35",
-                  day.toDateString() === today && "border-accent-green/60",
+                  day.toDateString() === today && "border-accent-brand/60",
                 )}
               >
                 <span className="text-[10px] text-foreground/45">{day.getDate()}</span>
                 {entries.map(({ post, version }) => (
                   <div
                     key={post.id}
-                    className="truncate rounded bg-accent-green/20 px-1 py-0.5 text-[10px] text-accent-green"
+                    className="truncate rounded bg-accent-brand/20 px-1 py-0.5 text-[10px] text-accent-brand"
                     title={version ? PLATFORM_RULES[version.platform].label : undefined}
                   >
                     {version ? PLATFORM_RULES[version.platform].label : "Scheduled"}
@@ -145,7 +145,7 @@ export function ContentCalendar({
             );
           })}
         </div>
-      </GlassPanel>
+      </Panel>
 
       {scheduled.length === 0 && (
         <p className="text-xs text-foreground/45">

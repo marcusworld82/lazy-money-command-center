@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { Badge } from "@/components/ui/badge";
-import { GlassPanel } from "@/components/ui/glass-panel";
+import { Panel } from "@/components/ui/panel";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
@@ -43,15 +43,15 @@ export default function SettingsPage() {
         </p>
       </header>
 
-      <GlassPanel className="flex items-center justify-between gap-4 p-4">
+      <Panel className="flex items-center justify-between gap-4 p-4">
         <div className="flex flex-col">
           <Label className="text-sm font-medium">Theme</Label>
           <span className="text-xs text-foreground/55">Currently {theme} mode</span>
         </div>
         <ThemeToggle />
-      </GlassPanel>
+      </Panel>
 
-      <GlassPanel className="flex items-center justify-between gap-4 p-4">
+      <Panel className="flex items-center justify-between gap-4 p-4">
         <div className="flex flex-col">
           <Label className="text-sm font-medium">Collapse sidebar by default</Label>
           <span className="text-xs text-foreground/55">
@@ -59,13 +59,13 @@ export default function SettingsPage() {
           </span>
         </div>
         <Switch checked={collapsed} onCheckedChange={setCollapsed} />
-      </GlassPanel>
+      </Panel>
 
       <section className="flex flex-col gap-3">
         <h2 className="font-heading text-sm font-semibold uppercase tracking-wider text-foreground/60">
           Publishing
         </h2>
-        <GlassPanel className="flex items-center justify-between gap-4 p-4">
+        <Panel className="flex items-center justify-between gap-4 p-4">
           <div className="flex flex-col">
             <Label className="text-sm font-medium">Require manual approval</Label>
             <span className="text-xs text-foreground/55">
@@ -83,8 +83,8 @@ export default function SettingsPage() {
               })
             }
           />
-        </GlassPanel>
-        <GlassPanel className="flex items-center justify-between gap-4 p-4">
+        </Panel>
+        <Panel className="flex items-center justify-between gap-4 p-4">
           <div className="flex flex-col">
             <Label className="text-sm font-medium">Auto-publish</Label>
             <span className="text-xs text-foreground/55">
@@ -102,14 +102,14 @@ export default function SettingsPage() {
               })
             }
           />
-        </GlassPanel>
+        </Panel>
       </section>
 
       <section className="flex flex-col gap-3">
         <h2 className="font-heading text-sm font-semibold uppercase tracking-wider text-foreground/60">
           Connections &amp; API Keys
         </h2>
-        <GlassPanel className="flex flex-col gap-3 p-4 opacity-60">
+        <Panel className="flex flex-col gap-3 p-4 opacity-60">
           {["OpenRouter", "fal", "Supabase", "Telegram", "Connections / MCPs"].map((service) => (
             <div key={service} className="flex items-center justify-between gap-4">
               <span className="text-sm font-medium">{service}</span>
@@ -118,7 +118,7 @@ export default function SettingsPage() {
               </Badge>
             </div>
           ))}
-        </GlassPanel>
+        </Panel>
       </section>
     </div>
   );

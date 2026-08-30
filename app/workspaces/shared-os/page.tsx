@@ -1,6 +1,6 @@
 import { WorkspaceDashboard } from "@/components/workspace/workspace-dashboard";
 import { WorkspaceLivePanel } from "@/components/workspace/workspace-live-panel";
-import { GlassPanel } from "@/components/ui/glass-panel";
+import { Panel } from "@/components/ui/panel";
 import { getWorkspaceMeta } from "@/lib/workspace";
 import { SHARED_OS_ITEMS } from "@/lib/sample-data";
 
@@ -13,10 +13,10 @@ export default function SharedOsPage() {
         </h2>
         <div className="flex flex-col gap-2">
           {SHARED_OS_ITEMS.map((item) => (
-            <GlassPanel key={item.id} className="flex items-center justify-between p-3">
+            <Panel key={item.id} className="flex items-center justify-between p-3">
               <span className="text-sm">{item.title}</span>
               <span className="text-xs text-foreground/50">{item.kind}</span>
-            </GlassPanel>
+            </Panel>
           ))}
         </div>
       </section>

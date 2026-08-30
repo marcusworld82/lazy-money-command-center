@@ -3,7 +3,7 @@
 import * as React from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { GlassPanel } from "@/components/ui/glass-panel";
+import { Panel } from "@/components/ui/panel";
 import { PlaceholderEmptyState } from "@/components/ui/placeholder-empty-state";
 import { CardGridSkeleton } from "@/components/ui/skeleton";
 import { useAppData } from "@/lib/providers/app-data-provider";
@@ -97,15 +97,15 @@ export default function AssetsPage() {
             const Icon = TYPE_ICON[asset.type];
             const workspace = asset.workspace ? getWorkspaceMeta(asset.workspace) : null;
             return (
-              <GlassPanel key={asset.id} interactive className="group relative flex flex-col gap-2 p-3">
+              <Panel key={asset.id} interactive className="group relative flex flex-col gap-2 p-3">
                 <button
                   onClick={() => removeAsset(asset.id)}
                   aria-label="Remove asset"
-                  className="absolute top-2 right-2 z-10 flex size-6 items-center justify-center rounded-full bg-black/50 text-white opacity-0 backdrop-blur transition-opacity group-hover:opacity-100"
+                  className="absolute top-2 right-2 z-10 flex size-6 items-center justify-center rounded-full border border-subtle bg-surface-raised text-foreground opacity-0 transition-opacity group-hover:opacity-100"
                 >
                   <X className="size-3.5" />
                 </button>
-                <div className="flex aspect-square items-center justify-center overflow-hidden rounded-lg border border-glass-border bg-white/5">
+                <div className="flex aspect-square items-center justify-center overflow-hidden rounded-lg border border-subtle bg-white/5">
                   {asset.type === "image" && asset.url ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
@@ -121,7 +121,7 @@ export default function AssetsPage() {
                 {workspace && (
                   <span className="text-[11px] text-foreground/45">{workspace.shortLabel}</span>
                 )}
-              </GlassPanel>
+              </Panel>
             );
           })}
         </div>

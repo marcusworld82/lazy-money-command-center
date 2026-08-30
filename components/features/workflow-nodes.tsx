@@ -14,6 +14,12 @@ import {
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import type { Asset } from "@/lib/types";
+import {
+  GenerationBar,
+  DEFAULT_GENERATION_SETTINGS,
+  type GenerationModel,
+  type GenerationSettings,
+} from "@/components/features/generation-bar";
 import type { WorkflowRunEventType } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
@@ -51,7 +57,16 @@ export interface WorkflowNodeData extends Record<string, unknown> {
   assetUrl?: string;
   /** approval nodes */
   status?: ApprovalStatus;
+  /** prompt nodes — model/ratio/resolution/count, persisted with the canvas */
+  generation?: GenerationSettings;
 }
+
+/** Placeholder model list for the in-node bar; Phase 5 supplies the real one. */
+const NODE_MODELS: GenerationModel[] = [
+  { id: "m1", name: "Image Model A", description: "Fast stills", costPerRun: 0.02 },
+  { id: "m2", name: "Image Model B", description: "Higher fidelity", costPerRun: 0.08 },
+  { id: "m4", name: "Video Model A", description: "Image-to-video", costPerRun: 0.35 },
+];
 
 /**
  * Canvas-scoped context so node components can reach the asset library and
@@ -89,15 +104,15 @@ function NodeShell({
   return (
     <div
       className={cn(
-        "flex flex-col gap-2 rounded-xl border px-3 py-2.5 shadow-md backdrop-blur-xl",
+        // Flat dark node card: thin border, medium radius, no blur or shadow.
+        "flex flex-col gap-2 rounded-xl border bg-surface-raised px-3 py-2.5",
         wide ? "w-64" : "min-w-40",
-        selected ? "border-accent-green/70" : "border-glass-border",
+        selected ? "border-accent-brand" : "border-subtle",
       )}
-      style={{ backgroundColor: "var(--glass-strong)" }}
     >
-      <Handle type="target" position={Position.Top} className="!bg-accent-green" />
+      <Handle type="target" position={Position.Top} className="!bg-accent-brand" />
       <div className="flex items-center gap-2">
-        <div className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-accent-green/15 text-accent-green">
+        <div className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-accent-brand/15 text-accent-brand">
           <Icon className="size-4" />
         </div>
         <span className="text-[10px] font-medium uppercase tracking-wider text-foreground/45">
@@ -105,7 +120,7 @@ function NodeShell({
         </span>
       </div>
       {children}
-      <Handle type="source" position={Position.Bottom} className="!bg-accent-green" />
+      <Handle type="source" position={Position.Bottom} className="!bg-accent-brand" />
     </div>
   );
 }
@@ -129,7 +144,7 @@ function TextualNode({
     <NodeShell kind={data.kind} selected={!!selected} wide>
       <textarea
         // nodrag/nowheel keep typing and scrolling from panning the canvas.
-        className="nodrag nowheel min-h-20 w-full resize-y rounded-md border border-glass-border bg-transparent p-2 text-xs outline-none focus-visible:border-accent-green/60"
+        className="nodrag nowheel min-h-20 w-full resize-y rounded-md border border-subtle bg-transparent p-2 text-xs outline-none focus-visible:border-accent-brand/60"
         value={(data.content as string) ?? ""}
         placeholder={placeholder}
         onChange={(e) => updateNodeData(id, { content: e.target.value })}
@@ -150,17 +165,41 @@ export function TextNode({ id, data, selected }: NodeProps) {
   );
 }
 
+/**
+ * Prompt node. Carries the same GenerationBar the Generate page uses, in its
+ * inline variant — so Phase 5 can wire one component in both places rather than
+ * reimplementing model/ratio/count controls per surface. Settings live in node
+ * data, so they persist with the canvas like any other node field.
+ */
 export function PromptNode({ id, data, selected }: NodeProps) {
+  const nodeData = data as WorkflowNodeData;
+  const { updateNodeData } = useReactFlow();
+
+  const settings: GenerationSettings = {
+    ...DEFAULT_GENERATION_SETTINGS,
+    modelId: NODE_MODELS[0].id,
+    ...(nodeData.generation ?? {}),
+  };
+
   return (
     <TextualNode
       id={id}
-      data={data as WorkflowNodeData}
+      data={nodeData}
       selected={!!selected}
       placeholder="Structured prompt…"
       footer={
-        <span className="text-[10px] text-foreground/40">
-          Connects to models in Phase 5
-        </span>
+        <div className="nodrag flex flex-col gap-1.5">
+          <GenerationBar
+            variant="inline"
+            models={NODE_MODELS}
+            value={settings}
+            onChange={(next) => updateNodeData(id, { generation: next })}
+            className="flex-col items-stretch gap-1.5 p-1.5"
+          />
+          <span className="text-[10px] text-foreground/40">
+            Connects to models in Phase 5
+          </span>
+        </div>
       }
     />
   );
@@ -183,10 +222,10 @@ function AssetNode({ id, data, selected }: NodeProps) {
         <img
           src={nodeData.assetUrl}
           alt={nodeData.assetName ?? ""}
-          className="h-24 w-full rounded-md border border-glass-border object-cover"
+          className="h-24 w-full rounded-md border border-subtle object-cover"
         />
       ) : (
-        <div className="flex h-24 w-full items-center justify-center rounded-md border border-glass-border bg-white/5">
+        <div className="flex h-24 w-full items-center justify-center rounded-md border border-subtle bg-white/5">
           {nodeData.assetName ? (
             <span className="px-2 text-center text-[11px] text-foreground/60">
               {nodeData.assetName}
@@ -197,7 +236,7 @@ function AssetNode({ id, data, selected }: NodeProps) {
         </div>
       )}
       <select
-        className="nodrag w-full rounded-md border border-glass-border bg-transparent p-1.5 text-xs outline-none focus-visible:border-accent-green/60"
+        className="nodrag w-full rounded-md border border-subtle bg-transparent p-1.5 text-xs outline-none focus-visible:border-accent-brand/60"
         value={nodeData.assetId ?? ""}
         onChange={(e) => {
           const asset = matching.find((a) => a.id === e.target.value);
@@ -252,8 +291,8 @@ export function ApprovalNode({ id, data, selected }: NodeProps) {
           className={cn(
             "nodrag flex items-center gap-1 rounded-md border px-2 py-1 text-[11px] transition-colors",
             status === "approved"
-              ? "border-accent-green bg-accent-green/20 text-accent-green"
-              : "border-glass-border text-foreground/60 hover:border-accent-green/50",
+              ? "border-accent-brand bg-accent-brand/20 text-accent-brand"
+              : "border-subtle text-foreground/60 hover:border-accent-brand/50",
           )}
         >
           <CheckCircle2 className="size-3" /> Approve
@@ -265,7 +304,7 @@ export function ApprovalNode({ id, data, selected }: NodeProps) {
             "nodrag flex items-center gap-1 rounded-md border px-2 py-1 text-[11px] transition-colors",
             status === "rejected"
               ? "border-foreground/50 bg-white/10 text-foreground"
-              : "border-glass-border text-foreground/60 hover:border-foreground/40",
+              : "border-subtle text-foreground/60 hover:border-foreground/40",
           )}
         >
           <XCircle className="size-3" /> Reject
@@ -284,7 +323,7 @@ export function OutputNode({ id, data, selected }: NodeProps) {
   return (
     <NodeShell kind="output" selected={!!selected}>
       <input
-        className="nodrag w-full rounded-md border border-glass-border bg-transparent px-2 py-1 text-xs outline-none focus-visible:border-accent-green/60"
+        className="nodrag w-full rounded-md border border-subtle bg-transparent px-2 py-1 text-xs outline-none focus-visible:border-accent-brand/60"
         value={(nodeData.content as string) ?? ""}
         placeholder="Deliverable name…"
         onChange={(e) => updateNodeData(id, { content: e.target.value })}

@@ -6,7 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { GlassPanel } from "@/components/ui/glass-panel";
+import { Panel } from "@/components/ui/panel";
 import {
   Select,
   SelectContent,
@@ -63,7 +63,7 @@ export function FlowBuilder({
   }
 
   return (
-    <GlassPanel className="p-4">
+    <Panel className="p-4">
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <h2 className="font-heading text-sm font-semibold uppercase tracking-wider text-foreground/60">
           {existing ? "Edit flow" : "New flow"}
@@ -99,7 +99,7 @@ export function FlowBuilder({
           </div>
         </div>
 
-        <div className="flex items-center justify-between gap-4 rounded-lg border border-glass-border p-3">
+        <div className="flex items-center justify-between gap-4 rounded-lg border border-subtle p-3">
           <div className="flex flex-col">
             <Label className="text-sm font-medium">Follow-gate</Label>
             <span className="text-xs text-foreground/55">
@@ -156,6 +156,6 @@ export function FlowBuilder({
           </Button>
         </div>
       </form>
-    </GlassPanel>
+    </Panel>
   );
 }

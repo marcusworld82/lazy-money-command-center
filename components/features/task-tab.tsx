@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { GlassPanel } from "@/components/ui/glass-panel";
+import { Panel } from "@/components/ui/panel";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -64,7 +64,7 @@ export function TaskTab({ workspace }: { workspace?: Workspace }) {
           description="Add one above, or link a task to a project from its detail panel."
         />
       ) : (
-        <GlassPanel className="flex flex-col divide-y divide-glass-border p-0">
+        <Panel className="flex flex-col divide-y divide-subtle p-0">
           {sorted.map((task) => {
             const project = task.projectId
               ? projects.find((p) => p.id === task.projectId)
@@ -124,7 +124,7 @@ export function TaskTab({ workspace }: { workspace?: Workspace }) {
               </div>
             );
           })}
-        </GlassPanel>
+        </Panel>
       )}
     </div>
   );

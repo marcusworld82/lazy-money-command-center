@@ -6,7 +6,7 @@ import { PlaceholderEmptyState } from "@/components/ui/placeholder-empty-state";
 import { CardGridSkeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { GlassPanel } from "@/components/ui/glass-panel";
+import { Panel } from "@/components/ui/panel";
 import {
   Table,
   TableBody,
@@ -118,9 +118,9 @@ export default function ContentCommandPage() {
       </header>
 
       {actionError && (
-        <GlassPanel className="p-3">
+        <Panel className="p-3">
           <p className="text-xs text-foreground/75">{actionError}</p>
-        </GlassPanel>
+        </Panel>
       )}
 
       <Tabs defaultValue="create">
@@ -157,7 +157,7 @@ export default function ContentCommandPage() {
             items.map((item) => {
               const itemVersions = versions.filter((v) => v.contentId === item.id);
               return (
-                <GlassPanel key={item.id} className="flex flex-col gap-3 p-4">
+                <Panel key={item.id} className="flex flex-col gap-3 p-4">
                   <div className="flex flex-wrap items-start justify-between gap-2">
                     <div className="flex flex-col">
                       <span className="font-heading text-sm font-semibold">{item.title}</span>
@@ -178,7 +178,7 @@ export default function ContentCommandPage() {
                   </div>
 
                   {item.analysis && (
-                    <div className="flex flex-col gap-1.5 rounded-md border border-glass-border bg-white/5 p-3">
+                    <div className="flex flex-col gap-1.5 rounded-md border border-subtle bg-white/5 p-3">
                       <span className="text-[10px] font-semibold uppercase tracking-wider text-foreground/50">
                         Analysis — single source of truth
                       </span>
@@ -194,7 +194,7 @@ export default function ContentCommandPage() {
                             Facts to preserve verbatim:
                           </span>
                           {item.analysis.facts_to_preserve.map((f, i) => (
-                            <span key={i} className="text-[11px] text-accent-green">
+                            <span key={i} className="text-[11px] text-accent-brand">
                               • {f}
                             </span>
                           ))}
@@ -210,7 +210,7 @@ export default function ContentCommandPage() {
                       ))}
                     </div>
                   )}
-                </GlassPanel>
+                </Panel>
               );
             })
           )}
@@ -276,8 +276,8 @@ export default function ContentCommandPage() {
         </TabsContent>
 
         <TabsContent value="platforms" className="flex flex-col gap-4">
-          <GlassPanel className="flex items-start gap-3 p-4">
-            <PlugZap className="mt-0.5 size-4 shrink-0 text-accent-green" />
+          <Panel className="flex items-start gap-3 p-4">
+            <PlugZap className="mt-0.5 size-4 shrink-0 text-accent-brand" />
             <div className="flex flex-col gap-1">
               <span className="text-sm font-medium">No publish connectors wired yet</span>
               <p className="text-xs text-foreground/60">
@@ -287,8 +287,8 @@ export default function ContentCommandPage() {
                 nothing is ever marked published without a real successful publish call.
               </p>
             </div>
-          </GlassPanel>
-          <GlassPanel className="overflow-hidden p-0">
+          </Panel>
+          <Panel className="overflow-hidden p-0">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -313,7 +313,7 @@ export default function ContentCommandPage() {
                 ))}
               </TableBody>
             </Table>
-          </GlassPanel>
+          </Panel>
         </TabsContent>
 
         <TabsContent value="analytics">

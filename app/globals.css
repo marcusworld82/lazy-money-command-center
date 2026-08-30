@@ -9,15 +9,16 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-sans);
   --font-mono: var(--font-geist-mono);
-  --font-heading: var(--font-sans);
-  --color-accent-green: var(--accent-green);
+  --font-heading: var(--font-heading-family), var(--font-sans);
+  --color-accent-brand: var(--accent-brand);
+  --color-accent-brand-secondary: var(--accent-brand-secondary);
   --color-surface-black: var(--surface-black);
   --color-surface-white: var(--surface-white);
   --color-on-dark: var(--on-dark);
   --color-on-light: var(--on-light);
-  --color-glass: var(--glass);
-  --color-glass-border: var(--glass-border);
-  --color-glass-strong: var(--glass-strong);
+  --color-surface-card: var(--surface-card);
+  --color-surface-raised: var(--surface-raised);
+  --color-subtle: var(--border-subtle);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -57,52 +58,52 @@
 }
 
 :root {
-  /* Brand palette. Black/white are the dominant surface + text colors; green is an
-     accent reserved for active states, buttons, hover/focus borders, key metric
-     numbers, and highlight moments — never a large surface fill (master spec §2,
-     corrected). */
+  /* Brand palette (Phase 4.5). Dark near-black ground, red accent, white text.
+     The accent is deliberately narrow: CTAs, active states, focus rings, key
+     numbers. It is never a large surface fill. */
   --surface-black: #000000;
   --surface-white: #ffffff;
-  --accent-green: #166e16;
+  --accent-brand: #ad0000;
+  /* Defined for later use (badges/tags). Intentionally unused right now. */
+  --accent-brand-secondary: #ff3d8a;
 
-  /* Adaptive text rule: fixed regardless of theme mode — white text on dark/black
-     surfaces, black text on white surfaces. */
+  /* Adaptive text rule: white text on dark surfaces, black on light ones. */
   --on-dark: #ffffff;
   --on-light: #000000;
 
   --radius: 0.625rem;
 }
 
-/* Dark mode (default). Background is literal black; panels are a faint white-tinted
-   "glass" overlay so they read as elevated black, not colored. */
+/* Dark mode (default). Flat, dense, thin-bordered — no blur, no glass. */
 :root,
 .dark {
-  --background: var(--surface-black);
+  --background: #1a1818;
   --foreground: var(--on-dark);
 
-  --glass: rgb(255 255 255 / 6%);
-  --glass-strong: rgb(10 10 10 / 96%);
-  --glass-border: rgb(255 255 255 / 14%);
+  /* Cards sit one shade lighter than the page, with a thin low-opacity border. */
+  --surface-card: #232020;
+  --surface-raised: #2a2626;
+  --border-subtle: rgb(255 255 255 / 12%);
 
-  --card: var(--glass);
+  --card: var(--surface-card);
   --card-foreground: var(--on-dark);
-  --popover: var(--glass-strong);
+  --popover: var(--surface-raised);
   --popover-foreground: var(--on-dark);
 
-  --primary: var(--accent-green);
+  --primary: var(--accent-brand);
   --primary-foreground: var(--surface-white);
-  --secondary: rgb(255 255 255 / 10%);
+  --secondary: rgb(255 255 255 / 8%);
   --secondary-foreground: var(--on-dark);
-  --muted: rgb(255 255 255 / 8%);
-  --muted-foreground: rgb(255 255 255 / 65%);
-  --accent: rgb(22 110 22 / 22%);
+  --muted: rgb(255 255 255 / 6%);
+  --muted-foreground: rgb(255 255 255 / 60%);
+  --accent: rgb(173 0 0 / 22%);
   --accent-foreground: var(--on-dark);
-  --destructive: var(--surface-black);
+  --destructive: var(--accent-brand);
   --destructive-foreground: var(--surface-white);
 
-  --border: var(--glass-border);
-  --input: rgb(255 255 255 / 16%);
-  --ring: rgb(22 110 22 / 65%);
+  --border: var(--border-subtle);
+  --input: rgb(255 255 255 / 14%);
+  --ring: rgb(173 0 0 / 70%);
 
   --chart-1: rgb(255 255 255 / 90%);
   --chart-2: rgb(255 255 255 / 70%);
@@ -110,45 +111,44 @@
   --chart-4: rgb(255 255 255 / 40%);
   --chart-5: rgb(255 255 255 / 25%);
 
-  --sidebar: rgb(255 255 255 / 5%);
+  --sidebar: #171515;
   --sidebar-foreground: var(--on-dark);
-  --sidebar-primary: var(--accent-green);
+  --sidebar-primary: var(--accent-brand);
   --sidebar-primary-foreground: var(--surface-white);
-  --sidebar-accent: rgb(22 110 22 / 18%);
+  --sidebar-accent: rgb(255 255 255 / 7%);
   --sidebar-accent-foreground: var(--on-dark);
-  --sidebar-border: rgb(255 255 255 / 12%);
-  --sidebar-ring: rgb(22 110 22 / 65%);
+  --sidebar-border: var(--border-subtle);
+  --sidebar-ring: rgb(173 0 0 / 70%);
 }
 
-/* Light mode: same palette, roles mirrored — white dominant surface, black text,
-   green still confined to accents only. */
+/* Light mode: same palette, roles mirrored. Accent stays red. */
 .light {
-  --background: var(--surface-white);
+  --background: #f5f4f4;
   --foreground: var(--on-light);
 
-  --glass: rgb(0 0 0 / 4%);
-  --glass-strong: rgb(255 255 255 / 97%);
-  --glass-border: rgb(0 0 0 / 12%);
+  --surface-card: #ffffff;
+  --surface-raised: #ffffff;
+  --border-subtle: rgb(0 0 0 / 12%);
 
-  --card: var(--glass);
+  --card: var(--surface-card);
   --card-foreground: var(--on-light);
-  --popover: var(--glass-strong);
+  --popover: var(--surface-raised);
   --popover-foreground: var(--on-light);
 
-  --primary: var(--accent-green);
+  --primary: var(--accent-brand);
   --primary-foreground: var(--surface-white);
-  --secondary: rgb(0 0 0 / 6%);
+  --secondary: rgb(0 0 0 / 5%);
   --secondary-foreground: var(--on-light);
-  --muted: rgb(0 0 0 / 5%);
-  --muted-foreground: rgb(0 0 0 / 60%);
-  --accent: rgb(22 110 22 / 12%);
+  --muted: rgb(0 0 0 / 4%);
+  --muted-foreground: rgb(0 0 0 / 58%);
+  --accent: rgb(173 0 0 / 12%);
   --accent-foreground: var(--on-light);
-  --destructive: var(--surface-black);
+  --destructive: var(--accent-brand);
   --destructive-foreground: var(--surface-white);
 
-  --border: var(--glass-border);
+  --border: var(--border-subtle);
   --input: rgb(0 0 0 / 14%);
-  --ring: rgb(22 110 22 / 55%);
+  --ring: rgb(173 0 0 / 55%);
 
   --chart-1: rgb(0 0 0 / 85%);
   --chart-2: rgb(0 0 0 / 65%);
@@ -156,14 +156,14 @@
   --chart-4: rgb(0 0 0 / 35%);
   --chart-5: rgb(0 0 0 / 20%);
 
-  --sidebar: rgb(0 0 0 / 4%);
+  --sidebar: #ffffff;
   --sidebar-foreground: var(--on-light);
-  --sidebar-primary: var(--accent-green);
+  --sidebar-primary: var(--accent-brand);
   --sidebar-primary-foreground: var(--surface-white);
-  --sidebar-accent: rgb(22 110 22 / 12%);
+  --sidebar-accent: rgb(0 0 0 / 5%);
   --sidebar-accent-foreground: var(--on-light);
-  --sidebar-border: rgb(0 0 0 / 10%);
-  --sidebar-ring: rgb(22 110 22 / 55%);
+  --sidebar-border: var(--border-subtle);
+  --sidebar-ring: rgb(173 0 0 / 55%);
 }
 
 @layer base {
@@ -171,27 +171,19 @@
     @apply border-border outline-ring/50;
   }
   body {
+    /* Flat ground — the Phase 1 radial gradients belonged to the glass
+       direction and are removed with it. */
     @apply bg-background text-foreground;
-    background-image: radial-gradient(
-        circle at 15% -10%,
-        rgb(255 255 255 / 8%),
-        transparent 55%
-      ),
-      radial-gradient(circle at 100% 0%, rgb(0 0 0 / 20%), transparent 45%);
-    background-attachment: fixed;
     transition:
       background-color 0.2s ease,
       color 0.2s ease;
   }
-  .light body {
-    background-image: radial-gradient(
-        circle at 15% -10%,
-        rgb(255 255 255 / 60%),
-        transparent 55%
-      ),
-      radial-gradient(circle at 100% 0%, rgb(0 0 0 / 6%), transparent 45%);
-  }
   html {
     @apply font-sans;
+  }
+  /* Headlines: bold condensed, tight tracking. Section headers that read as
+     titles are uppercased at the call site. */
+  .font-heading {
+    letter-spacing: -0.01em;
   }
 }

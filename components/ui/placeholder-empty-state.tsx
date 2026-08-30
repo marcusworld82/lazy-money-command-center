@@ -1,6 +1,6 @@
 import type { LucideIcon } from "lucide-react";
 import type { ReactNode } from "react";
-import { GlassPanel } from "@/components/ui/glass-panel";
+import { Panel } from "@/components/ui/panel";
 import { cn } from "@/lib/utils";
 
 interface PlaceholderEmptyStateProps {
@@ -19,14 +19,14 @@ export function PlaceholderEmptyState({
   className,
 }: PlaceholderEmptyStateProps) {
   return (
-    <GlassPanel
+    <Panel
       className={cn(
         "flex flex-col items-center justify-center gap-3 px-6 py-14 text-center",
         className,
       )}
     >
       {Icon ? (
-        <div className="flex size-11 items-center justify-center rounded-full border border-glass-border bg-white/5">
+        <div className="flex size-11 items-center justify-center rounded-full border border-subtle bg-white/5">
           <Icon className="size-5 text-foreground/60" />
         </div>
       ) : null}
@@ -35,6 +35,6 @@ export function PlaceholderEmptyState({
         <p className="max-w-sm text-xs text-foreground/55">{description}</p>
       ) : null}
       {action}
-    </GlassPanel>
+    </Panel>
   );
 }

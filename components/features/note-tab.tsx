@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { GlassPanel } from "@/components/ui/glass-panel";
+import { Panel } from "@/components/ui/panel";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
@@ -79,7 +79,7 @@ export function NoteTab() {
       ) : (
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           {filtered.map((note) => (
-            <GlassPanel key={note.id} className="flex flex-col gap-2 p-4">
+            <Panel key={note.id} className="flex flex-col gap-2 p-4">
               {editingId === note.id ? (
                 <Textarea
                   value={editValue}
@@ -109,7 +109,7 @@ export function NoteTab() {
                   <Trash2 className="size-3.5" />
                 </Button>
               </div>
-            </GlassPanel>
+            </Panel>
           ))}
         </div>
       )}

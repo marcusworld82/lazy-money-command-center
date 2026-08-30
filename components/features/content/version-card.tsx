@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { GlassPanel } from "@/components/ui/glass-panel";
+import { Panel } from "@/components/ui/panel";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -43,14 +43,14 @@ export function VersionCard({
   const needsReview = p.notes?.includes("REVIEW NEEDED");
 
   return (
-    <GlassPanel className="flex flex-col gap-3 p-4">
+    <Panel className="flex flex-col gap-3 p-4">
       <div className="flex items-start justify-between gap-2">
         <span className="font-heading text-sm font-semibold">{rules.label}</span>
         <Badge
           variant="secondary"
           className={cn(
             "shrink-0 text-[10px]",
-            version.status === "approved" && "text-accent-green",
+            version.status === "approved" && "text-accent-brand",
           )}
         >
           {STATUS_LABEL[version.status]}
@@ -94,7 +94,7 @@ export function VersionCard({
       {p.hashtags && p.hashtags.length > 0 && (
         <div className="flex flex-wrap gap-1">
           {p.hashtags.map((h) => (
-            <span key={h} className="text-[11px] text-accent-green">
+            <span key={h} className="text-[11px] text-accent-brand">
               #{h.replace(/^#/, "")}
             </span>
           ))}
@@ -102,8 +102,8 @@ export function VersionCard({
       )}
 
       {needsReview && (
-        <div className="flex items-start gap-2 rounded-md border border-glass-border bg-white/5 p-2">
-          <AlertTriangle className="mt-0.5 size-3.5 shrink-0 text-accent-green" />
+        <div className="flex items-start gap-2 rounded-md border border-subtle bg-white/5 p-2">
+          <AlertTriangle className="mt-0.5 size-3.5 shrink-0 text-accent-brand" />
           <p className="text-[11px] text-foreground/70">{p.notes}</p>
         </div>
       )}
@@ -112,7 +112,7 @@ export function VersionCard({
       )}
 
       {version.status === "ready_to_post" && p.manualPostPack && (
-        <div className="flex flex-col gap-1.5 rounded-md border border-glass-border bg-white/5 p-2.5">
+        <div className="flex flex-col gap-1.5 rounded-md border border-subtle bg-white/5 p-2.5">
           <span className="text-[10px] font-semibold uppercase tracking-wider text-foreground/50">
             Manual post pack
           </span>
@@ -139,7 +139,7 @@ export function VersionCard({
       )}
 
       {!compact && (
-        <div className="flex flex-wrap items-center gap-1.5 border-t border-glass-border pt-2">
+        <div className="flex flex-wrap items-center gap-1.5 border-t border-subtle pt-2">
           {onApprove && version.status !== "approved" && (
             <Button size="sm" variant="secondary" className="gap-1.5" onClick={onApprove}>
               <Check className="size-3.5" /> Approve
@@ -181,6 +181,6 @@ export function VersionCard({
           )}
         </div>
       )}
-    </GlassPanel>
+    </Panel>
   );
 }

@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { GlassPanel } from "@/components/ui/glass-panel";
+import { Panel } from "@/components/ui/panel";
 import { Save } from "lucide-react";
 import type { ClientBrandKit } from "@/lib/types";
 import { saveBrandKit } from "@/lib/actions/knowledge";
@@ -102,7 +102,7 @@ export function BrandKitForm({
   );
 
   return (
-    <GlassPanel className="p-4">
+    <Panel className="p-4">
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <h3 className="font-heading text-sm font-semibold uppercase tracking-wider text-foreground/60">
           Client Brand Kit
@@ -147,6 +147,6 @@ export function BrandKitForm({
           </Button>
         </div>
       </form>
-    </GlassPanel>
+    </Panel>
   );
 }

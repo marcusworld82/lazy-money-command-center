@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
-import { GlassPanel } from "@/components/ui/glass-panel";
+import { Panel } from "@/components/ui/panel";
 import { StatCard } from "@/components/ui/stat-card";
 import { ProjectCard } from "@/components/ui/project-card";
 import { ActivityFeedItem } from "@/components/ui/activity-feed-item";
@@ -52,7 +52,7 @@ export default function CommandCenterPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <GlassPanel className="flex flex-col gap-2 p-6 md:p-8">
+      <Panel className="flex flex-col gap-2 p-6 md:p-8">
         <span className="text-xs font-medium uppercase tracking-wider text-foreground/55">
           Daily Focus
         </span>
@@ -63,7 +63,7 @@ export default function CommandCenterPage() {
           Backed by Supabase — everything here persists across sessions, devices, and
           deployments.
         </p>
-      </GlassPanel>
+      </Panel>
 
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-3">
         <section className="flex flex-col gap-3 xl:col-span-2">
@@ -109,7 +109,7 @@ export default function CommandCenterPage() {
               const inProgress = workspaceProjects.filter((p) => p.status === "in-progress").length;
               const assetCount = assets.filter((a) => a.workspace === slug).length;
               return (
-                <GlassPanel key={slug} className="flex flex-col gap-0.5 p-3">
+                <Panel key={slug} className="flex flex-col gap-0.5 p-3">
                   <span className="text-sm font-medium">{meta.label}</span>
                   <span className="text-xs text-foreground/55">
                     {workspaceProjects.length === 0
@@ -117,7 +117,7 @@ export default function CommandCenterPage() {
                       : `${inProgress} in progress`}
                   </span>
                   <span className="text-xs text-foreground/40">{assetCount} assets</span>
-                </GlassPanel>
+                </Panel>
               );
             })}
           </div>
@@ -134,7 +134,7 @@ export default function CommandCenterPage() {
           ) : loading ? (
             <ListSkeleton count={5} />
           ) : (
-            <GlassPanel className="p-4">
+            <Panel className="p-4">
               {activity.length === 0 ? (
                 <p className="p-2 text-sm text-foreground/55">No activity yet.</p>
               ) : (
@@ -144,7 +144,7 @@ export default function CommandCenterPage() {
                   ))}
                 </ul>
               )}
-            </GlassPanel>
+            </Panel>
           )}
         </section>
 
@@ -152,7 +152,7 @@ export default function CommandCenterPage() {
           <h2 className="font-heading text-sm font-semibold uppercase tracking-wider text-foreground/60">
             Quick Capture
           </h2>
-          <GlassPanel className="flex flex-col gap-3 p-4">
+          <Panel className="flex flex-col gap-3 p-4">
             <form onSubmit={(e) => submitQuickCapture("idea", e)} className="flex items-center gap-2">
               <Lightbulb className="size-4 shrink-0 text-foreground/50" />
               <Input
@@ -189,7 +189,7 @@ export default function CommandCenterPage() {
                 + Note
               </Button>
             </form>
-          </GlassPanel>
+          </Panel>
         </section>
       </div>
 

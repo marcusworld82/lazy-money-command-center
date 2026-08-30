@@ -35,7 +35,7 @@ export function MarkdownView({ content }: { content: string }) {
           ol: (props) => <ol className="list-decimal pl-5 leading-relaxed" {...props} />,
           a: (props) => (
             <a
-              className="text-accent-green underline underline-offset-2"
+              className="text-accent-brand underline underline-offset-2"
               target="_blank"
               rel="noreferrer"
               {...props}
@@ -43,7 +43,7 @@ export function MarkdownView({ content }: { content: string }) {
           ),
           blockquote: (props) => (
             <blockquote
-              className="border-l-2 border-accent-green/50 pl-3 text-foreground/60"
+              className="border-l-2 border-accent-brand/50 pl-3 text-foreground/60"
               {...props}
             />
           ),
@@ -55,7 +55,7 @@ export function MarkdownView({ content }: { content: string }) {
           ),
           pre: (props) => (
             <pre
-              className="overflow-x-auto rounded-lg border border-glass-border bg-white/5 p-3 font-mono text-xs"
+              className="overflow-x-auto rounded-lg border border-subtle bg-white/5 p-3 font-mono text-xs"
               {...props}
             />
           ),
@@ -66,14 +66,14 @@ export function MarkdownView({ content }: { content: string }) {
           ),
           th: (props) => (
             <th
-              className="border border-glass-border px-2 py-1 text-left font-semibold"
+              className="border border-subtle px-2 py-1 text-left font-semibold"
               {...props}
             />
           ),
           td: (props) => (
-            <td className="border border-glass-border px-2 py-1" {...props} />
+            <td className="border border-subtle px-2 py-1" {...props} />
           ),
-          hr: () => <hr className="border-glass-border" />,
+          hr: () => <hr className="border-subtle" />,
         }}
       >
         {content}
@@ -95,7 +95,7 @@ export function MarkdownEditor({
 
   return (
     <div className={cn("flex flex-col gap-2", className)}>
-      <div className="flex w-fit items-center gap-1 rounded-lg border border-glass-border bg-glass p-1">
+      <div className="flex w-fit items-center gap-1 rounded-lg border border-subtle bg-surface-card p-1">
         <Button
           size="sm"
           variant={mode === "write" ? "secondary" : "ghost"}
@@ -119,10 +119,10 @@ export function MarkdownEditor({
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder={"# Heading\n\nWrite in markdown — headings, lists, tables, and code blocks all render."}
-          className="min-h-80 w-full resize-y rounded-lg border border-glass-border bg-transparent p-3 font-mono text-xs leading-relaxed outline-none focus-visible:border-accent-green/60"
+          className="min-h-80 w-full resize-y rounded-lg border border-subtle bg-transparent p-3 font-mono text-xs leading-relaxed outline-none focus-visible:border-accent-brand/60"
         />
       ) : (
-        <div className="min-h-80 rounded-lg border border-glass-border bg-white/5 p-4">
+        <div className="min-h-80 rounded-lg border border-subtle bg-white/5 p-4">
           <MarkdownView content={value} />
         </div>
       )}

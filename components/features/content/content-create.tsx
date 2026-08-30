@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { GlassPanel } from "@/components/ui/glass-panel";
+import { Panel } from "@/components/ui/panel";
 import { Badge } from "@/components/ui/badge";
 import {
   Select,
@@ -100,8 +100,8 @@ export function ContentCreate({
   return (
     <div className="flex flex-col gap-4">
       {!llmConfigured && (
-        <GlassPanel className="flex items-start gap-3 p-4">
-          <AlertTriangle className="mt-0.5 size-4 shrink-0 text-accent-green" />
+        <Panel className="flex items-start gap-3 p-4">
+          <AlertTriangle className="mt-0.5 size-4 shrink-0 text-accent-brand" />
           <div className="flex flex-col gap-1">
             <span className="text-sm font-medium">
               No LLM key configured — analysis and adaptation are unavailable
@@ -112,10 +112,10 @@ export function ContentCreate({
               save content items in the meantime.
             </p>
           </div>
-        </GlassPanel>
+        </Panel>
       )}
 
-      <GlassPanel className="p-4">
+      <Panel className="p-4">
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <div className="flex flex-col gap-1.5">
@@ -236,8 +236,8 @@ export function ContentCreate({
                   className={cn(
                     "rounded-md border px-2.5 py-1 text-xs transition-colors",
                     platforms.includes(p)
-                      ? "border-accent-green bg-accent-green/20 text-accent-green"
-                      : "border-glass-border text-foreground/60 hover:border-accent-green/50",
+                      ? "border-accent-brand bg-accent-brand/20 text-accent-brand"
+                      : "border-subtle text-foreground/60 hover:border-accent-brand/50",
                   )}
                 >
                   {PLATFORM_RULES[p].label}
@@ -247,7 +247,7 @@ export function ContentCreate({
           </div>
 
           {error && (
-            <p className="rounded-md border border-glass-border bg-white/5 p-2.5 text-xs text-foreground/70">
+            <p className="rounded-md border border-subtle bg-white/5 p-2.5 text-xs text-foreground/70">
               {error}
             </p>
           )}
@@ -255,7 +255,7 @@ export function ContentCreate({
           <div className="flex items-center justify-end gap-3">
             {busy && (
               <span className="flex items-center gap-1.5 text-xs text-foreground/55">
-                <Sparkles className="size-3.5 animate-pulse text-accent-green" />
+                <Sparkles className="size-3.5 animate-pulse text-accent-brand" />
                 {busy}
               </span>
             )}
@@ -278,7 +278,7 @@ export function ContentCreate({
             </Badge>
           )}
         </form>
-      </GlassPanel>
+      </Panel>
     </div>
   );
 }

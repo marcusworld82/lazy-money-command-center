@@ -4,7 +4,7 @@ import * as React from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { GlassPanel } from "@/components/ui/glass-panel";
+import { Panel } from "@/components/ui/panel";
 import { PlaceholderEmptyState } from "@/components/ui/placeholder-empty-state";
 import { ListSkeleton } from "@/components/ui/skeleton";
 import {
@@ -222,7 +222,7 @@ export default function KnowledgeLibraryPage() {
         <ListSkeleton count={6} />
       ) : (
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-[280px_1fr]">
-          <GlassPanel className="flex h-fit flex-col gap-2 p-3">
+          <Panel className="flex h-fit flex-col gap-2 p-3">
             <div className="flex items-center justify-between px-1">
               <span className="text-[11px] font-semibold uppercase tracking-wider text-foreground/45">
                 Folders
@@ -248,11 +248,11 @@ export default function KnowledgeLibraryPage() {
               onSelectDocument={openDocument}
               onAddSubfolder={openFolderDialog}
             />
-          </GlassPanel>
+          </Panel>
 
           <div className="flex flex-col gap-4">
             {selectedDocument ? (
-              <GlassPanel className="flex flex-col gap-4 p-4">
+              <Panel className="flex flex-col gap-4 p-4">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <Input
                     value={draftTitle}
@@ -262,7 +262,7 @@ export default function KnowledgeLibraryPage() {
                   <div className="flex items-center gap-2">
                     {dirty && (
                       <span className="flex items-center gap-1.5 text-[11px] text-foreground/50">
-                        <span className="size-1.5 rounded-full bg-accent-green" />
+                        <span className="size-1.5 rounded-full bg-accent-brand" />
                         Unsaved
                       </span>
                     )}
@@ -307,7 +307,7 @@ export default function KnowledgeLibraryPage() {
                 <MarkdownEditor value={draftContent} onChange={setDraftContent} />
 
                 {selectedFolder?.category === "template" && (
-                  <div className="flex flex-wrap items-center gap-2 border-t border-glass-border pt-3">
+                  <div className="flex flex-wrap items-center gap-2 border-t border-subtle pt-3">
                     <span className="text-xs text-foreground/55">
                       Duplicate this template into:
                     </span>
@@ -328,10 +328,10 @@ export default function KnowledgeLibraryPage() {
                     <Copy className="size-3.5 text-foreground/40" />
                   </div>
                 )}
-              </GlassPanel>
+              </Panel>
             ) : selectedFolder ? (
               <>
-                <GlassPanel className="flex flex-wrap items-center justify-between gap-3 p-4">
+                <Panel className="flex flex-wrap items-center justify-between gap-3 p-4">
                   <div className="flex flex-col">
                     <h2 className="font-heading text-base font-semibold">
                       {selectedFolder.name}
@@ -355,17 +355,17 @@ export default function KnowledgeLibraryPage() {
                       <Trash2 className="size-3.5" />
                     </Button>
                   </div>
-                </GlassPanel>
+                </Panel>
 
                 {isDesignSystem && (
-                  <GlassPanel className="flex items-center gap-3 p-4">
-                    <Sparkles className="size-4 shrink-0 text-accent-green" />
+                  <Panel className="flex items-center gap-3 p-4">
+                    <Sparkles className="size-4 shrink-0 text-accent-brand" />
                     <p className="text-xs text-foreground/60">
                       Folder structure is reserved now. Automated Design DNA codification
                       (dna.json, PROMPT.md, reconstruction tests) arrives in Phase 6 —
                       documents here work like anywhere else in the meantime.
                     </p>
-                  </GlassPanel>
+                  </Panel>
                 )}
 
                 {isClientFolder && selectedFolder.parentId && (

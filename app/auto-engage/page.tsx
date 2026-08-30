@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { GlassPanel } from "@/components/ui/glass-panel";
+import { Panel } from "@/components/ui/panel";
 import { PlaceholderEmptyState } from "@/components/ui/placeholder-empty-state";
 import { ListSkeleton } from "@/components/ui/skeleton";
 import {
@@ -119,8 +119,8 @@ export default function AutoEngagePage() {
         )}
       </header>
 
-      <GlassPanel className="flex items-start gap-3 p-4">
-        <ShieldAlert className="mt-0.5 size-4 shrink-0 text-accent-green" />
+      <Panel className="flex items-start gap-3 p-4">
+        <ShieldAlert className="mt-0.5 size-4 shrink-0 text-accent-brand" />
         <div className="flex flex-col gap-1">
           <span className="text-sm font-medium">Simulation mode — no Meta API connected</span>
           <p className="text-xs text-foreground/60">
@@ -130,7 +130,7 @@ export default function AutoEngagePage() {
             this app, and every log entry below is marked simulated.
           </p>
         </div>
-      </GlassPanel>
+      </Panel>
 
       {editing && (
         <FlowBuilder
@@ -162,7 +162,7 @@ export default function AutoEngagePage() {
             ) : (
               <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
                 {flows.map((flow) => (
-                  <GlassPanel key={flow.id} className="flex flex-col gap-3 p-4">
+                  <Panel key={flow.id} className="flex flex-col gap-3 p-4">
                     <div className="flex items-start justify-between gap-2">
                       <div className="flex flex-col">
                         <div className="flex items-center gap-2">
@@ -205,7 +205,7 @@ export default function AutoEngagePage() {
                       ))}
                     </ol>
 
-                    <div className="flex items-center gap-1.5 border-t border-glass-border pt-2">
+                    <div className="flex items-center gap-1.5 border-t border-subtle pt-2">
                       <Button
                         size="sm"
                         variant="secondary"
@@ -238,7 +238,7 @@ export default function AutoEngagePage() {
                         <Trash2 className="size-3.5" />
                       </Button>
                     </div>
-                  </GlassPanel>
+                  </Panel>
                 ))}
               </div>
             )}
@@ -249,14 +249,14 @@ export default function AutoEngagePage() {
               Automation Log
             </h2>
             {log.length === 0 ? (
-              <GlassPanel className="p-4">
+              <Panel className="p-4">
                 <p className="text-sm text-foreground/55">
                   No automations have run yet. Use Simulate on a flow to see how it would
                   behave.
                 </p>
-              </GlassPanel>
+              </Panel>
             ) : (
-              <GlassPanel className="overflow-hidden p-0">
+              <Panel className="overflow-hidden p-0">
                 <Table>
                   <TableHeader>
                     <TableRow>
@@ -293,7 +293,7 @@ export default function AutoEngagePage() {
                     })}
                   </TableBody>
                 </Table>
-              </GlassPanel>
+              </Panel>
             )}
           </section>
         </>
@@ -317,7 +317,7 @@ export default function AutoEngagePage() {
                 onChange={(e) => setSimContact(e.target.value)}
               />
             </div>
-            <div className="flex items-center justify-between gap-4 rounded-lg border border-glass-border p-3">
+            <div className="flex items-center justify-between gap-4 rounded-lg border border-subtle p-3">
               <Label className="text-sm">Contact follows the account</Label>
               <Switch checked={simFollows} onCheckedChange={setSimFollows} />
             </div>

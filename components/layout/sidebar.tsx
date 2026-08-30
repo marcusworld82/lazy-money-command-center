@@ -17,13 +17,13 @@ export function Sidebar() {
   return (
     <aside
       className={cn(
-        "sticky top-0 flex h-svh shrink-0 flex-col border-r border-glass-border bg-sidebar backdrop-blur-xl transition-[width] duration-200",
+        "sticky top-0 flex h-svh shrink-0 flex-col border-r border-subtle bg-sidebar transition-[width] duration-200",
         collapsed ? "w-[68px]" : "w-64",
       )}
     >
       <div
         className={cn(
-          "flex items-center gap-2 border-b border-glass-border px-3 pt-4 pb-3",
+          "flex items-center gap-2 border-b border-subtle px-3 pt-4 pb-3",
           collapsed ? "flex-col" : "justify-between",
         )}
       >

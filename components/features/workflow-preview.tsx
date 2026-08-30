@@ -19,7 +19,7 @@ export function WorkflowPreview({
     return (
       <div
         className={cn(
-          "flex h-20 items-center justify-center rounded-lg border border-glass-border bg-white/5 text-[11px] text-foreground/35",
+          "flex h-20 items-center justify-center rounded-lg border border-subtle bg-white/5 text-[11px] text-foreground/35",
           className,
         )}
       >
@@ -56,7 +56,7 @@ export function WorkflowPreview({
     <svg
       viewBox={`0 0 ${W} ${H}`}
       className={cn(
-        "h-20 w-full rounded-lg border border-glass-border bg-white/5",
+        "h-20 w-full rounded-lg border border-subtle bg-white/5",
         className,
       )}
       aria-hidden
@@ -86,7 +86,7 @@ export function WorkflowPreview({
             cx={p.x}
             cy={p.y}
             r={2}
-            className="fill-accent-green"
+            className="fill-accent-brand"
           />
         );
       })}

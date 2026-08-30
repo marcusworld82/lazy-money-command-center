@@ -14,6 +14,7 @@ import {
   BookOpen,
   Sparkles,
   Bot,
+  Wand2,
   Wallet,
   Settings,
 } from "lucide-react";
@@ -77,6 +78,7 @@ export const NAV_CONFIG: NavEntry[] = [
     label: "Intelligence",
     icon: Sparkles,
     items: [
+      { label: "Generate", href: "/generate", icon: Wand2, badge: "Shell" },
       { label: "Agents", href: "/intelligence/agents", icon: Bot, badge: "Soon" },
     ],
   },
