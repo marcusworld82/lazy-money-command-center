@@ -1,0 +1,1250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MARCO. Shell Wireframe</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0F0E0E; --panel:#1A1818; --panel-2:#211E1E; --line:#2E2A2A; --line-2:#3A3434;
+  --red:#AD0000; --red-hi:#E01414; --pink:#FF3D8A;
+  --txt:#F2EFEF; --txt-dim:#8B8383; --txt-mute:#5E5757;
+  --rail:266px; --work:364px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{background:var(--bg);color:var(--txt);font-family:Archivo,'Helvetica Neue',Arial,sans-serif;font-size:14px;overflow:hidden}
+button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
+.eyebrow{font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--txt-mute);font-weight:700}
+.eyebrow .bar{display:inline-block;width:12px;height:2px;background:var(--red);vertical-align:middle;margin-right:7px;position:relative;top:-1px}
+
+.app{display:grid;grid-template-columns:var(--rail) 1fr var(--work);height:100vh;border-top:2px solid var(--red)}
+.app.no-work{grid-template-columns:var(--rail) 1fr 0}
+
+/* avatar */
+.av{border-radius:50%;flex:none;display:grid;place-items:center;overflow:hidden;position:relative}
+.av img{width:78%;height:78%;object-fit:contain;filter:drop-shadow(0 1px 0 rgba(0,0,0,.25))}
+
+/* rail */
+.rail{background:var(--panel);border-right:1px solid var(--line);display:flex;flex-direction:column;min-height:0}
+.brand{display:flex;align-items:center;gap:11px;padding:15px 16px 14px;border-bottom:1px solid var(--line)}
+.mark{width:32px;height:32px;border-radius:9px;background:var(--red);display:grid;place-items:center;overflow:hidden}
+.mark img{width:26px;height:26px;object-fit:contain}
+.brand h1{font-size:17px;font-weight:900;letter-spacing:.06em}
+.brandsub{font-size:9px;color:var(--txt-mute);letter-spacing:.18em;text-transform:uppercase;margin-top:1px}
+
+.ctx{margin:12px 12px 2px;padding:9px 11px;border:1px solid var(--line);border-left:2px solid var(--red);border-radius:9px;display:flex;align-items:center;justify-content:space-between;background:var(--panel-2)}
+.ctx .lbl{font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--txt-mute)}
+.ctx .val{font-size:13px;font-weight:700;margin-top:2px}
+.ctx .chev{color:var(--txt-mute);font-size:11px}
+
+.railscroll{flex:1;overflow-y:auto;padding:10px 12px 20px;min-height:0}
+.railscroll::-webkit-scrollbar{width:6px}.railscroll::-webkit-scrollbar-thumb{background:#2E2A2A;border-radius:3px}
+.sect{display:flex;align-items:center;justify-content:space-between;padding:14px 4px 8px}
+.newbtn{font-size:15px;color:var(--txt-mute);line-height:1;padding:0 5px;border:1px solid var(--line);border-radius:6px}
+.newbtn:hover{color:#fff;border-color:var(--red);background:var(--red)}
+
+.thread{display:flex;gap:10px;padding:8px 10px;border-radius:9px;align-items:center;width:100%;text-align:left;transition:background .12s}
+.thread:hover{background:#232020}
+.thread.on{background:linear-gradient(90deg,#2E1111,#232020);box-shadow:inset 2px 0 0 var(--red)}
+.thread .av{width:26px;height:26px}
+.thread .meta{min-width:0;flex:1}
+.thread .top{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.thread .nm{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.thread .tm{font-size:10px;color:var(--txt-mute);flex:none}
+.thread .pv{font-size:11.5px;color:var(--txt-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
+.thread .flag{width:6px;height:6px;border-radius:50%;background:var(--red-hi);flex:none}
+
+.navitem{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;width:100%;text-align:left;color:var(--txt-dim);font-size:13px}
+.navitem:hover{background:#232020;color:var(--txt)}
+.navitem.on{background:#232020;color:var(--txt);font-weight:700;box-shadow:inset 2px 0 0 var(--red)}
+.ico{width:15px;text-align:center;font-size:13px;opacity:.85}
+.pill{margin-left:auto;font-size:9px;letter-spacing:.08em;color:var(--txt-mute);border:1px solid var(--line);border-radius:20px;padding:1px 6px}
+.pill.hot{color:#fff;background:var(--red);border-color:var(--red);font-weight:700}
+
+/* center */
+.main{display:flex;flex-direction:column;min-width:0;min-height:0}
+.topbar{display:flex;align-items:center;gap:12px;padding:0 18px;height:56px;border-bottom:1px solid var(--line);flex:none}
+.title{display:flex;align-items:center;gap:10px;min-width:0}
+.title .av{width:28px;height:28px}
+.title h2{font-size:15px;font-weight:800;letter-spacing:-.01em;white-space:nowrap}
+.tagline{font-size:11px;color:var(--txt-mute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border-left:1px solid var(--line);padding-left:12px}
+.views{margin-left:auto;display:flex;background:var(--panel-2);border:1px solid var(--line);border-radius:9px;padding:2px}
+.views button{padding:5px 15px;border-radius:7px;font-size:12px;font-weight:700;color:var(--txt-dim);letter-spacing:.02em}
+.views button:hover{color:var(--txt)}
+.views button.on{background:var(--red);color:#fff}
+.views.hidden{display:none}
+.iconbtn{width:31px;height:31px;border-radius:8px;display:grid;place-items:center;color:var(--txt-dim);border:1px solid var(--line)}
+.iconbtn:hover{color:#fff;border-color:var(--red)}
+
+.stage{flex:1;overflow-y:auto;min-height:0}
+.stage::-webkit-scrollbar{width:8px}.stage::-webkit-scrollbar-thumb{background:#2E2A2A;border-radius:4px}
+.pad{padding:22px 24px 30px;max-width:830px}
+.pagehd{display:flex;align-items:baseline;gap:12px;border-bottom:1px solid var(--line);padding-bottom:12px;margin-bottom:20px}
+.pagehd h3{font-size:20px;font-weight:800;letter-spacing:-.02em}
+.pagehd .sub{font-size:11.5px;color:var(--txt-mute)}
+
+/* chat */
+.msg{margin-bottom:18px;max-width:640px}
+.who{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--txt-mute);margin-bottom:6px;font-weight:700;display:flex;align-items:center;gap:6px}
+.who .av{width:15px;height:15px}
+.bub{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px;line-height:1.55;font-size:13.5px;color:#DCD7D7}
+.bub.me{background:#F2EFEF;color:#141212;border-color:#F2EFEF}
+.msg.mine{margin-left:auto}.msg.mine .who{justify-content:flex-end}
+
+.card{border:1px solid var(--line);border-radius:12px;background:var(--panel);overflow:hidden;margin-bottom:18px;max-width:640px}
+.card.alert{border-color:#5A1414;box-shadow:0 0 0 1px rgba(173,0,0,.25)}
+.card .hd{display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid var(--line);background:var(--panel-2)}
+.card.alert .hd{background:linear-gradient(90deg,#2B0F0F,#211E1E)}
+.card .hd .t{font-size:11.5px;font-weight:800;letter-spacing:.06em}
+.tag{font-size:9px;letter-spacing:.1em;text-transform:uppercase;padding:2px 7px;border-radius:20px;font-weight:800;margin-left:auto}
+.tag.hand{background:rgba(255,61,138,.15);color:var(--pink)}
+.tag.wait{background:var(--red);color:#fff}
+.tag.ok{background:rgba(70,180,110,.15);color:#5FCB8C}
+.card .bd{padding:13px 14px;font-size:13px;line-height:1.6;color:#CFC9C9}
+.kv{display:grid;grid-template-columns:104px 1fr;gap:5px 12px;font-size:12.5px;margin-top:10px}
+.kv dt{color:var(--txt-mute)}.kv dd{color:#DCD7D7}
+.acts{display:flex;gap:8px;padding:11px 14px;border-top:1px solid var(--line)}
+.btn{padding:6px 14px;border-radius:8px;font-size:12px;font-weight:700;border:1px solid var(--line);color:var(--txt-dim)}
+.btn:hover{color:var(--txt);border-color:var(--line-2)}
+.btn.pri{background:var(--red);border-color:var(--red);color:#fff}
+.btn.pri:hover{color:#fff;background:var(--red-hi);border-color:var(--red-hi)}
+.composer{flex:none;border-top:1px solid var(--line);padding:12px 24px 16px}
+.cbox{border:1px solid var(--line);background:var(--panel);border-radius:12px;padding:11px 13px;display:flex;align-items:center;gap:10px;max-width:830px}
+.cbox:focus-within,.cbox:hover{border-color:var(--line-2)}
+.cbox span{color:var(--txt-mute);flex:1;font-size:13px}
+.chip{font-size:11px;color:var(--txt-dim);border:1px solid var(--line);border-radius:20px;padding:3px 9px}
+.chip.send{background:var(--red);border-color:var(--red);color:#fff;font-weight:700}
+
+/* build */
+.bgrid{display:grid;grid-template-columns:1fr;gap:0}
+.blk{border:1px solid var(--line);border-radius:12px;background:var(--panel);margin-bottom:14px;overflow:hidden}
+.blk>.bh{display:flex;align-items:center;gap:8px;padding:9px 13px;border-bottom:1px solid var(--line);background:var(--panel-2)}
+.blk>.bh .n{width:17px;height:17px;border-radius:5px;background:var(--red);color:#fff;font-size:9px;font-weight:800;display:grid;place-items:center}
+.blk>.bh .t{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+.blk>.bb{padding:14px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.field{margin-bottom:0}
+.field label{display:block;font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--txt-mute);margin-bottom:6px;font-weight:700}
+.inp{border:1px solid var(--line);background:#151313;border-radius:9px;padding:9px 12px;font-size:13px;color:#DCD7D7;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.inp:hover{border-color:var(--line-2)}
+.inp .cv{color:var(--txt-mute);font-size:11px;flex:none}
+.inp.ta{min-height:76px;align-items:flex-start;line-height:1.55}
+.slots{display:flex;gap:8px;flex-wrap:wrap}
+.slot{width:70px;height:70px;border-radius:9px;border:1px solid var(--line);background:var(--panel-2);display:grid;place-items:center;font-size:9px;color:var(--txt-dim);text-align:center;line-height:1.35;padding:4px;font-weight:600}
+.slot b{display:block;font-size:13px;color:var(--txt);font-weight:800}
+.slot.add{border-style:dashed;color:var(--txt-mute)}
+.slot.add:hover{border-color:var(--red);color:var(--red-hi)}
+.rolebar{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+.role{font-size:10.5px;padding:3px 9px;border-radius:20px;border:1px solid var(--line);color:var(--txt-dim)}
+.role b{color:var(--txt);font-weight:700}
+.runbar{display:flex;justify-content:space-between;align-items:center;border:1px solid var(--line);border-left:3px solid var(--red);border-radius:12px;padding:13px 15px;background:var(--panel)}
+.cost{font-size:12px;color:var(--txt-mute)}.cost b{color:var(--txt);font-weight:800;font-size:15px}
+.seg{display:flex;border:1px solid var(--line);border-radius:9px;overflow:hidden}
+.seg span{flex:1;text-align:center;padding:8px 0;font-size:12px;color:var(--txt-dim);border-right:1px solid var(--line)}
+.seg span:last-child{border-right:0}
+.seg span.on{background:var(--red);color:#fff;font-weight:700}
+
+/* canvas */
+.canvaswrap{display:grid;grid-template-columns:172px 1fr;gap:12px;height:470px}
+.palette{border:1px solid var(--line);border-radius:12px;background:var(--panel);padding:11px;overflow-y:auto}
+.pgrp{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--txt-mute);font-weight:700;margin:10px 2px 7px}
+.pgrp:first-child{margin-top:0}
+.pnode{border:1px solid var(--line);border-radius:8px;padding:7px 9px;font-size:11.5px;color:var(--txt-dim);margin-bottom:6px;cursor:grab;display:flex;align-items:center;gap:7px}
+.pnode:hover{border-color:var(--line-2);color:var(--txt)}
+.pnode i{width:6px;height:6px;border-radius:2px;flex:none;font-style:normal}
+.canvas{position:relative;border:1px solid var(--line);border-radius:12px;background:radial-gradient(circle at 1px 1px,#262222 1px,transparent 0) 0 0/22px 22px,var(--panel);overflow:hidden}
+.ctools{position:absolute;top:10px;left:10px;right:10px;display:flex;gap:7px;z-index:3;align-items:center}
+.ctool{font-size:11px;border:1px solid var(--line);background:#191717;border-radius:7px;padding:5px 10px;color:var(--txt-dim)}
+.ctool.on{border-color:var(--red);color:#fff;background:var(--red)}
+.node{position:absolute;width:154px;border:1px solid var(--line);border-radius:10px;background:var(--panel-2);padding:9px 11px;z-index:2}
+.node .nt{font-size:8.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--txt-mute);font-weight:800;margin-bottom:3px;display:flex;align-items:center;gap:5px}
+.node .nt i{width:5px;height:5px;border-radius:50%;font-style:normal}
+.node .nb{font-size:12px;font-weight:700;line-height:1.35}
+.node .ns{font-size:10px;color:var(--txt-mute);margin-top:4px}
+.node.appr{border-color:var(--red);box-shadow:0 0 0 1px rgba(173,0,0,.35)}
+.node .h{position:absolute;width:8px;height:8px;border-radius:50%;background:#4a4343;border:1px solid var(--panel);top:50%;margin-top:-4px}
+.node .h.l{left:-5px}.node .h.r{right:-5px}
+svg.wires{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:1}
+.savedbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:13px}
+.saved{cursor:pointer;font-size:11.5px;border:1px solid var(--line);border-radius:8px;padding:6px 11px;color:var(--txt-dim)}
+.saved:hover{border-color:var(--line-2);color:var(--txt)}
+.saved.on{border-color:var(--red);color:#fff;background:rgba(173,0,0,.18);font-weight:700}
+
+/* calendar */
+.cal{display:grid;grid-template-columns:repeat(7,1fr);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.cal .dh{padding:8px;font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--txt-mute);border-bottom:1px solid var(--line);border-right:1px solid var(--line);background:var(--panel-2);font-weight:800}
+.cal .cell{min-height:92px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);padding:6px;background:var(--panel)}
+.cal .cell.today{background:#1F1919;box-shadow:inset 0 2px 0 var(--red)}
+.cal .dnum{font-size:10px;color:var(--txt-mute);margin-bottom:5px}
+.post{font-size:10px;border-radius:5px;padding:3px 5px;margin-bottom:3px;line-height:1.25;border-left:2px solid}
+.post.ig{background:rgba(255,61,138,.12);border-color:var(--pink);color:#F0B9CE}
+.post.tt{background:rgba(173,0,0,.18);border-color:var(--red);color:#F3AEAE}
+.post.yt{background:#262222;border-color:#5E5757;color:var(--txt-dim)}
+
+/* spend */
+.hero{border:1px solid var(--line);border-radius:14px;background:linear-gradient(120deg,#241414 0%,#1A1818 55%);padding:20px 22px;margin-bottom:14px;display:flex;align-items:flex-end;gap:34px}
+.hero .big{font-size:46px;font-weight:900;letter-spacing:-.035em;line-height:1}
+.hero .big em{font-style:normal;color:var(--red-hi)}
+.hero .lab{font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--txt-mute);margin-bottom:8px;font-weight:700}
+.hero .sm{font-size:19px;font-weight:800}
+.hero .smlab{font-size:10px;color:var(--txt-mute);letter-spacing:.1em;text-transform:uppercase;margin-top:3px}
+.bars{border:1px solid var(--line);border-radius:12px;background:var(--panel);padding:15px}
+.bar{display:grid;grid-template-columns:74px 1fr 58px;align-items:center;gap:11px;margin-bottom:9px;font-size:12px}
+.bar .nm{color:var(--txt-dim);display:flex;align-items:center;gap:7px}
+.bar .nm .av{width:17px;height:17px}
+.track{height:8px;border-radius:4px;background:#262222;overflow:hidden}
+.fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--red),var(--red-hi))}
+.bar .amt{text-align:right;font-weight:800}
+.tbl{width:100%;border-collapse:collapse;font-size:12px;margin-top:4px}
+.tbl th{text-align:left;font-size:9px;letter-spacing:.13em;text-transform:uppercase;color:var(--txt-mute);padding:8px 10px;border-bottom:1px solid var(--line);font-weight:800}
+.tbl td{padding:9px 10px;border-bottom:1px solid #232020;color:var(--txt-dim)}
+.tbl td b{color:var(--txt);font-weight:700}
+.tbl tr:hover td{background:#1E1B1B}
+.tbl td.r{text-align:right;color:var(--txt);font-weight:700}
+.capbar{display:flex;align-items:center;gap:12px;border:1px solid #5A1414;background:linear-gradient(90deg,#2B0F0F,#1A1818);border-radius:10px;padding:11px 14px;margin-bottom:14px;font-size:12px}
+.capbar .track{flex:1}
+
+/* settings */
+.setwrap{display:grid;grid-template-columns:186px 1fr;gap:16px}
+.setlist{border:1px solid var(--line);border-radius:12px;background:var(--panel);padding:8px;height:fit-content}
+.setrow{display:flex;align-items:center;gap:9px;padding:8px 9px;border-radius:8px;width:100%;text-align:left;font-size:12.5px;color:var(--txt-dim)}
+.setrow .av{width:22px;height:22px}
+.setrow:hover{background:#232020;color:var(--txt)}
+.setrow.on{background:#2A1010;color:var(--txt);font-weight:700;box-shadow:inset 2px 0 0 var(--red)}
+.toggle{width:34px;height:19px;border-radius:20px;background:#332c2c;position:relative;flex:none}
+.toggle:after{content:"";position:absolute;width:15px;height:15px;border-radius:50%;background:#6b6363;top:2px;left:2px}
+.toggle.on{background:var(--red)}.toggle.on:after{left:17px;background:#fff}
+.permrow{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid #232020;font-size:12.5px}
+.permrow:last-child{border-bottom:0}
+.permrow .pd{color:var(--txt-mute);font-size:11px;margin-top:2px}
+.tri{display:flex;border:1px solid var(--line);border-radius:7px;overflow:hidden;flex:none}
+.tri span{padding:4px 11px;font-size:11px;color:var(--txt-mute);border-right:1px solid var(--line)}
+.tri span:last-child{border-right:0}
+.tri span.on{background:var(--red);color:#fff;font-weight:700}
+.tri span.no.on{background:#3A3434;color:#fff}
+
+/* knowledge */
+.klist{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.kcard{border:1px solid var(--line);border-radius:12px;background:var(--panel);padding:14px;border-top:2px solid var(--red)}
+.kcard h4{font-size:12px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;margin-bottom:7px}
+.kcard p{font-size:12px;color:var(--txt-dim);line-height:1.55}
+.kcard .cnt{font-size:10px;color:var(--txt-mute);margin-top:9px;letter-spacing:.08em;text-transform:uppercase}
+
+/* work */
+.work{background:var(--panel);border-left:1px solid var(--line);display:flex;flex-direction:column;min-height:0;overflow:hidden}
+.app.no-work .work{display:none}
+.workhd{display:flex;align-items:center;gap:9px;padding:0 16px;height:56px;border-bottom:1px solid var(--line);flex:none}
+.workhd .wt{font-size:12px;font-weight:800;letter-spacing:.05em}
+.workhd .tag{margin-left:auto}
+.workbd{flex:1;overflow-y:auto;padding:16px}
+.workbd::-webkit-scrollbar{width:6px}.workbd::-webkit-scrollbar-thumb{background:#2E2A2A;border-radius:3px}
+.thumbs{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.thumb{aspect-ratio:4/5;border-radius:9px;border:1px solid var(--line);display:grid;place-items:end;padding:7px;font-size:9px;color:#c9c2c2}
+.thumb.sel{border-color:var(--red);box-shadow:0 0 0 1px rgba(173,0,0,.4)}
+.t1{background:linear-gradient(150deg,#3a3232,#1c1919)}
+.t2{background:linear-gradient(150deg,#4a2226,#1c1919)}
+.t3{background:linear-gradient(150deg,#2b3038,#1c1919)}
+.t4{background:linear-gradient(150deg,#3d3528,#1c1919)}
+.runmeta{border:1px solid var(--line);border-radius:10px;padding:11px 12px;margin-top:12px}
+.runmeta .rl{display:flex;justify-content:space-between;font-size:11.5px;padding:4px 0;color:var(--txt-dim)}
+.runmeta .rl b{color:var(--txt);font-weight:700}
+.runmeta .rl b.red{color:var(--red-hi)}
+.steps{margin-top:12px}
+.step{display:flex;gap:9px;align-items:flex-start;padding:7px 0;font-size:12px;color:var(--txt-dim)}
+.sdot{width:7px;height:7px;border-radius:50%;margin-top:5px;flex:none}
+.note{font-size:11px;color:var(--txt-mute);line-height:1.55;margin-top:14px;border-top:1px solid var(--line);padding-top:12px}
+
+/* rail collapse */
+.railtoggle{margin-left:auto;width:26px;height:26px;border-radius:7px;display:grid;place-items:center;color:var(--txt-mute);border:1px solid var(--line);font-size:12px;flex:none}
+.railtoggle:hover{color:#fff;border-color:var(--red);background:var(--red)}
+.rail{overflow:hidden}
+.app.mini{grid-template-columns:66px 1fr var(--work)}
+.app.mini.no-work{grid-template-columns:66px 1fr 0}
+.app.mini .brand{flex-direction:column;gap:9px;padding:13px 0 12px;justify-content:center}
+.app.mini .brand>div:not(.mark){display:none}
+.app.mini .railtoggle{margin:0}
+.app.mini .ctx{margin:10px 9px 2px;padding:8px 0;justify-content:center;border-left:1px solid var(--line);border-top:2px solid var(--red)}
+.app.mini .ctx>div,.app.mini .ctx .chev{display:none}
+.app.mini .ctx:after{content:"CO";font-size:10px;font-weight:800;color:var(--txt-dim);letter-spacing:.05em}
+.app.mini .railscroll{padding:8px 9px 20px}
+.app.mini .sect{justify-content:center;padding:18px 0 7px}
+.app.mini .sect .eyebrow{display:none}
+.app.mini .thread,.app.mini .navitem{justify-content:center;padding:9px 0;gap:0;position:relative}
+.app.mini .thread .meta,.app.mini .navitem .lbl,.app.mini .pill{display:none}
+.app.mini .thread .flag{position:absolute;top:6px;right:12px}
+.app.mini .navitem .ico{font-size:15px;width:auto}
+
+.swatches{display:flex;gap:8px;flex-wrap:wrap}
+.swatch{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;border:2px solid transparent;overflow:hidden}
+.swatch img{width:78%;height:78%;object-fit:contain}
+.swatch.on{border-color:#fff;box-shadow:0 0 0 2px rgba(255,255,255,.15)}
+.picker{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;border:1px dashed var(--line-2);color:var(--txt-mute);cursor:pointer;position:relative;overflow:hidden}
+.picker:hover{border-color:var(--red);color:var(--red-hi)}
+.picker input{position:absolute;inset:0;opacity:0;cursor:pointer;padding:0;border:0}
+.picker span{font-size:16px;pointer-events:none}
+
+/* right panel toggle */
+.workclose{width:26px;height:26px;border-radius:7px;display:grid;place-items:center;color:var(--txt-mute);border:1px solid var(--line);font-size:12px;margin-left:8px}
+.workclose:hover{color:#fff;border-color:var(--red);background:var(--red)}
+.paneltoggle.on{color:#fff;border-color:var(--red);background:var(--red)}
+
+/* magnific style canvas */
+.stage.bleed{overflow:hidden}
+.stage.bleed .pad{padding:0;max-width:none;height:100%}
+.mcanvas{position:relative;height:100%;min-height:520px;overflow:hidden;
+  background:radial-gradient(circle at 1px 1px,#232020 1px,transparent 0) 0 0/26px 26px,#141212}
+.mdock{position:absolute;left:16px;top:50%;transform:translateY(-50%);z-index:8;background:var(--panel);
+  border:1px solid var(--line);border-radius:26px;padding:7px 5px;display:flex;flex-direction:column;gap:3px;box-shadow:0 8px 26px rgba(0,0,0,.5)}
+.mdock button{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;color:var(--txt-dim);font-size:15px}
+.mdock button:hover{background:#2A2626;color:var(--txt)}
+.mdock button.on{background:#fff;color:#141212}
+.mdock .sep{height:1px;background:var(--line);margin:4px 7px}
+.mtop{position:absolute;left:70px;top:14px;z-index:7;display:flex;gap:7px;align-items:center}
+.mchip{font-size:11px;border:1px solid var(--line);background:rgba(26,24,24,.9);border-radius:8px;padding:5px 11px;color:var(--txt-dim);backdrop-filter:blur(6px)}
+.mchip.on{background:var(--red);border-color:var(--red);color:#fff;font-weight:700}
+.mfoot{position:absolute;left:70px;right:16px;bottom:14px;z-index:7;display:flex;align-items:center;gap:8px}
+.mfoot .sp{margin-left:auto}
+.grp{position:absolute;border:1px solid var(--line);border-radius:12px;padding:11px;background:rgba(26,24,24,.55)}
+.grp.ref{background:rgba(40,52,72,.35);border-color:#2f3d52}
+.grp.prm{background:rgba(22,32,48,.5);border-color:#2b3a4d}
+.grp.up{background:rgba(58,36,30,.5);border-color:#4a2f26}
+.grp.fin{background:rgba(48,20,20,.42);border-color:#5A1414}
+.glabel{position:absolute;top:-19px;left:2px;font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--txt-mute);font-weight:800}
+.tiles{display:grid;gap:6px}
+.tile{border-radius:5px;background:linear-gradient(150deg,#3a3232,#1c1919);border:1px solid #2c2727}
+.tile.a{background:linear-gradient(150deg,#4a3a2a,#1c1919)}
+.tile.b{background:linear-gradient(150deg,#2b3846,#1c1919)}
+.tile.c{background:linear-gradient(150deg,#4a2226,#1c1919)}
+.tile.d{background:linear-gradient(150deg,#39332c,#1c1919)}
+.pcard{border:1px solid #2b3a4d;border-radius:6px;background:rgba(15,20,28,.85);padding:6px}
+.pline{height:3px;border-radius:2px;background:#2f3d52;margin-bottom:4px}
+.pline.s{width:60%}.pline.m{width:82%}
+.ptxt{font-size:7px;color:#6d7d92;line-height:1.5;letter-spacing:.01em}
+.sticky{position:absolute;border-radius:4px;padding:8px;font-size:8px;line-height:1.5;color:#3a3020}
+.sticky.y{background:#E8C468}.sticky.o{background:#E8A06B}
+.mnode{position:absolute;border:1px solid var(--line);border-radius:9px;background:var(--panel-2);padding:7px 10px;z-index:3}
+.mnode .nt{font-size:8px;letter-spacing:.13em;text-transform:uppercase;color:var(--txt-mute);font-weight:800;display:flex;gap:5px;align-items:center}
+.mnode .nb{font-size:11.5px;font-weight:700;margin-top:2px}
+.mnode.appr{border-color:var(--red);box-shadow:0 0 0 1px rgba(173,0,0,.4)}
+svg.mwires{position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none}
+
+/* canvas chat panel */
+.cchat{display:flex;flex-direction:column;height:100%}
+.cchat .hello{padding:26px 18px 0}
+.cchat .hello h3{font-size:26px;font-weight:900;letter-spacing:-.03em}
+.cchat .hello p{font-size:12px;color:var(--txt-mute);margin-top:6px}
+.cchat .body{flex:1;overflow-y:auto;padding:16px}
+.cchat .foot{border-top:1px solid var(--line);padding:12px}
+.cbig{border:1px solid var(--line);background:#151313;border-radius:12px;padding:12px}
+.cbig .ph{font-size:13px;color:var(--txt-mute)}
+.cbig .row{display:flex;align-items:center;gap:8px;margin-top:12px}
+.cbig .row .sp{margin-left:auto}
+.rnd{width:28px;height:28px;border-radius:50%;border:1px solid var(--line);display:grid;place-items:center;color:var(--txt-dim);font-size:13px}
+.rnd.go{background:var(--red);border-color:var(--red);color:#fff}
+
+/* mobile */
+.mobonly{display:none}
+.scrim{display:none}
+@media(max-width:900px){
+  .app,.app.mini,.app.no-work,.app.mini.no-work{grid-template-columns:1fr;padding-bottom:58px}
+  .rail{position:fixed;left:0;top:0;bottom:0;width:284px;z-index:60;transform:translateX(-100%);transition:transform .2s;padding-bottom:58px}
+  .app.drawer .rail{transform:none;box-shadow:0 0 60px rgba(0,0,0,.7)}
+  .app.mini .rail{width:284px}
+  .app.mini .brand>div:not(.mark),.app.mini .thread .meta,.app.mini .navitem span:not(.ico),
+  .app.mini .sect .eyebrow,.app.mini .ctx>div:first-child{display:block}
+  .app.mini .thread,.app.mini .navitem,.app.mini .brand,.app.mini .sect{justify-content:flex-start;padding:8px 10px}
+  .app.mini .ctx:after{content:none}
+  .app.drawer .scrim{display:block;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:55}
+  .work{position:fixed;left:0;right:0;bottom:58px;top:auto;height:62vh;z-index:50;border-left:0;border-top:1px solid var(--line);
+    border-radius:16px 16px 0 0;transform:translateY(102%);transition:transform .22s}
+  .app.sheet .work{transform:none;box-shadow:0 -14px 40px rgba(0,0,0,.6)}
+  .app.no-work .work{display:flex}
+  .mobonly{display:grid}
+  .tabbar{position:fixed;left:0;right:0;bottom:0;height:58px;background:var(--panel);border-top:1px solid var(--line);
+    grid-template-columns:repeat(4,1fr);z-index:70;padding-bottom:env(safe-area-inset-bottom)}
+  .tabbar button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:9.5px;
+    letter-spacing:.08em;text-transform:uppercase;color:var(--txt-mute);font-weight:700}
+  .tabbar button .ti{font-size:16px}
+  .tabbar button.on{color:#fff;box-shadow:inset 0 2px 0 var(--red)}
+  .pad{padding:16px 14px 24px;max-width:none!important}
+  .topbar{padding:0 12px;gap:9px}
+  .tagline{display:none}
+  .views button{padding:5px 11px;font-size:11px}
+  .grid2,.grid3,.klist,.setwrap,.canvaswrap{grid-template-columns:1fr!important}
+  .thumbs{grid-template-columns:1fr 1fr!important}
+  .hero{flex-wrap:wrap;gap:18px}
+  .hero .big{font-size:36px}
+  .cal{grid-template-columns:1fr;border:0}
+  .cal .dh{display:none}
+  .cal .cell{border:1px solid var(--line);border-radius:10px;margin-bottom:8px;min-height:0}
+  .tbl th:nth-child(3),.tbl td:nth-child(3){display:none}
+  .msg,.card,.cbox{max-width:none}
+  .composer{padding:10px 14px 14px}
+  .btn,.chip,.saved,.ctool,.role{min-height:34px;display:inline-flex;align-items:center}
+  .mdock{flex-direction:row;left:50%;top:auto;bottom:14px;transform:translateX(-50%)}
+  .mtop,.mfoot{left:14px}
+  .mfoot{bottom:70px}
+  .canvasnote{display:block!important}
+}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+  <div class="scrim" id="scrim"></div>
+  <aside class="rail">
+    <div class="brand">
+      <div class="mark"><img id="brandIcon" alt=""></div>
+      <div><h1>MARCO</h1><div class="brandsub">Command Center</div></div>
+      <button class="railtoggle" id="railToggle" title="Collapse sidebar">&#9776;</button>
+    </div>
+    <div class="ctx">
+      <div><div class="lbl">Brand context</div><div class="val">COAD</div></div>
+      <div class="chev">&#9662;</div>
+    </div>
+    <div class="railscroll">
+      <div class="sect"><span class="eyebrow"><span class="bar"></span>Threads</span><button class="newbtn" data-page="newagent" title="New agent">+</button></div>
+      <div id="threads"></div>
+      <div class="sect"><span class="eyebrow"><span class="bar"></span>Library</span></div>
+      <button class="navitem" data-page="calendar"><span class="ico">&#9635;</span><span class="lbl">Calendar</span><span class="pill">9</span></button>
+      <button class="navitem" data-page="automations"><span class="ico">&#9889;</span><span class="lbl">Automations</span><span class="pill hot">1</span></button>
+      <button class="navitem" data-page="assets"><span class="ico">&#9744;</span><span class="lbl">Assets</span><span class="pill">412</span></button>
+      <button class="navitem" data-page="knowledge"><span class="ico">&#9776;</span><span class="lbl">Knowledge</span></button>
+      <button class="navitem" data-page="spend"><span class="ico">&#8942;</span><span class="lbl">Spend</span></button>
+      <button class="navitem" data-page="settings"><span class="ico">&#9881;</span><span class="lbl">Settings</span></button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <button class="iconbtn mobonly" id="burger" style="display:none">&#9776;</button>
+      <div class="title">
+        <div class="av" id="hdAv"><img alt=""></div>
+        <h2 id="hdName">Atelier</h2>
+        <span class="tagline" id="hdTag"></span>
+      </div>
+      <div class="views" id="views">
+        <button data-view="chat">Chat</button>
+        <button data-view="build">Build</button>
+        <button data-view="canvas">Canvas</button>
+      </div>
+      <button class="iconbtn" title="Agent settings">&#9881;</button>
+      <button class="iconbtn paneltoggle on" id="panelToggle" title="Toggle side panel">&#9707;</button>
+    </div>
+    <div class="stage"><div class="pad" id="stage"></div></div>
+    <div class="composer" id="composer">
+      <div class="cbox">
+        <span>Message Atelier</span>
+        <div class="chip">Attach</div><div class="chip">Bundle</div><div class="chip send">Send</div>
+      </div>
+    </div>
+  </main>
+
+  <aside class="work" id="work">
+    <div class="workhd"><div class="wt" id="workTitle">Run 0114</div><span class="tag wait" id="workTag">Blocked</span><button class="workclose" id="workClose" title="Close panel">&#10005;</button></div>
+    <div class="workbd" id="workBody"></div>
+  </aside>
+
+  <nav class="tabbar mobonly" id="tabbar">
+    <button data-tab="threads"><span class="ti">&#9776;</span>Threads</button>
+    <button data-tab="work" class="on"><span class="ti">&#9679;</span>Work</button>
+    <button data-tab="panel"><span class="ti">&#9723;</span>Output</button>
+    <button data-tab="library"><span class="ti">&#9635;</span>Library</button>
+  </nav>
+</div>
+
+<script>
+const ICON = "data:image/png;base64,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";
+document.getElementById("brandIcon").src=ICON;
+
+const AGENTS = {
+  chief:   {name:"Chief",   color:"#7FD1B9", tag:"routes work, reports back", preview:"routed the hoodie brief to Atelier", time:"2:14 PM", views:["chat"], flag:false},
+  atelier: {name:"Atelier", color:"#AD0000", tag:"apparel design and product", preview:"3 hoodie directions up, voice has the copy", time:"1:52 PM", views:["chat","build","canvas"], flag:true},
+  studio:  {name:"Studio",  color:"#FF3D8A", tag:"images and video generation", preview:"seedance queued, 41 assets in manifest", time:"1:31 PM", views:["chat","build","canvas"], flag:false},
+  voice:   {name:"Voice",   color:"#E8C468", tag:"all wording, every surface", preview:"campaign copy back to atelier, 2 options", time:"1:48 PM", views:["chat","build"], flag:false},
+  social:  {name:"Social",  color:"#6FA8FF", tag:"scheduling, platforms, automations", preview:"9 posts staged for next week", time:"11:20 AM", views:["chat","build","canvas"], flag:true},
+  builder: {name:"Builder", color:"#9B8CFF", tag:"claude plans, codex executes", preview:"PR open, waiting on your review", time:"9:05 AM", views:["chat","build"], flag:false}
+};
+const av = (id,cls="") => `<span class="av ${cls}" style="background:${AGENTS[id].color}"><img src="${ICON}" alt=""></span>`;
+const state = {agent:"atelier", view:"chat", page:null, setAgent:"atelier", setSection:"agent", kTab:"library", workOpen:true};
+
+function renderThreads(){
+  document.getElementById("threads").innerHTML = Object.keys(AGENTS).map(id=>{
+    const a=AGENTS[id];
+    return `<button class="thread ${state.page===null&&state.agent===id?'on':''}" data-agent="${id}">
+      ${av(id)}
+      <div class="meta">
+        <div class="top"><div class="nm">${a.name}</div><div class="tm">${a.time}</div></div>
+        <div class="pv">${a.preview}</div>
+      </div>${a.flag?'<span class="flag"></span>':''}
+    </button>`;}).join("");
+  document.querySelectorAll("[data-agent]").forEach(b=>b.onclick=()=>{
+    state.agent=b.dataset.agent; state.page=null;
+    if(!AGENTS[state.agent].views.includes(state.view)) state.view="chat";
+    document.getElementById("app").classList.remove("drawer");
+    render();});
+  document.querySelectorAll("[data-page]").forEach(b=>b.onclick=()=>{state.page=b.dataset.page;document.getElementById("app").classList.remove("drawer");render();});
+}
+
+/* ============ CHAT ============ */
+const CHAT = {
+ atelier:`
+  <div class="msg mine"><div class="who">You</div><div class="bub me">Fall drop for COAD. Heavyweight hoodie, three directions. Same story as the last lookbook.</div></div>
+  <div class="msg"><div class="who">${av('atelier')} Atelier</div><div class="bub">Pulled the COAD brand record: palette, the boxy fit block, the washed heavyweight fleece from last drop. Three directions below, each with a stitch and trim spec. No copy from me, that is not mine to write.</div></div>
+  <div class="card"><div class="hd"><span class="t">HANDOFF TO VOICE</span><span class="tag hand">Sent</span></div>
+    <div class="bd">A typed packet, not a chat message.
+      <dl class="kv"><dt>Goal</dt><dd>Campaign lines for 3 hoodie directions</dd>
+      <dt>State</dt><dd>Designs locked, renders pending</dd>
+      <dt>Evidence</dt><dd>COAD voice record, last drop captions</dd>
+      <dt>Constraint</dt><dd>No hype language, keep it short</dd>
+      <dt>Next action</dt><dd>Return 2 options per direction</dd></dl></div></div>
+  <div class="msg"><div class="who">${av('voice')} Voice</div><div class="bub">Two lines per direction, back in the thread. Both hold the COAD register. Flagged one that leans close to a line you already ran in June.</div></div>
+  <div class="card alert"><div class="hd"><span class="t">APPROVAL. RENDER 3 DIRECTIONS</span><span class="tag wait">Waiting on you</span></div>
+    <div class="bd">Studio runs 3 image sets at 4 variations. Estimated $0.72. Nothing renders until you approve.</div>
+    <div class="acts"><button class="btn pri">Approve</button><button class="btn">Change model</button><button class="btn">Take over</button></div></div>`,
+ studio:`
+  <div class="msg mine"><div class="who">You</div><div class="bub me">Cut the fall drop film. Use the COAD reference bundle.</div></div>
+  <div class="msg"><div class="who">${av('studio')} Studio</div><div class="bub">Loaded bundle <b>COAD Fall Refs</b>. 41 assets. I read the manifest, not the files. Roles are tagged so the model knows what each one is for.</div></div>
+  <div class="card"><div class="hd"><span class="t">ASSET MANIFEST</span><span class="tag ok">41 tagged</span></div>
+    <div class="bd"><div class="rolebar">
+      <span class="role"><b>12</b> character ref</span><span class="role"><b>9</b> style ref</span>
+      <span class="role"><b>7</b> location</span><span class="role"><b>6</b> product</span>
+      <span class="role"><b>4</b> audio bed</span><span class="role"><b>3</b> doc, text only</span></div>
+      <div style="margin-top:12px;color:#8B8383;font-size:12px">PDFs never reach the video model. Extracted at ingest, carried as run context.</div></div>
+    <div class="acts"><button class="btn">Open in Build</button><button class="btn">Save as bundle</button></div></div>
+  <div class="msg"><div class="who">${av('studio')} Studio</div><div class="bub">Queued on SeeDance 2.5, 10 second master. Flip to Build to change duration or swap the model before it runs.</div></div>`,
+ chief:`
+  <div class="msg mine"><div class="who">You</div><div class="bub me">Where is the fall drop.</div></div>
+  <div class="msg"><div class="who">${av('chief')} Chief</div><div class="bub">One answer instead of six threads.</div></div>
+  <div class="card"><div class="hd"><span class="t">STATUS</span><span class="tag wait">1 blocker</span></div>
+    <div class="bd"><dl class="kv">
+      <dt>Atelier</dt><dd>3 directions designed, waiting on your render approval</dd>
+      <dt>Voice</dt><dd>Copy delivered, 6 lines</dd>
+      <dt>Studio</dt><dd>Idle, blocked by the approval above</dd>
+      <dt>Social</dt><dd>9 posts staged, none scheduled</dd>
+      <dt>Builder</dt><dd>PR open on the storefront page</dd></dl></div>
+    <div class="acts"><button class="btn pri">Go to approval</button><button class="btn">Full report</button></div></div>`,
+ voice:`
+  <div class="msg"><div class="who">${av('voice')} Voice</div><div class="bub">I own every word that ships. Captions, reel scripts, storefront copy, client site copy. One owner means the brand voice cannot drift into six versions.</div></div>
+  <div class="card"><div class="hd"><span class="t">INBOUND FROM ATELIER</span><span class="tag hand">Handoff</span></div>
+    <div class="bd">Campaign lines for 3 hoodie directions. Reading the COAD voice record, not guessing.</div></div>
+  <div class="msg mine"><div class="who">You</div><div class="bub me">Second option is too close to June. Try that one again, leave the others.</div></div>
+  <div class="msg"><div class="who">${av('voice')} Voice</div><div class="bub">Rewrote direction two. One and three untouched.</div></div>`,
+ social:`
+  <div class="msg mine"><div class="who">You</div><div class="bub me">Take the fall drop renders and stage a week.</div></div>
+  <div class="msg"><div class="who">${av('social')} Social</div><div class="bub">Asked Voice for wording, adapted per platform, staged 9 posts. Nothing schedules until you approve. Calendar is in the left rail.</div></div>
+  <div class="card alert"><div class="hd"><span class="t">AUTOMATION SUGGESTED</span><span class="tag wait">Needs approval</span></div>
+    <div class="bd"><dl class="kv"><dt>Trigger</dt><dd>Comment contains "save"</dd><dt>Gate</dt><dd>Must follow</dd>
+      <dt>Action</dt><dd>DM the drop link</dd><dt>Applies to</dt><dd>3 reels in this batch</dd></dl></div>
+    <div class="acts"><button class="btn pri">Turn on</button><button class="btn">Edit flow</button></div></div>`,
+ builder:`
+  <div class="msg mine"><div class="who">You</div><div class="bub me">Client storefront needs a size guide modal.</div></div>
+  <div class="msg"><div class="who">${av('builder')} Builder</div><div class="bub">Claude wrote the plan. Files, interfaces, acceptance tests. Codex does not touch anything until you sign off.</div></div>
+  <div class="card alert"><div class="hd"><span class="t">PLAN. REVIEW BEFORE EXECUTION</span><span class="tag wait">Waiting on you</span></div>
+    <div class="bd"><dl class="kv"><dt>Touches</dt><dd>4 files, 1 new component</dd><dt>Tests</dt><dd>3 acceptance checks</dd>
+      <dt>Executor</dt><dd>Codex, branch and PR</dd><dt>Review</dt><dd>Claude checks the diff, 2 rounds max</dd></dl></div>
+    <div class="acts"><button class="btn pri">Approve plan</button><button class="btn">Edit plan</button></div></div>`
+};
+
+/* ============ BUILD ============ */
+function buildView(id){
+  const head=(n,t)=>`<div class="bh"><span class="n">${n}</span><span class="t">${t}</span></div>`;
+  if(id==="studio") return `
+  <div class="blk">${head(1,"Prompt")}<div class="bb">
+    <div class="inp ta">Slow push through a washed concrete corridor. Subject in the heavyweight hoodie, backlit, cold key with warm bounce. No logo distortion.</div>
+    <div class="rolebar"><span class="role">Rewrite with Voice</span><span class="role">Load from run 0109</span></div></div></div>
+  <div class="blk">${head(2,"Asset manifest. 41 items")}<div class="bb">
+    <div class="slots">
+      <div class="slot"><b>12</b>character</div><div class="slot"><b>9</b>style</div><div class="slot"><b>7</b>location</div>
+      <div class="slot"><b>6</b>product</div><div class="slot"><b>4</b>audio</div><div class="slot"><b>3</b>doc</div>
+      <div class="slot add">+ add</div></div>
+    <div class="rolebar"><span class="role">Bundle <b>COAD Fall Refs</b></span><span class="role">Reorder</span><span class="role">Retag roles</span><span class="role">Save as new bundle</span></div></div></div>
+  <div class="blk">${head(3,"Model and output")}<div class="bb">
+    <div class="grid3">
+      <div class="field"><label>Model</label><div class="inp">SeeDance 2.5<span class="cv">fal</span></div></div>
+      <div class="field"><label>Duration</label><div class="inp">10s<span class="cv">max 12</span></div></div>
+      <div class="field"><label>Variations</label><div class="inp">2<span class="cv">per run</span></div></div></div>
+    <div class="field" style="margin-top:12px"><label>Aspect ratio</label>
+      <div class="seg"><span>1:1</span><span>4:5</span><span class="on">9:16</span><span>16:9</span><span>21:9</span></div></div></div></div>
+  <div class="runbar"><div class="cost">Estimated <b>$1.84</b> for this run. Charged on completion.</div>
+    <div style="display:flex;gap:8px"><button class="btn">Save as template</button><button class="btn pri">Run</button></div></div>`;
+
+  if(id==="atelier") return `
+  <div class="blk">${head(1,"Brief")}<div class="bb">
+    <div class="inp ta">Fall drop. Heavyweight hoodie, boxy block, three directions. Washed fleece, contrast stitch on two of them.</div></div></div>
+  <div class="blk">${head(2,"Context and knowledge")}<div class="bb">
+    <div class="grid2">
+      <div class="field"><label>Brand record</label><div class="inp">COAD<span class="cv">locked</span></div></div>
+      <div class="field"><label>Season</label><div class="inp">Fall 26<span class="cv">drop 3</span></div></div></div>
+    <div class="field" style="margin-top:12px"><label>Attached knowledge, read only for this run</label>
+      <div class="slots"><div class="slot">COAD<br>bible</div><div class="slot">fit<br>blocks</div><div class="slot">fabric<br>library</div><div class="slot">past<br>drops</div><div class="slot add">+ attach</div></div></div></div></div>
+  <div class="blk">${head(3,"Models")}<div class="bb"><div class="grid3">
+      <div class="field"><label>Reasoning</label><div class="inp">Claude Opus<span class="cv">openrouter</span></div></div>
+      <div class="field"><label>Fast</label><div class="inp">Gemini Flash<span class="cv">openrouter</span></div></div>
+      <div class="field"><label>Render</label><div class="inp">Nano Banana<span class="cv">fal</span></div></div></div></div></div>
+  <div class="blk">${head(4,"Handoffs")}<div class="bb">
+    <div class="permrow"><div>Send copy request to Voice<div class="pd">Typed packet, returns into this run</div></div><div class="toggle on"></div></div>
+    <div class="permrow"><div>Send renders to Studio<div class="pd">After your approval</div></div><div class="toggle on"></div></div>
+    <div class="permrow"><div>Stage to Social when done<div class="pd">Off by default</div></div><div class="toggle"></div></div></div></div>
+  <div class="runbar"><div class="cost">Estimated <b>$0.72</b>. Handoff to Voice included.</div>
+    <div style="display:flex;gap:8px"><button class="btn">Save as template</button><button class="btn pri">Run</button></div></div>`;
+
+  if(id==="voice") return `
+  <div class="blk">${head(1,"What to write")}<div class="bb">
+    <div class="inp ta">Campaign lines for 3 hoodie directions. Two options each. Short.</div>
+    <div class="field" style="margin-top:12px"><label>Surface</label>
+      <div class="seg"><span class="on">Campaign</span><span>Caption</span><span>Reel script</span><span>Storefront</span><span>Email</span></div></div></div></div>
+  <div class="blk">${head(2,"Voice record")}<div class="bb"><div class="grid2">
+      <div class="field"><label>Brand</label><div class="inp">COAD<span class="cv">locked</span></div></div>
+      <div class="field"><label>Register</label><div class="inp">Direct, no hype<span class="cv">from record</span></div></div>
+      <div class="field"><label>Words to avoid</label><div class="inp">14 terms<span class="cv">edit</span></div></div>
+      <div class="field"><label>Reasoning model</label><div class="inp">Claude Opus<span class="cv">openrouter</span></div></div></div></div></div>
+  <div class="runbar"><div class="cost">Estimated <b>$0.09</b>.</div><button class="btn pri">Write</button></div>`;
+
+  if(id==="builder") return `
+  <div class="blk">${head(1,"Request")}<div class="bb"><div class="inp ta">Client storefront needs a size guide modal, opened from the product page.</div></div></div>
+  <div class="blk">${head(2,"The pair")}<div class="bb"><div class="grid2">
+      <div class="field"><label>Planner</label><div class="inp">Claude Opus<span class="cv">writes the plan</span></div></div>
+      <div class="field"><label>Executor</label><div class="inp">Codex<span class="cv">writes the code</span></div></div>
+      <div class="field"><label>Repo</label><div class="inp">client-storefront<span class="cv">main</span></div></div>
+      <div class="field"><label>Review rounds</label><div class="inp">2<span class="cv">then escalate</span></div></div></div></div></div>
+  <div class="blk">${head(3,"Gates")}<div class="bb">
+    <div class="permrow"><div>You approve the plan before code<div class="pd">Cannot be turned off</div></div><div class="toggle on"></div></div>
+    <div class="permrow"><div>Open a PR, never merge<div class="pd">Merge stays yours</div></div><div class="toggle on"></div></div></div></div>
+  <div class="runbar"><div class="cost">Estimated <b>$0.41</b> for plan plus execution.</div><button class="btn pri">Plan it</button></div>`;
+
+  return `
+  <div class="blk">${head(1,"Batch source")}<div class="bb">
+    <div class="inp">Fall drop renders. 9 assets<span class="cv">from Studio run 0114</span></div></div></div>
+  <div class="blk">${head(2,"Platforms")}<div class="bb">
+    <div class="seg"><span class="on">Instagram</span><span class="on">TikTok</span><span class="on">YouTube</span><span>X</span><span>Pinterest</span></div>
+    <div class="grid2" style="margin-top:12px">
+      <div class="field"><label>Copy from</label><div class="inp">Voice<span class="cv">handoff</span></div></div>
+      <div class="field"><label>Window</label><div class="inp">Mon to Sun<span class="cv">next week</span></div></div></div></div></div>
+  <div class="blk">${head(3,"Publishing")}<div class="bb">
+    <div class="permrow"><div>Publish mode<div class="pd">Manual approval is the default and stays that way</div></div>
+      <div class="tri"><span class="on">Manual</span><span>Auto</span></div></div>
+    <div class="permrow"><div>Attach the save keyword automation<div class="pd">Applies to 3 reels</div></div><div class="toggle on"></div></div></div></div>
+  <div class="runbar"><div class="cost">Estimated <b>$0.31</b> for 9 adaptations.</div><button class="btn pri">Stage posts</button></div>`;
+}
+
+/* ============ CANVAS ============ */
+const CANVAS = `
+<div class="mcanvas">
+  <div class="mdock">
+    <button title="Add">+</button>
+    <button class="on" title="Select">&#9655;</button>
+    <button title="Pan">&#9995;</button>
+    <button title="Cut">&#9986;</button>
+    <button title="Frame">&#9744;</button>
+    <button title="Comment">&#9993;</button>
+    <div class="sep"></div>
+    <button title="Undo">&#8630;</button>
+    <button title="Redo">&#8631;</button>
+    <button title="Settings">&#9881;</button>
+  </div>
+
+  <div class="mtop">
+    <span class="mchip on">Drop pipeline</span>
+    <span class="mchip">Client site build</span>
+    <span class="mchip">Weekly content batch</span>
+    <span class="mchip">+ new</span>
+  </div>
+
+  <svg class="mwires">
+    <g stroke="#3d4a63" fill="none" stroke-width="1">
+      <path d="M300 372 C 360 372, 360 330, 420 330"/>
+      <path d="M300 400 C 360 400, 360 356, 420 356"/>
+      <path d="M300 428 C 360 428, 360 382, 420 382"/>
+    </g>
+    <g stroke="#4a3f5e" fill="none" stroke-width="1" opacity=".85">
+      <path d="M700 330 C 790 330, 830 250, 916 244"/>
+      <path d="M700 348 C 790 348, 830 268, 916 262"/>
+      <path d="M700 366 C 790 366, 830 288, 916 280"/>
+      <path d="M700 384 C 790 384, 830 306, 916 298"/>
+      <path d="M700 402 C 790 402, 830 324, 916 316"/>
+      <path d="M700 420 C 790 420, 830 342, 916 334"/>
+      <path d="M700 438 C 790 438, 830 360, 916 352"/>
+      <path d="M700 456 C 790 456, 830 378, 916 370"/>
+    </g>
+    <g stroke="#4a3f5e" fill="none" stroke-width="1" opacity=".7">
+      <path d="M872 200 C 892 210, 900 226, 916 240"/>
+      <path d="M872 208 C 892 224, 900 250, 916 268"/>
+      <path d="M872 216 C 892 240, 900 274, 916 296"/>
+    </g>
+    <path d="M1070 300 C 1130 300, 1150 300, 1196 300" stroke="#AD0000" fill="none" stroke-width="2"/>
+  </svg>
+
+  <div class="sticky y" style="left:104px;top:96px;width:132px;height:62px">Skip the reference block if the brand record already locks the palette.</div>
+  <div class="sticky o" style="left:96px;top:470px;width:96px;height:44px">Fall drop, page 1</div>
+
+  <div class="grp ref" style="left:96px;top:330px;width:204px">
+    <div class="glabel">Reference images</div>
+    <div class="tiles" style="grid-template-columns:repeat(3,58px)">
+      <div class="tile a" style="height:58px"></div><div class="tile b" style="height:58px"></div><div class="tile" style="height:58px"></div>
+      <div class="tile" style="height:58px"></div><div class="tile d" style="height:58px"></div><div class="tile c" style="height:58px"></div>
+    </div>
+  </div>
+
+  <div class="grp up" style="left:640px;top:110px;width:232px">
+    <div class="glabel">Uploaded images</div>
+    <div class="tiles" style="grid-template-columns:82px 62px 62px">
+      <div class="tile" style="height:96px"></div><div class="tile d" style="height:96px"></div><div class="tile c" style="height:96px"></div>
+    </div>
+  </div>
+
+  <div class="grp prm" style="left:420px;top:296px;width:280px">
+    <div class="glabel">Prompts</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+      <div class="pcard"><div class="pline m"></div><div class="pline s"></div>
+        <div class="ptxt">Reference image analyzer. Neutral flat lay, matte concrete, overhead soft light.</div></div>
+      <div class="pcard"><div class="pline m"></div><div class="pline s"></div>
+        <div class="ptxt">Prompt generator. Packaging rests on textured concrete, generous negative space.</div></div>
+      <div class="pcard" style="grid-column:1 / -1"><div class="pline m"></div>
+        <div class="ptxt">8 variants queued. Prompt 01 through 08, one per final frame. Edit any single prompt without rerunning the set.</div></div>
+    </div>
+  </div>
+
+  <div class="grp fin" style="left:916px;top:180px;width:154px">
+    <div class="glabel">Final images</div>
+    <div class="tiles" style="grid-template-columns:repeat(2,66px)">
+      <div class="tile c" style="height:82px"></div><div class="tile" style="height:82px"></div>
+      <div class="tile b" style="height:82px"></div><div class="tile c" style="height:82px"></div>
+    </div>
+  </div>
+
+  <div class="mnode appr" style="left:1196px;top:276px;width:146px">
+    <div class="nt"><i style="width:5px;height:5px;border-radius:50%;background:#AD0000;display:inline-block"></i>Approval</div>
+    <div class="nb">You sign off</div>
+  </div>
+  <div class="mnode" style="left:1196px;top:352px;width:146px">
+    <div class="nt"><i style="width:5px;height:5px;border-radius:50%;background:#6FA8FF;display:inline-block"></i>Output</div>
+    <div class="nb">Stage to Social</div>
+  </div>
+
+  <div class="mfoot">
+    <span class="mchip">&#9635; Page 1</span>
+    <span class="mchip sp">Fit</span>
+    <span class="mchip">33%</span>
+  </div>
+
+  <div class="canvasnote" style="display:none;position:absolute;left:14px;right:14px;top:56px;z-index:9;
+      border:1px solid var(--line);border-left:3px solid var(--red);background:rgba(26,24,24,.95);border-radius:10px;padding:11px 13px;font-size:12px;color:#CFC9C9">
+    Read only on phone. Approve and check status here, open on desktop to wire nodes.
+  </div>
+</div>`;
+
+/* ============ PAGES ============ */
+function calendarHTML(){
+  const days=["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
+  let h=days.map(d=>`<div class="dh">${d}</div>`).join("");
+  const posts=[[{c:"ig",t:"Fall drop teaser"}],[{c:"tt",t:"Stitch detail reel"}],
+    [{c:"ig",t:"Direction 2 carousel"},{c:"yt",t:"Short cut"}],[],
+    [{c:"ig",t:"Drop day"},{c:"tt",t:"Drop day"},{c:"yt",t:"Full film"}],
+    [{c:"tt",t:"Behind the fit"}],[{c:"ig",t:"Restock note"}]];
+  posts.forEach((p,i)=>{h+=`<div class="cell ${i===2?'today':''}"><div class="dnum">${8+i}</div>${p.map(x=>`<div class="post ${x.c}">${x.t}</div>`).join("")}</div>`;});
+  return `<div class="cal">${h}</div><div class="note">Scheduling is state, not a run. Social stages posts here, you approve, nothing publishes on its own.</div>`;
+}
+
+const SPEND = `
+<div class="capbar"><b style="color:#fff">Monthly cap</b><div class="track"><div class="fill" style="width:59%"></div></div>
+  <span style="color:#F3AEAE">$147.22 of $250. 59%</span></div>
+<div class="hero">
+  <div><div class="lab">Today</div><div class="big"><em>$</em>4.18</div></div>
+  <div><div class="sm">$31.06</div><div class="smlab">7 days</div></div>
+  <div><div class="sm">$147.22</div><div class="smlab">30 days</div></div>
+  <div style="margin-left:auto;text-align:right"><div class="sm">$88 / $59</div><div class="smlab">fal / openrouter</div></div>
+</div>
+<div class="grid2" style="align-items:start">
+  <div class="bars">
+    <div class="eyebrow" style="margin-bottom:13px"><span class="bar"></span>Spend by agent, 30 days</div>
+    <div class="bar"><div class="nm">${av('studio')}Studio</div><div class="track"><div class="fill" style="width:100%"></div></div><div class="amt">$88.40</div></div>
+    <div class="bar"><div class="nm">${av('atelier')}Atelier</div><div class="track"><div class="fill" style="width:33%"></div></div><div class="amt">$29.10</div></div>
+    <div class="bar"><div class="nm">${av('voice')}Voice</div><div class="track"><div class="fill" style="width:17%"></div></div><div class="amt">$14.90</div></div>
+    <div class="bar"><div class="nm">${av('social')}Social</div><div class="track"><div class="fill" style="width:10%"></div></div><div class="amt">$9.12</div></div>
+    <div class="bar"><div class="nm">${av('builder')}Builder</div><div class="track"><div class="fill" style="width:6%"></div></div><div class="amt">$5.70</div></div>
+    <div class="bar" style="margin-bottom:0"><div class="nm">${av('chief')}Chief</div><div class="track"><div class="fill" style="width:1%"></div></div><div class="amt">$0.90</div></div>
+  </div>
+  <div class="bars">
+    <div class="eyebrow" style="margin-bottom:13px"><span class="bar"></span>Spend by model</div>
+    <div class="bar"><div class="nm" style="padding-left:2px">SeeDance</div><div class="track"><div class="fill" style="width:100%"></div></div><div class="amt">$61.20</div></div>
+    <div class="bar"><div class="nm" style="padding-left:2px">Nano Banana</div><div class="track"><div class="fill" style="width:44%"></div></div><div class="amt">$27.20</div></div>
+    <div class="bar"><div class="nm" style="padding-left:2px">Claude Opus</div><div class="track"><div class="fill" style="width:63%"></div></div><div class="amt">$38.60</div></div>
+    <div class="bar"><div class="nm" style="padding-left:2px">GPT</div><div class="track"><div class="fill" style="width:23%"></div></div><div class="amt">$14.10</div></div>
+    <div class="bar" style="margin-bottom:0"><div class="nm" style="padding-left:2px">Gemini Flash</div><div class="track"><div class="fill" style="width:10%"></div></div><div class="amt">$6.12</div></div>
+  </div>
+</div>
+<div class="bars" style="margin-top:14px;padding:0">
+  <div style="padding:15px 15px 4px"><div class="eyebrow"><span class="bar"></span>Recent runs</div></div>
+  <table class="tbl">
+    <tr><th>Run</th><th>Agent</th><th>Model</th><th>Output</th><th style="text-align:right">Cost</th></tr>
+    <tr><td><b>0114</b></td><td>Studio</td><td>SeeDance 2.5</td><td>1 video, 10s</td><td class="r">$1.84</td></tr>
+    <tr><td><b>0113</b></td><td>Atelier</td><td>Claude Opus</td><td>3 directions</td><td class="r">$0.31</td></tr>
+    <tr><td><b>0112</b></td><td>Voice</td><td>Claude Opus</td><td>6 lines</td><td class="r">$0.09</td></tr>
+    <tr><td><b>0111</b></td><td>Studio</td><td>Nano Banana</td><td>12 images</td><td class="r">$0.48</td></tr>
+    <tr><td><b>0110</b></td><td>Social</td><td>Gemini Flash</td><td>9 adaptations</td><td class="r">$0.31</td></tr>
+  </table>
+</div>`;
+
+function settingsHTML(){
+  const a=AGENTS[state.setAgent];
+  const sec=state.setSection;
+  const list = `
+    <div class="setlist">
+      <div class="pgrp" style="margin:4px 2px 7px">Agents</div>
+      ${Object.keys(AGENTS).map(id=>`<button class="setrow ${sec==='agent'&&state.setAgent===id?'on':''}" data-set="${id}">${av(id)}${AGENTS[id].name}</button>`).join("")}
+      <div style="border-top:1px solid var(--line);margin:9px 0"></div>
+      <div class="pgrp" style="margin:4px 2px 7px">System</div>
+      <button class="setrow ${sec==='providers'?'on':''}" data-sec="providers"><span class="ico">&#9919;</span>Providers and keys</button>
+      <button class="setrow ${sec==='connections'?'on':''}" data-sec="connections"><span class="ico">&#8644;</span>Connections</button>
+      <button class="setrow ${sec==='brands'?'on':''}" data-sec="brands"><span class="ico">&#9670;</span>Brand records</button>
+      <button class="setrow ${sec==='appearance'?'on':''}" data-sec="appearance"><span class="ico">&#9788;</span>Appearance</button>
+    </div>`;
+
+  const agentPane = `
+      <div class="blk"><div class="bh"><span class="av" style="background:${a.color};width:20px;height:20px"><img src="${ICON}" alt=""></span><span class="t">${a.name}</span>
+        <span class="tag ok" style="margin-left:auto">Active</span></div>
+        <div class="bb"><div class="field"><label>Instructions</label><div class="inp ta">You own apparel design and product. You do not write campaign copy. Hand wording to Voice as a typed packet. Never invent fabric specs you cannot source.</div></div></div></div>
+      <div class="blk"><div class="bh"><span class="n">M</span><span class="t">Models</span></div><div class="bb"><div class="grid3">
+        <div class="field"><label>Reasoning</label><div class="inp">Claude Opus<span class="cv">openrouter</span></div></div>
+        <div class="field"><label>Fast</label><div class="inp">Gemini Flash<span class="cv">openrouter</span></div></div>
+        <div class="field"><label>Render</label><div class="inp">Nano Banana<span class="cv">fal</span></div></div></div></div></div>
+      <div class="blk"><div class="bh"><span class="n">K</span><span class="t">Knowledge and skills</span></div><div class="bb">
+        <div class="slots"><div class="slot">COAD<br>bible</div><div class="slot">fit<br>blocks</div><div class="slot">fabric<br>library</div><div class="slot">past<br>drops</div><div class="slot add">+ attach</div></div>
+        <div class="rolebar"><span class="role">Skills enabled <b>4</b></span><span class="role">tapewarp carousel</span><span class="role">fashion trends</span><span class="role">coad worlds</span><span class="role">+ manage</span></div></div></div>
+      <div class="blk"><div class="bh"><span class="n">P</span><span class="t">Permissions</span></div><div class="bb">
+        <div class="permrow"><div>Generate images and video<div class="pd">Costs money on every run</div></div>
+          <div class="tri"><span>Always</span><span class="on">Ask</span><span class="no">Never</span></div></div>
+        <div class="permrow"><div>Publish to a platform<div class="pd">Atelier never publishes</div></div>
+          <div class="tri"><span>Always</span><span>Ask</span><span class="no on">Never</span></div></div>
+        <div class="permrow"><div>Write to Knowledge<div class="pd">Learning proposals need your approval</div></div>
+          <div class="tri"><span>Always</span><span class="on">Ask</span><span class="no">Never</span></div></div>
+        <div class="permrow"><div>Spend cap per run<div class="pd">Hard stop, the run fails instead of overspending</div></div>
+          <div class="inp" style="width:112px;padding:5px 10px">$5.00</div></div>
+        <div class="permrow"><div>Can hand off to other agents<div class="pd">Voice and Studio</div></div><div class="toggle on"></div></div></div></div>`;
+
+  const keyRow=(name,sub,masked,state_)=>`
+    <div class="permrow"><div>${name}<div class="pd">${sub}</div></div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <div class="inp" style="width:196px;padding:5px 10px;font-family:monospace;font-size:11px">${masked}</div>
+        <span class="tag ${state_==='ok'?'ok':'wait'}" style="margin:0">${state_==='ok'?'Connected':'Missing'}</span>
+        <button class="btn" style="padding:4px 10px">Edit</button></div></div>`;
+
+  const providers = `
+      <div class="blk"><div class="bh"><span class="n">1</span><span class="t">Model providers</span></div><div class="bb">
+        ${keyRow("OpenRouter","Every text model. Claude, GPT, Gemini, Grok, Kimi","sk-or-v1-••••••••••••4f2a","ok")}
+        ${keyRow("fal","Image and video. SeeDance, Nano Banana, Seedream","fal-••••••••••••9c31","ok")}
+        ${keyRow("Anthropic direct","Optional. Only if you bypass OpenRouter","not set","missing")}
+        <div class="rolebar"><span class="role">Keys are server side only, never sent to the browser</span></div></div></div>
+      <div class="blk"><div class="bh"><span class="n">2</span><span class="t">Platform keys</span></div><div class="bb">
+        ${keyRow("Meta Graph","Instagram and Facebook posting plus DM automations","EAAG••••••••••7b12","ok")}
+        ${keyRow("TikTok","Posting","not set","missing")}
+        ${keyRow("YouTube","Posting","ya29.••••••••••a4","ok")}
+        ${keyRow("Shopify","Product and storefront reads","shpat_••••••••••2e","ok")}
+        ${keyRow("Telegram bot","Mobile approvals and alerts","not set","missing")}</div></div>
+      <div class="blk"><div class="bh"><span class="n">3</span><span class="t">Budget</span></div><div class="bb">
+        <div class="permrow"><div>Monthly cap<div class="pd">Warns at 80%, blocks new runs at 100%</div></div><div class="inp" style="width:112px;padding:5px 10px">$250.00</div></div>
+        <div class="permrow"><div>Hard stop at cap<div class="pd">Off means warn only</div></div><div class="toggle on"></div></div></div></div>`;
+
+  const connRow=(name,kind,detail,on)=>`
+    <div class="permrow"><div>${name}<div class="pd">${detail}</div></div>
+      <div style="display:flex;align-items:center;gap:9px">
+        <span class="role" style="margin:0">${kind}</span>
+        <button class="btn" style="padding:4px 10px">Configure</button>
+        <div class="toggle ${on?'on':''}"></div></div></div>`;
+
+  const connections = `
+      <div class="blk"><div class="bh"><span class="n">M</span><span class="t">MCP servers</span>
+        <button class="btn pri" style="margin-left:auto;padding:4px 12px">+ Add server</button></div><div class="bb">
+        ${connRow("Notion","MCP","Knowledge sync and skill pages",1)}
+        ${connRow("Shopify","MCP","Products, orders, collections",1)}
+        ${connRow("Supabase","MCP","Your own database",1)}
+        ${connRow("Higgsfield","MCP","Soul ID and cinema presets",1)}
+        ${connRow("Figma","MCP","Design file reads",0)}
+        ${connRow("Apify","MCP","Scraping and social research",0)}
+        <div class="rolebar"><span class="role">Each server is granted per agent, not globally</span></div></div></div>
+      <div class="blk"><div class="bh"><span class="n">C</span><span class="t">CLI runners</span>
+        <button class="btn pri" style="margin-left:auto;padding:4px 12px">+ Add runner</button></div><div class="bb">
+        ${connRow("Claude Code","CLI","Planner for the Builder pair. Local sandbox",1)}
+        ${connRow("Codex","CLI","Executor for the Builder pair. Branch and PR only",1)}
+        ${connRow("GitHub","CLI","Repo access, marcusworld82",1)}
+        ${connRow("Vercel","CLI","Deploys and logs",0)}</div></div>
+      <div class="blk"><div class="bh"><span class="n">G</span><span class="t">Grants</span></div><div class="bb">
+        <div class="permrow"><div>Which agents can use CLI runners<div class="pd">Builder only</div></div><button class="btn" style="padding:4px 10px">Edit</button></div>
+        <div class="permrow"><div>Approval before any MCP write<div class="pd">Reads are allowed, writes ask</div></div><div class="toggle on"></div></div>
+        <div class="permrow"><div>Audit log<div class="pd">Every tool call, who ran it, what it touched</div></div><button class="btn" style="padding:4px 10px">Open log</button></div></div></div>`;
+
+  const brands = `
+      <div class="blk"><div class="bh"><span class="n">B</span><span class="t">Brand records</span>
+        <button class="btn pri" style="margin-left:auto;padding:4px 12px">+ New brand</button></div><div class="bb">
+        <div class="permrow"><div>COAD<div class="pd">Streetwear. Palette, voice, audience, restrictions</div></div><span class="tag ok" style="margin:0">Active</span></div>
+        <div class="permrow"><div>Son's line<div class="pd">In setup. Palette not locked yet</div></div><button class="btn" style="padding:4px 10px">Open</button></div>
+        <div class="permrow"><div>Humble Hearted<div class="pd">Jewelry, Shopify connected</div></div><button class="btn" style="padding:4px 10px">Open</button></div>
+        <div class="permrow"><div>Client, HVAC<div class="pd">Agency work</div></div><button class="btn" style="padding:4px 10px">Open</button></div>
+        <div class="rolebar"><span class="role">Every agent reads the active record. No agent owns it.</span></div></div></div>`;
+
+  const appearance = `
+      <div class="blk"><div class="bh"><span class="n">A</span><span class="t">Appearance</span></div><div class="bb">
+        <div class="permrow"><div>Theme<div class="pd">Dark is the default</div></div><div class="tri"><span class="on">Dark</span><span>Light</span></div></div>
+        <div class="permrow"><div>Accent<div class="pd">Red is the brand</div></div><div class="inp" style="width:112px;padding:5px 10px">#AD0000</div></div>
+        <div class="permrow"><div>Right work panel<div class="pd">Auto hides when a run has no output</div></div><div class="toggle on"></div></div></div></div>`;
+
+  const pane = sec==='providers'?providers : sec==='connections'?connections : sec==='brands'?brands : sec==='appearance'?appearance : agentPane;
+  return `<div class="setwrap">${list}<div>${pane}</div></div>`;
+}
+
+function knowledgeHTML(){
+  const tabs = `
+  <div class="savedbar">
+    <span class="saved ${state.kTab==='library'?'on':''}" data-ktab="library">Library</span>
+    <span class="saved ${state.kTab==='skills'?'on':''}" data-ktab="skills">Skills</span>
+    <span class="saved ${state.kTab==='brands'?'on':''}" data-ktab="brands">Brand records</span>
+    <span class="saved ${state.kTab==='proposals'?'on':''}" data-ktab="proposals">Learning proposals<b style="color:#E01414"> 2</b></span>
+  </div>`;
+
+  if(state.kTab==='skills'){
+    const skill=(n,src,agents,on)=>`
+      <div class="permrow"><div>${n}<div class="pd">Enabled for ${agents}</div></div>
+        <div style="display:flex;align-items:center;gap:9px">
+          <span class="role" style="margin:0">${src}</span>
+          <button class="btn" style="padding:4px 10px">Edit</button>
+          <div class="toggle ${on?'on':''}"></div></div></div>`;
+    return tabs + `
+    <div class="setwrap" style="grid-template-columns:1fr 356px">
+      <div>
+        <div class="blk"><div class="bh"><span class="n">S</span><span class="t">Installed skills</span>
+          <div style="margin-left:auto;display:flex;gap:7px">
+            <button class="btn" style="padding:4px 11px">Upload file</button>
+            <button class="btn pri" style="padding:4px 11px">+ New skill</button></div></div>
+          <div class="bb">
+            ${skill("tapewarp carousel","Claude Code","Social, Studio",1)}
+            ${skill("coad worlds images","Claude Code","Atelier, Studio",1)}
+            ${skill("fashion streetwear trends","Claude Code","Atelier",1)}
+            ${skill("higgsfield prompting","Markdown","Studio",1)}
+            ${skill("reverse image forensics","Claude Code","Studio",1)}
+            ${skill("divergence","Perplexity export","Voice, Social",0)}
+            ${skill("content psychology","Markdown","Voice",1)}
+            ${skill("seo auditor","Claude Code","Builder",0)}
+            <div class="rolebar">
+              <span class="role">Accepts <b>SKILL.md</b></span><span class="role">Claude Code skill folders</span>
+              <span class="role">Perplexity exports</span><span class="role">plain <b>.md</b></span><span class="role">zip</span></div>
+          </div></div>
+        <div class="blk"><div class="bh"><span class="n">+</span><span class="t">Three ways a skill gets here</span></div><div class="bb">
+          <div class="permrow"><div>Upload<div class="pd">Drop a SKILL.md, a Claude Code folder, a Perplexity export, or a zip. Marco parses the manifest, normalizes the name and description, and asks which agents get it.</div></div><button class="btn" style="padding:4px 10px">Upload</button></div>
+          <div class="permrow"><div>Save from a thread<div class="pd">Any thread has a Save as skill action. It reads the conversation, writes the skill, and drops it here as a draft.</div></div><button class="btn" style="padding:4px 10px">Pick a thread</button></div>
+          <div class="permrow"><div>Build from scratch<div class="pd">Use the skill builder on the right. It writes the file, you approve, it installs.</div></div><button class="btn pri" style="padding:4px 10px">Start</button></div>
+        </div></div>
+      </div>
+
+      <div class="blk" style="display:flex;flex-direction:column;height:560px;margin:0">
+        <div class="bh"><span class="n">B</span><span class="t">Skill builder</span>
+          <div class="inp" style="margin-left:auto;padding:3px 9px;font-size:11px">Claude Opus<span class="cv">swap</span></div></div>
+        <div class="bb" style="flex:1;overflow-y:auto">
+          <div class="msg" style="max-width:none;margin-bottom:14px"><div class="who">Skill builder</div>
+            <div class="bub" style="font-size:12.5px">Tell me what the skill should do, or paste a file. I write the SKILL.md, you approve it, then I pick which agents get it.</div></div>
+          <div class="msg mine" style="max-width:none;margin-bottom:14px"><div class="who">You</div>
+            <div class="bub me" style="font-size:12.5px">A skill for building tech packs from a hoodie design. Measurements, stitch callouts, trim list.</div></div>
+          <div class="msg" style="max-width:none;margin-bottom:14px"><div class="who">Skill builder</div>
+            <div class="bub" style="font-size:12.5px">Drafted <b>tech-pack-builder</b>. Pulls fit blocks and the fabric library from Knowledge. Outputs a spec sheet plus a callout image brief for Studio.</div></div>
+          <div class="card" style="max-width:none;margin:0">
+            <div class="hd"><span class="t">DRAFT. TECH PACK BUILDER</span><span class="tag wait">Review</span></div>
+            <div class="bd" style="font-size:12px"><dl class="kv" style="grid-template-columns:88px 1fr">
+              <dt>Format</dt><dd>SKILL.md plus 2 helpers</dd>
+              <dt>Triggers</dt><dd>tech pack, spec sheet, grading</dd>
+              <dt>Reads</dt><dd>fit blocks, fabric library</dd>
+              <dt>Assign to</dt><dd>Atelier</dd></dl></div>
+            <div class="acts"><button class="btn pri">Install</button><button class="btn">Open file</button><button class="btn">Revise</button></div></div>
+        </div>
+        <div style="border-top:1px solid var(--line);padding:11px 13px">
+          <div class="cbox" style="max-width:none;padding:8px 11px">
+            <span style="font-size:12px">Describe a skill</span><div class="chip">Attach</div><div class="chip send">Send</div></div>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  if(state.kTab==='brands') return tabs + `
+    <div class="klist">
+      <div class="kcard"><h4>COAD</h4><p>Palette, voice, audience, restrictions, size chart, past drops.</p><div class="cnt">active</div></div>
+      <div class="kcard"><h4>Son's line</h4><p>In setup. Name and palette not locked yet.</p><div class="cnt">draft</div></div>
+      <div class="kcard"><h4>Humble Hearted</h4><p>Jewelry. Shopify connected.</p><div class="cnt">4 docs</div></div>
+      <div class="kcard"><h4>Client, HVAC</h4><p>Agency brand kit, offers, restrictions.</p><div class="cnt">6 docs</div></div>
+    </div>`;
+
+  if(state.kTab==='proposals') return tabs + `
+    <div class="card alert"><div class="hd"><span class="t">VOICE. ADD A PHRASE TO AVOID</span><span class="tag wait">Pending</span></div>
+      <div class="bd">Voice wants to add "elevate" to the COAD words to avoid list. It flagged 4 drafts where it caught itself reaching for it.</div>
+      <div class="acts"><button class="btn pri">Approve</button><button class="btn">Reject</button><button class="btn">See the 4 drafts</button></div></div>
+    <div class="card alert"><div class="hd"><span class="t">ATELIER. SAVE A FIT BLOCK</span><span class="tag wait">Pending</span></div>
+      <div class="bd">Atelier wants to save the boxy heavyweight block from this drop as a reusable block in the fit library.</div>
+      <div class="acts"><button class="btn pri">Approve</button><button class="btn">Reject</button></div></div>
+    <div class="note">No agent writes to Knowledge on its own. Every change lands here first.</div>`;
+
+  return tabs + `
+    <div class="klist">
+      <div class="kcard"><h4>Agent instructions</h4><p>One doc per agent. What it owns, what it hands off, what it must never do.</p><div class="cnt">6 docs</div></div>
+      <div class="kcard"><h4>Playbooks</h4><p>Drop launch. Client onboarding. Weekly content batch. Repeatable sequences with approval gates.</p><div class="cnt">7 playbooks</div></div>
+      <div class="kcard"><h4>Design DNA</h4><p>Locked styles. Once a look is codified it becomes selectable by name in any generation.</p><div class="cnt">3 locked</div></div>
+      <div class="kcard"><h4>Reference vault</h4><p>Fabric library, fit blocks, past drops, competitor teardowns.</p><div class="cnt">64 docs</div></div>
+      <div class="kcard"><h4>SOPs</h4><p>How a drop ships. How a client gets onboarded. How a run gets approved.</p><div class="cnt">11 docs</div></div>
+      <div class="kcard"><h4>Templates</h4><p>Brand bible, client onboarding, SOP starter.</p><div class="cnt">9 templates</div></div>
+    </div>`;
+}
+
+function newAgentHTML(){
+  const colors=["#AD0000","#FF3D8A","#E8C468","#6FA8FF","#9B8CFF","#7FD1B9","#E8A06B","#5FCB8C"];
+  const swatch = colors.map((c,i)=>`<button class="swatch ${i===0?'on':''}" data-swatch="${c}" style="background:${c}"><img src="${ICON}" alt=""></button>`).join("");
+  return `
+  <div class="setwrap" style="grid-template-columns:1fr 300px">
+    <div>
+      <div class="blk"><div class="bh"><span class="n">1</span><span class="t">Identity</span></div><div class="bb">
+        <div class="grid2">
+          <div class="field"><label>Name</label><div class="inp">Merch<span class="cv">unique</span></div></div>
+          <div class="field"><label>One line</label><div class="inp">packaging, labels, hang tags</div></div></div>
+        <div class="field" style="margin-top:12px"><label>Avatar background</label>
+          <div class="swatches">${swatch}
+            <label class="picker" title="Custom color">
+              <input type="color" id="naPick" value="#AD0000">
+              <span>+</span>
+            </label>
+          </div>
+          <div class="rolebar"><span class="role">Hex <b id="naHex">#AD0000</b></span>
+            <span class="role" id="naRandom">Random</span>
+            <span class="role">Match brand record</span></div></div>
+      </div></div>
+
+      <div class="blk"><div class="bh"><span class="n">2</span><span class="t">What it owns</span></div><div class="bb">
+        <div class="field"><label>Instructions</label><div class="inp ta">You own physical packaging and trim. Hang tags, labels, polybags, box inserts. You do not write copy, hand that to Voice. You do not render campaign imagery, hand that to Studio.</div></div>
+        <div class="rolebar"><span class="role">Start from a template</span><span class="role">Atelier</span><span class="role">Voice</span><span class="role">Studio</span><span class="role">Blank</span></div>
+      </div></div>
+
+      <div class="blk"><div class="bh"><span class="n">3</span><span class="t">Surfaces</span></div><div class="bb">
+        <div class="permrow"><div>Chat<div class="pd">Always on. Every agent has a thread.</div></div><div class="toggle on" style="opacity:.5"></div></div>
+        <div class="permrow"><div>Build<div class="pd">A form with model, inputs, and a run button</div></div><div class="toggle on"></div></div>
+        <div class="permrow"><div>Canvas<div class="pd">Only if the agent produces multi step work worth graphing</div></div><div class="toggle"></div></div>
+      </div></div>
+
+      <div class="blk"><div class="bh"><span class="n">4</span><span class="t">Models</span></div><div class="bb"><div class="grid3">
+        <div class="field"><label>Reasoning</label><div class="inp">Claude Opus<span class="cv">openrouter</span></div></div>
+        <div class="field"><label>Fast</label><div class="inp">Gemini Flash<span class="cv">openrouter</span></div></div>
+        <div class="field"><label>Render</label><div class="inp">none<span class="cv">optional</span></div></div>
+      </div></div></div>
+
+      <div class="blk"><div class="bh"><span class="n">5</span><span class="t">Knowledge and skills</span></div><div class="bb">
+        <div class="slots"><div class="slot add">+ attach<br>knowledge</div><div class="slot add">+ enable<br>skill</div></div>
+        <div class="rolebar"><span class="role">Reads the active brand record automatically</span></div>
+      </div></div>
+
+      <div class="blk"><div class="bh"><span class="n">6</span><span class="t">Permissions and handoffs</span></div><div class="bb">
+        <div class="permrow"><div>Generate images and video<div class="pd">Costs money on every run</div></div>
+          <div class="tri"><span>Always</span><span class="on">Ask</span><span class="no">Never</span></div></div>
+        <div class="permrow"><div>Publish to a platform<div class="pd">New agents default to never</div></div>
+          <div class="tri"><span>Always</span><span>Ask</span><span class="no on">Never</span></div></div>
+        <div class="permrow"><div>Write to Knowledge<div class="pd">Proposals only, you approve</div></div>
+          <div class="tri"><span>Always</span><span class="on">Ask</span><span class="no">Never</span></div></div>
+        <div class="permrow"><div>Spend cap per run<div class="pd">Hard stop</div></div>
+          <div class="inp" style="width:112px;padding:5px 10px">$2.00</div></div>
+        <div class="permrow"><div>Can hand off to<div class="pd">Who it is allowed to send a packet to</div></div>
+          <div style="display:flex;gap:6px"><span class="role">Voice</span><span class="role">Studio</span><span class="role">+ add</span></div></div>
+      </div></div>
+
+      <div class="runbar"><div class="cost">New agents start <b>paused</b>. Run it once, read the output, then activate.</div>
+        <div style="display:flex;gap:8px"><button class="btn">Cancel</button><button class="btn pri">Create agent</button></div></div>
+    </div>
+
+    <div>
+      <div class="blk" style="margin:0"><div class="bh"><span class="n">P</span><span class="t">Preview</span></div><div class="bb">
+        <div class="thread on" style="pointer-events:none">
+          <span class="av" id="naAv" style="background:#AD0000"><img src="${ICON}" alt=""></span>
+          <div class="meta"><div class="top"><div class="nm">Merch</div><div class="tm">now</div></div>
+            <div class="pv">packaging, labels, hang tags</div></div></div>
+        <div class="runmeta" style="margin-top:14px">
+          <div class="rl"><span>Surfaces</span><b>Chat, Build</b></div>
+          <div class="rl"><span>Reasoning</span><b>Claude Opus</b></div>
+          <div class="rl"><span>Publish</span><b>Never</b></div>
+          <div class="rl"><span>Cap per run</span><b>$2.00</b></div>
+          <div class="rl"><span>Status</span><b class="red">Paused</b></div></div>
+        <div class="note">Split by craft, not by topic. If the model, the knowledge, and the way you judge the output all match an agent you already have, do not make a new one.</div>
+      </div></div>
+    </div>
+  </div>`;
+}
+
+const PAGES = {
+  calendar:{title:"Calendar", sub:"9 posts staged, none published", body:calendarHTML()},
+  automations:{title:"Automations", sub:"standing rules, not runs", body:`
+    <div class="card"><div class="hd"><span class="t">SAVE. DROP LINK</span><span class="tag ok">Live</span></div>
+      <div class="bd"><dl class="kv"><dt>Trigger</dt><dd>Comment contains "save"</dd><dt>Gate</dt><dd>Must follow</dd>
+        <dt>Action</dt><dd>DM the drop link</dd><dt>Fired</dt><dd>218 times, 7 days</dd></dl></div>
+      <div class="acts"><button class="btn">Pause</button><button class="btn">Edit flow</button><button class="btn">View log</button></div></div>
+    <div class="card alert"><div class="hd"><span class="t">SIZE. FIT GUIDE</span><span class="tag wait">Paused</span></div>
+      <div class="bd"><dl class="kv"><dt>Trigger</dt><dd>Comment contains "size"</dd><dt>Gate</dt><dd>Off</dd><dt>Action</dt><dd>DM the fit chart</dd></dl></div>
+      <div class="acts"><button class="btn pri">Turn on</button><button class="btn">Edit flow</button></div></div>
+    <div class="note">Automations are standing rules. That is why this page has no Chat, Build, or Canvas tabs.</div>`},
+  assets:{title:"Assets", sub:"412 files, 6 bundles", body:`
+    <div class="savedbar"><span class="saved on">All</span><span class="saved">COAD Fall Refs, 41</span><span class="saved">Son's line, 28</span><span class="saved">Client, 60</span><span class="saved">+ new bundle</span></div>
+    <div class="thumbs" style="grid-template-columns:repeat(5,1fr)">${Array.from({length:15},(_,i)=>`<div class="thumb t${i%4+1} ${i<2?'sel':''}">asset_${210+i}</div>`).join("")}</div>
+    <div class="note">A bundle is a saved manifest. Studio loads it by name instead of you reselecting 41 files.</div>`},
+  knowledge:{title:"Knowledge", sub:"documents, skills, brand records, and pending proposals", body:""},
+  spend:{title:"Spend", sub:"every run logs cost against the agent that spent it", body:SPEND},
+  settings:{title:"Settings", sub:"agents, API keys, MCP servers, CLI runners", body:""},
+  newagent:{title:"New agent", sub:"identity, surfaces, models, permissions", body:""}
+};
+
+function workHTML(){
+  if(state.page) return null;
+  if(state.view==="canvas") return {title:"Create", tag:'<span class="tag ok">Ready</span>', raw:`
+    <div class="cchat">
+      <div class="hello"><h3>Hello, Marcus</h3><p>Describe what you want and I will lay the nodes onto the canvas.</p></div>
+      <div class="body">
+        <div class="rolebar" style="margin:0">
+          <span class="role">Add a reference block</span><span class="role">Generate 8 variants</span>
+          <span class="role">Insert an approval gate</span><span class="role">Save as template</span></div>
+      </div>
+      <div class="foot"><div class="cbig">
+        <div class="ph">What do you want to create?</div>
+        <div class="row"><span class="rnd">+</span><span class="chip">Create</span>
+          <span class="sp"></span><span class="rnd">&#9679;</span><span class="rnd">&#9881;</span><span class="rnd go">&#8593;</span></div>
+      </div></div>
+    </div>`};
+  if(state.agent==="atelier"||state.agent==="studio") return {title:"Run 0114", tag:'<span class="tag wait">Blocked</span>', body:`
+    <div class="thumbs"><div class="thumb t1 sel">dir_01</div><div class="thumb t2">dir_02</div><div class="thumb t3">dir_03</div><div class="thumb t4">dir_03b</div></div>
+    <div class="runmeta">
+      <div class="rl"><span>Status</span><b class="red">Awaiting approval</b></div>
+      <div class="rl"><span>Assets in</span><b>41</b></div>
+      <div class="rl"><span>Outputs</span><b>4</b></div>
+      <div class="rl"><span>Cost so far</span><b>$0.72</b></div></div>
+    <div class="steps">
+      <div class="step"><span class="sdot" style="background:#5FCB8C"></span>Brief read, COAD context loaded</div>
+      <div class="step"><span class="sdot" style="background:#5FCB8C"></span>3 directions designed</div>
+      <div class="step"><span class="sdot" style="background:#5FCB8C"></span>Handoff to Voice, copy returned</div>
+      <div class="step"><span class="sdot" style="background:#E01414"></span>Render, blocked on your approval</div>
+      <div class="step"><span class="sdot" style="background:#5E5757"></span>Stage to Social</div></div>
+    <div class="note">This panel is the same Run the center pane shows. Chat, Build, and Canvas are three ways to steer it.</div>`};
+  return {title:"Thread context", tag:'<span class="tag ok">Idle</span>', body:`
+    <div class="runmeta"><div class="rl"><span>Agent</span><b>${AGENTS[state.agent].name}</b></div>
+      <div class="rl"><span>Brand</span><b>COAD</b></div><div class="rl"><span>Open runs</span><b>1</b></div></div>
+    <div class="note">The right panel collapses when there is nothing to look at.</div>`};
+}
+
+function render(){
+  renderThreads();
+  const stage=document.getElementById("stage"), views=document.getElementById("views"),
+        composer=document.getElementById("composer"), app=document.getElementById("app"),
+        hdAv=document.getElementById("hdAv");
+
+  if(state.page){
+    const p=PAGES[state.page];
+    hdAv.style.background="#3A3434"; hdAv.querySelector("img").src=ICON; hdAv.style.filter="grayscale(1)";
+    document.getElementById("hdName").textContent="MARCO";
+    document.getElementById("hdTag").textContent=p.title.toLowerCase()+". "+p.sub;
+    views.classList.add("hidden"); composer.style.display="none"; app.classList.add("no-work");
+    document.getElementById("panelToggle").style.display="none";
+    stage.parentElement.classList.remove("bleed");
+    stage.style.maxWidth="1000px";
+    stage.innerHTML=`<div class="pagehd"><h3>${p.title}</h3><span class="sub">${p.sub}</span></div>`+
+      (state.page==="settings"?settingsHTML():state.page==="knowledge"?knowledgeHTML():state.page==="newagent"?newAgentHTML():p.body);
+    if(state.page==="settings"){
+      document.querySelectorAll("[data-set]").forEach(b=>b.onclick=()=>{state.setAgent=b.dataset.set;state.setSection="agent";render();});
+      document.querySelectorAll("[data-sec]").forEach(b=>b.onclick=()=>{state.setSection=b.dataset.sec;render();});
+    }
+    if(state.page==="newagent"){
+      const setColor=(c)=>{
+        document.getElementById("naAv").style.background=c;
+        document.getElementById("naHex").textContent=c.toUpperCase();
+        document.getElementById("naPick").value=c;};
+      document.querySelectorAll("[data-swatch]").forEach(b=>b.onclick=()=>{
+        document.querySelectorAll("[data-swatch]").forEach(x=>x.classList.remove("on"));
+        b.classList.add("on"); setColor(b.dataset.swatch);});
+      document.getElementById("naPick").oninput=(e)=>{
+        document.querySelectorAll("[data-swatch]").forEach(x=>x.classList.remove("on"));
+        setColor(e.target.value);};
+      document.getElementById("naRandom").onclick=()=>{
+        const c="#"+Math.floor(Math.random()*16777215).toString(16).padStart(6,"0");
+        document.querySelectorAll("[data-swatch]").forEach(x=>x.classList.remove("on"));
+        setColor(c);};
+    }
+    if(state.page==="knowledge") document.querySelectorAll("[data-ktab]").forEach(b=>b.onclick=()=>{state.kTab=b.dataset.ktab;render();});
+    document.querySelectorAll(".navitem").forEach(n=>n.classList.toggle("on",n.dataset.page===state.page));
+    return;
+  }
+
+  document.querySelectorAll(".navitem").forEach(n=>n.classList.remove("on"));
+  const a=AGENTS[state.agent];
+  hdAv.style.background=a.color; hdAv.style.filter="none"; hdAv.querySelector("img").src=ICON;
+  document.getElementById("hdName").textContent=a.name;
+  document.getElementById("hdTag").textContent=a.tag;
+  composer.style.display="block"; composer.querySelector("span").textContent="Message "+a.name;
+
+  views.classList.remove("hidden");
+  views.querySelectorAll("button").forEach(b=>{
+    b.style.display=a.views.includes(b.dataset.view)?"block":"none";
+    b.classList.toggle("on",b.dataset.view===state.view);});
+
+  const isCanvas = state.view==="canvas";
+  stage.parentElement.classList.toggle("bleed", isCanvas);
+  stage.style.maxWidth = isCanvas ? "none" : (state.view==="build" ? "700px" : "830px");
+  composer.style.display = isCanvas ? "none" : "block";
+  if(state.view==="chat") stage.innerHTML=CHAT[state.agent];
+  else if(state.view==="build") stage.innerHTML=buildView(state.agent);
+  else stage.innerHTML=CANVAS;
+
+  const w=workHTML();
+  app.classList.toggle("no-work", !state.workOpen);
+  document.getElementById("panelToggle").classList.toggle("on", state.workOpen);
+  document.getElementById("panelToggle").style.display="grid";
+  if(w){
+    const wb=document.getElementById("workBody");
+    document.getElementById("workTitle").textContent=w.title;
+    document.getElementById("workTag").outerHTML=w.tag.replace('class="tag','id="workTag" class="tag');
+    wb.innerHTML=w.raw||w.body;
+    wb.style.padding = w.raw ? "0" : "16px";
+  }
+}
+document.querySelectorAll("#views button").forEach(b=>b.onclick=()=>{state.view=b.dataset.view;render();});
+
+const APP=document.getElementById("app");
+const isMobile=()=>window.matchMedia("(max-width:900px)").matches;
+
+document.getElementById("railToggle").onclick=()=>{
+  if(isMobile()) APP.classList.toggle("drawer");
+  else APP.classList.toggle("mini");
+};
+document.getElementById("burger").onclick=()=>APP.classList.toggle("drawer");
+document.getElementById("scrim").onclick=()=>APP.classList.remove("drawer");
+
+document.getElementById("panelToggle").onclick=()=>{
+  if(isMobile()){APP.classList.toggle("sheet");return;}
+  state.workOpen=!state.workOpen;render();};
+document.getElementById("workClose").onclick=()=>{
+  if(isMobile()){APP.classList.remove("sheet");return;}
+  state.workOpen=false;render();};
+
+document.querySelectorAll("#tabbar button").forEach(b=>b.onclick=()=>{
+  document.querySelectorAll("#tabbar button").forEach(x=>x.classList.remove("on"));
+  b.classList.add("on");
+  const t=b.dataset.tab;
+  APP.classList.remove("drawer","sheet");
+  if(t==="threads"){APP.classList.add("drawer");}
+  else if(t==="panel"){APP.classList.add("sheet");}
+  else if(t==="library"){state.page="knowledge";render();}
+  else {state.page=null;render();}
+});
+
+function syncMobile(){
+  const m=isMobile();
+  document.getElementById("burger").style.display=m?"grid":"none";
+  document.getElementById("railToggle").innerHTML=m?"&#10005;":"&#9776;";
+  if(!m) APP.classList.remove("drawer","sheet");
+}
+window.addEventListener("resize",syncMobile);
+syncMobile();
+
+render();
+</script>
+</body>
+</html>
