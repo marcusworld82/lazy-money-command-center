@@ -25,6 +25,7 @@ export default function SettingsPage() {
 }
 
 function Rows({ section, brands }: { section: Section; brands: Brand[] }) {
-  const rows = section === "Providers and keys" ? ["OpenRouter", "fal", "Meta", "TikTok", "YouTube", "Shopify", "Telegram"] : section === "Connections" ? ["MCP servers", "CLI runners"] : section === "Brand records" ? brands.map((brand) => brand.name) : section === "Sync" ? ["Obsidian + Supabase"] : ["Theme", "Accent", "Work panel auto-hide"];
-  return <div className="marco-library-card">{rows.map((row) => <div className="marco-settings-row" key={row}><span><b>{row}</b><small>{section === "Sync" ? "Supabase is authoritative; Obsidian is a mirror." : "Configuration remains server-side."}</small></span><em>{section === "Sync" ? "Not configured" : "Missing / Connected"}</em></div>)}</div>;
+  const rows = section === "Providers and keys" ? ["OpenRouter — text and reasoning", "fal — image and video", "Monthly budget cap", "Hard stop before external spend"] : section === "Connections" ? ["MCP servers", "CLI runners"] : section === "Brand records" ? brands.map((brand) => brand.name) : section === "Sync" ? ["Obsidian + Supabase"] : ["Theme", "Accent", "Work panel auto-hide"];
+  const isProvider = section === "Providers and keys";
+  return <div className="marco-library-card"><header><b>{isProvider ? "Generation configuration" : "Configuration"}</b><em className="is-paused">Local preview</em></header>{rows.map((row) => <div className="marco-settings-row" key={row}><span><b>{row}</b><small>{isProvider ? "Saved server-side only after valid provider and Supabase access is connected." : section === "Sync" ? "Supabase is authoritative; Obsidian is a mirror." : "Configuration remains server-side."}</small></span><em>{isProvider ? "Not connected" : section === "Sync" ? "Not configured" : "Missing / Connected"}</em></div>)}</div>;
 }
