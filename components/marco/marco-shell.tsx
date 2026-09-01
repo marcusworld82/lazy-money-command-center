@@ -3,7 +3,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { Menu, PanelRightClose, PanelRightOpen, Plus, Settings, X } from "lucide-react";
 import { AgentAvatar } from "@/components/marco/agent-avatar";
 import { MessageCard, RunSteps } from "@/components/marco/run-cards";
@@ -11,28 +11,114 @@ import { cn } from "@/lib/utils";
 import type { Brand, MarcoAgent, Run, Thread, ThreadMessage } from "@/lib/marco-types";
 import { listBrands, listMarcoAgents, listMessages, listRuns, listThreads, sendThreadMessage } from "@/lib/actions/marco";
 
-const LIBRARY = [["Calendar", "/calendar"], ["Automations", "/automations"], ["Assets", "/assets"], ["Knowledge", "/knowledge"], ["Spend", "/spend-usage"], ["Settings", "/settings"]] as const;
+const LIBRARY = [
+  ["Calendar", "/calendar", "□"], ["Automations", "/automations", "ϟ"], ["Assets", "/assets", "▣"],
+  ["Knowledge", "/knowledge", "☰"], ["Spend", "/spend-usage", "⋮"], ["Settings", "/settings", "⚙"],
+] as const;
+
 export function MarcoShell({ children }: { children: React.ReactNode }) {
   const searchParams = useSearchParams();
-  const [agents, setAgents] = React.useState<MarcoAgent[]>([]); const [brands, setBrands] = React.useState<Brand[]>([]); const [threads, setThreads] = React.useState<Thread[]>([]); const [activeThread, setActiveThread] = React.useState<Thread | null>(null); const [messages, setMessages] = React.useState<ThreadMessage[]>([]); const [runs, setRuns] = React.useState<Run[]>([]); const [view, setView] = React.useState<"chat" | "build" | "canvas">("chat"); const [rail, setRail] = React.useState(false); const [work, setWork] = React.useState(true); const [drawer, setDrawer] = React.useState(false); const [sheet, setSheet] = React.useState(false); const [draft, setDraft] = React.useState("");
-  React.useEffect(() => { setRail(localStorage.getItem("marco:rail-collapsed") === "true"); setWork(localStorage.getItem("marco:work-open") !== "false"); Promise.all([listMarcoAgents(), listBrands(), listThreads()]).then(([a,b,t]) => { setAgents(a); setBrands(b); setThreads(t); const requestedThread = searchParams.get("thread"); const requestedAgent = searchParams.get("agent"); const requestedView = searchParams.get("view"); const nextThread = t.find((thread) => thread.id === requestedThread) ?? t.find((thread) => a.find((candidate) => candidate.id === thread.agentId)?.slug === requestedAgent) ?? t[0] ?? null; setActiveThread(nextThread); const nextAgent = a.find((candidate) => candidate.id === nextThread?.agentId); if (requestedView === "build" || requestedView === "canvas") setView(nextAgent?.surfaces.includes(requestedView) ? requestedView : "chat"); }).catch(() => undefined); }, [searchParams]);
-  React.useEffect(() => { if (!activeThread) return; Promise.all([listMessages(activeThread.id), listRuns(activeThread.id)]).then(([m,r]) => { setMessages(m); setRuns(r); }).catch(() => { setMessages([]); setRuns([]); }); const agent = agents.find((a) => a.id === activeThread.agentId); if (agent && !agent.surfaces.includes(view)) setView("chat"); }, [activeThread?.id, agents]);
-  const agent = agents.find((a) => a.id === activeThread?.agentId); const run = runs[0] ?? null; const brand = brands.find((b) => b.id === activeThread?.brandId) ?? brands.find((b) => b.isActive); const toggleRail = () => { const next = !rail; setRail(next); localStorage.setItem("marco:rail-collapsed", String(next)); }; const toggleWork = () => { const next = !work; setWork(next); localStorage.setItem("marco:work-open", String(next)); };
-  async function submit() { if (!draft.trim() || !activeThread || !agent) return; const message = await sendThreadMessage({ threadId: activeThread.id, agentId: agent.id, body: draft.trim() }); setMessages((old) => [...old, message]); setDraft(""); }
-  const isLibrary = React.Children.count(children) > 0;
-  return <div className={cn("grid min-h-svh border-t-2 border-[var(--red)] bg-[var(--bg)] text-[var(--txt)]", rail ? "lg:grid-cols-[66px_1fr_var(--work)]" : "lg:grid-cols-[266px_1fr_var(--work)]", !work && "lg:grid-cols-[var(--rail)_1fr]")}> 
-    <div className={cn("fixed inset-0 z-40 bg-black/60 lg:hidden", drawer ? "block" : "hidden")} onClick={() => setDrawer(false)} />
-    <aside className={cn("z-50 flex min-h-0 flex-col overflow-hidden border-r border-[var(--line)] bg-[var(--panel)] transition-all lg:static", "fixed inset-y-0 left-0 w-[284px]", drawer ? "translate-x-0" : "-translate-x-full lg:translate-x-0", rail && "lg:w-[66px]")}> 
-      <div className={cn("flex items-center gap-3 border-b border-[var(--line)] p-4", rail && "lg:flex-col lg:px-0")}><Link href="/" className="grid size-8 place-items-center rounded-lg bg-[var(--red)]"><img src="/agent-mark.png" alt="MARCO" className="size-6" /></Link><div className={cn("min-w-0", rail && "lg:hidden")}><b className="tracking-[.08em]">MARCO</b><p className="text-[9px] uppercase tracking-[.18em] text-[var(--txt-mute)]">Command Center</p></div><button onClick={toggleRail} className="ml-auto grid size-7 place-items-center rounded-md border border-[var(--line)] text-[var(--txt-dim)] lg:ml-auto">{rail ? <Menu size={14} /> : <X size={14} />}</button></div>
-      <button className={cn("m-3 flex border-l-2 border-[var(--red)] bg-[var(--panel-2)] p-2 text-left", rail && "lg:mx-2 lg:justify-center")}><span className={rail ? "lg:hidden" : ""}><small className="block uppercase tracking-widest text-[var(--txt-mute)]">Brand context</small><b>{brand?.name ?? "No active brand"}</b></span><span className={cn("hidden text-xs font-bold", rail && "lg:block")}>CO</span></button>
-      <div className="min-h-0 flex-1 overflow-y-auto px-3"><div className={cn("flex items-center justify-between py-3 text-[10px] font-bold uppercase tracking-widest text-[var(--txt-mute)]", rail && "lg:justify-center")}><span className={rail ? "lg:hidden" : ""}>Threads</span><Link href="/new-agent" aria-label="New agent"><Plus size={16}/></Link></div>{threads.map((thread) => { const a = agents.find((item) => item.id === thread.agentId); if (!a) return null; return <button key={thread.id} onClick={() => { setActiveThread(thread); setDrawer(false); }} className={cn("mb-1 flex w-full items-center gap-2 rounded-lg p-2 text-left hover:bg-[var(--panel-2)]", activeThread?.id === thread.id && "border-l-2 border-[var(--red)] bg-[var(--panel-2)]", rail && "lg:justify-center lg:px-0")}><AgentAvatar color={a.avatarColor} name={a.name} size="sm"/><span className={cn("min-w-0 flex-1", rail && "lg:hidden")}><b className="block truncate text-xs">{a.name}</b><small className="block truncate text-[11px] text-[var(--txt-dim)]">{thread.lastMessagePreview ?? "New thread"}</small></span>{thread.unread && <i className="size-1.5 rounded-full bg-[var(--red-hi)]"/>}</button>; })}<div className={cn("pt-5 text-[10px] font-bold uppercase tracking-widest text-[var(--txt-mute)]", rail && "lg:text-center")}><span className={rail ? "lg:hidden" : ""}>Library</span></div>{LIBRARY.map(([label, href]) => <Link key={href} href={href} onClick={() => setDrawer(false)} className={cn("mt-1 flex items-center gap-2 rounded-lg p-2 text-sm text-[var(--txt-dim)] hover:bg-[var(--panel-2)] hover:text-[var(--txt)]", rail && "lg:justify-center")}><span>□</span><span className={rail ? "lg:hidden" : ""}>{label}</span></Link>)}</div>
+  const pathname = usePathname();
+  const [agents, setAgents] = React.useState<MarcoAgent[]>([]);
+  const [brands, setBrands] = React.useState<Brand[]>([]);
+  const [threads, setThreads] = React.useState<Thread[]>([]);
+  const [activeThread, setActiveThread] = React.useState<Thread | null>(null);
+  const [messages, setMessages] = React.useState<ThreadMessage[]>([]);
+  const [runs, setRuns] = React.useState<Run[]>([]);
+  const [view, setView] = React.useState<"chat" | "build" | "canvas">("chat");
+  const [rail, setRail] = React.useState(false);
+  const [work, setWork] = React.useState(true);
+  const [drawer, setDrawer] = React.useState(false);
+  const [sheet, setSheet] = React.useState(false);
+  const [draft, setDraft] = React.useState("");
+
+  React.useEffect(() => {
+    setRail(localStorage.getItem("marco:rail-collapsed") === "true");
+    setWork(localStorage.getItem("marco:work-open") !== "false");
+    void Promise.all([listMarcoAgents(), listBrands(), listThreads()]).then(([nextAgents, nextBrands, nextThreads]) => {
+      setAgents(nextAgents); setBrands(nextBrands); setThreads(nextThreads);
+      const requestedThread = searchParams.get("thread");
+      const requestedAgent = searchParams.get("agent");
+      const requestedView = searchParams.get("view");
+      const selected = nextThreads.find((thread) => thread.id === requestedThread)
+        ?? nextThreads.find((thread) => nextAgents.find((agent) => agent.id === thread.agentId)?.slug === requestedAgent)
+        ?? nextThreads[0] ?? null;
+      setActiveThread(selected);
+      const selectedAgent = nextAgents.find((agent) => agent.id === selected?.agentId);
+      if (requestedView === "build" || requestedView === "canvas") setView(selectedAgent?.surfaces.includes(requestedView) ? requestedView : "chat");
+    }).catch(() => undefined);
+  }, [searchParams]);
+
+  React.useEffect(() => {
+    if (!activeThread) return;
+    void Promise.all([listMessages(activeThread.id), listRuns(activeThread.id)]).then(([nextMessages, nextRuns]) => {
+      setMessages(nextMessages); setRuns(nextRuns);
+    }).catch(() => { setMessages([]); setRuns([]); });
+  }, [activeThread?.id]);
+
+  const agent = agents.find((item) => item.id === activeThread?.agentId);
+  const run = runs[0] ?? null;
+  const brand = brands.find((item) => item.id === activeThread?.brandId) ?? brands.find((item) => item.isActive);
+  const isLibrary = pathname !== "/";
+  const setRailOpen = () => { const next = !rail; setRail(next); localStorage.setItem("marco:rail-collapsed", String(next)); };
+  const setWorkOpen = () => { const next = !work; setWork(next); localStorage.setItem("marco:work-open", String(next)); };
+  const chooseThread = (thread: Thread) => { setActiveThread(thread); setDrawer(false); };
+  const chooseView = (next: "chat" | "build" | "canvas") => { if (agent?.surfaces.includes(next)) setView(next); };
+  async function submit() {
+    if (!draft.trim() || !activeThread || !agent) return;
+    const message = await sendThreadMessage({ threadId: activeThread.id, agentId: agent.id, body: draft.trim() });
+    setMessages((old) => [...old, message]); setDraft("");
+  }
+
+  return <div className={cn("marco-shell", rail && "is-mini", !work && "no-work", drawer && "has-drawer", sheet && "has-sheet")}>
+    <div className="marco-scrim" onClick={() => setDrawer(false)} />
+    <aside className="marco-rail">
+      <div className="marco-brand">
+        <Link href="/" className="marco-mark"><img src="/agent-mark.png" alt="MARCO" /></Link>
+        <div className="marco-brand-copy"><h1>MARCO</h1><p>Command Center</p></div>
+        <button className="marco-rail-toggle" onClick={setRailOpen} aria-label="Collapse thread rail">{rail ? <Menu size={13} /> : <X size={13} />}</button>
+      </div>
+      <button className="marco-context"><span><small>Brand context</small><b>{brand?.name ?? "No active brand"}</b></span><i>⌄</i></button>
+      <div className="marco-rail-scroll">
+        <div className="marco-section-title"><span>Threads</span><Link href="/new-agent" aria-label="New agent"><Plus size={15} /></Link></div>
+        <div>{threads.map((thread) => {
+          const rowAgent = agents.find((item) => item.id === thread.agentId); if (!rowAgent) return null;
+          return <button key={thread.id} className={cn("marco-thread", activeThread?.id === thread.id && "is-active")} onClick={() => chooseThread(thread)}>
+            <AgentAvatar color={rowAgent.avatarColor} name={rowAgent.name} size="sm" />
+            <span className="marco-thread-copy"><span><b>{rowAgent.name}</b><time>{relativeTime(thread.updatedAt)}</time></span><small>{thread.lastMessagePreview ?? rowAgent.tagline ?? "New thread"}</small></span>
+            {thread.unread && <i className="marco-unread" />}
+          </button>;
+        })}</div>
+        <div className="marco-section-title marco-library-title"><span>Library</span></div>
+        {LIBRARY.map(([label, href, icon]) => <Link key={href} href={href} className="marco-nav-item" onClick={() => setDrawer(false)}><i>{icon}</i><span>{label}</span>{label === "Automations" && <em>1</em>}</Link>)}
+      </div>
     </aside>
-    <main className="flex min-w-0 flex-col"><header className="flex h-14 items-center gap-2 border-b border-[var(--line)] px-3 lg:px-5"><button className="lg:hidden" onClick={() => setDrawer(true)}><Menu/></button>{agent ? <><AgentAvatar color={agent.avatarColor} name={agent.name}/><b>{agent.name}</b><span className="hidden border-l border-[var(--line)] pl-3 text-xs text-[var(--txt-mute)] sm:block">{agent.tagline}</span></> : <b>MARCO</b>}<div className="ml-auto flex items-center gap-2">{agent && agent.surfaces.length > 1 && <div className="flex rounded-lg border border-[var(--line)] bg-[var(--panel-2)] p-0.5">{agent.surfaces.map((surface) => <button key={surface} onClick={() => setView(surface)} className={cn("rounded-md px-3 py-1 text-xs capitalize", view === surface && "bg-[var(--red)] text-white")}>{surface}</button>)}</div>}<Link href="/settings"><Settings size={16}/></Link><button onClick={() => { if (innerWidth < 900) setSheet(true); else toggleWork(); }}>{work ? <PanelRightClose size={17}/> : <PanelRightOpen size={17}/>}</button></div></header>
-      <section className={cn("min-h-0 flex-1 overflow-y-auto", view === "canvas" && !isLibrary ? "p-0" : "p-4 lg:p-6")}>{isLibrary ? children : view === "chat" ? <div className="mx-auto flex max-w-[830px] flex-col gap-4">{messages.length ? messages.map((message) => <MessageCard key={message.id} message={message}/>) : <p className="text-sm text-[var(--txt-mute)]">This thread has no messages yet.</p>}</div> : view === "build" ? <BuildView run={run} /> : <CanvasView run={run}/>}</section>
-      {!isLibrary && view !== "canvas" && <form onSubmit={(e) => { e.preventDefault(); void submit(); }} className="border-t border-[var(--line)] p-3 lg:px-6"><div className="mx-auto flex max-w-[830px] gap-2 rounded-xl border border-[var(--line)] bg-[var(--panel)] p-2"><input value={draft} onChange={(e) => setDraft(e.target.value)} placeholder={`Message ${agent?.name ?? "MARCO"}`} className="min-w-0 flex-1 bg-transparent px-2 text-sm outline-none"/><button className="rounded-lg bg-[var(--red)] px-3 py-1 text-xs text-white">Send</button></div></form>}</main>
-    <aside className={cn("z-50 flex min-h-0 flex-col border-l border-[var(--line)] bg-[var(--panel)]", work ? "lg:flex" : "hidden", sheet ? "fixed inset-x-0 bottom-14 h-[62vh] rounded-t-2xl border-t lg:static lg:h-auto" : "hidden lg:flex")}><div className="flex h-14 items-center gap-2 border-b border-[var(--line)] px-4"><b className="text-xs uppercase tracking-widest">{view === "canvas" ? "Create" : run ? `Run ${run.shortId}` : "Thread context"}</b><button className="ml-auto" onClick={() => { if (innerWidth < 900) setSheet(false); else toggleWork(); }}><X size={16}/></button></div>{view === "canvas" ? <div className="flex flex-1 flex-col p-5"><h2 className="text-2xl font-black">Hello, Marcus</h2><p className="mt-2 text-sm text-[var(--txt-mute)]">Describe what you want and I will lay the nodes onto the canvas.</p><div className="mt-5 flex flex-wrap gap-2 text-xs text-[var(--txt-dim)]"><span className="rounded-full border border-[var(--line)] p-2">Add a reference block</span><span className="rounded-full border border-[var(--line)] p-2">Insert approval gate</span></div><div className="mt-auto rounded-xl border border-[var(--line)] p-3 text-sm text-[var(--txt-mute)]">What do you want to create?</div></div> : <div className="overflow-y-auto p-4">{run ? <><p className="text-sm text-[var(--txt-dim)]">Status: <b className="text-[var(--red-hi)]">{run.status}</b></p><p className="mt-2 text-sm text-[var(--txt-dim)]">Cost so far: <b className="text-[var(--txt)]">{run.cost == null ? "Unknown" : `$${run.cost.toFixed(2)}`}</b></p><div className="mt-5"><RunSteps steps={run.steps}/></div></> : <p className="text-sm text-[var(--txt-mute)]">Select or create a Run to see its status and outputs.</p>}</div>}</aside>
-    <nav className="fixed inset-x-0 bottom-0 z-[60] grid h-14 grid-cols-4 border-t border-[var(--line)] bg-[var(--panel)] pb-[env(safe-area-inset-bottom)] text-[10px] uppercase tracking-wider lg:hidden"><button onClick={() => setDrawer(true)}>Threads</button><button onClick={() => setSheet(true)}>Work</button><button onClick={() => setSheet(true)}>Output</button><Link href="/knowledge" className="grid place-items-center">Library</Link></nav>
+    <main className="marco-main">
+      <header className="marco-topbar">
+        <button className="marco-mobile-menu" onClick={() => setDrawer(true)} aria-label="Open threads"><Menu size={16} /></button>
+        <div className="marco-title">{agent ? <AgentAvatar color={agent.avatarColor} name={agent.name} /> : <span className="marco-title-empty" />}<h2>{agent?.name ?? "MARCO"}</h2><p>{agent?.tagline ?? (isLibrary ? "Command Center" : "")}</p></div>
+        {!isLibrary && agent && <div className="marco-views">{agent.surfaces.map((surface) => <button key={surface} className={view === surface ? "is-active" : ""} onClick={() => chooseView(surface)}>{surface}</button>)}</div>}
+        <Link href="/settings" className="marco-icon-button" aria-label="Agent settings"><Settings size={15} /></Link>
+        {!isLibrary && <button className={cn("marco-icon-button marco-panel-toggle", work && "is-active")} onClick={() => innerWidth < 900 ? setSheet(true) : setWorkOpen()} aria-label="Toggle work panel">{work ? <PanelRightClose size={16} /> : <PanelRightOpen size={16} />}</button>}
+      </header>
+      <section className={cn("marco-stage", view === "canvas" && !isLibrary && "is-canvas")}>
+        {isLibrary ? <div className="marco-page-pad">{children}</div> : view === "chat" ? <ChatView messages={messages} /> : view === "build" ? <BuildView run={run} /> : <CanvasView run={run} />}
+      </section>
+      {!isLibrary && view !== "canvas" && <form className="marco-composer" onSubmit={(event) => { event.preventDefault(); void submit(); }}><div><input value={draft} onChange={(event) => setDraft(event.target.value)} placeholder={`Message ${agent?.name ?? "MARCO"}`} /><span>Attach</span><span>Bundle</span><button>Send</button></div></form>}
+    </main>
+    {!isLibrary && <aside className="marco-work">
+      <header><b>{view === "canvas" ? "Create" : run ? `Run ${run.shortId}` : "Thread context"}</b><span className={run?.status === "needs_approval" ? "needs-approval" : ""}>{view === "canvas" ? "Ready" : run?.status ?? "Idle"}</span><button onClick={() => innerWidth < 900 ? setSheet(false) : setWorkOpen()} aria-label="Close work panel"><X size={14} /></button></header>
+      {view === "canvas" ? <CanvasChat /> : <WorkView run={run} agent={agent} brand={brand} />}
+    </aside>}
+    <nav className="marco-tabbar"><button onClick={() => setDrawer(true)}>☰<span>Threads</span></button><button onClick={() => { setSheet(true); }}>●<span>Work</span></button><button onClick={() => setSheet(true)}>▣<span>Output</span></button><Link href="/knowledge">□<span>Library</span></Link></nav>
   </div>;
 }
-function BuildView({ run }: { run: Run | null }) { return <div className="mx-auto max-w-[700px]"><section className="overflow-hidden rounded-xl border border-[var(--line)] bg-[var(--panel)]"><h2 className="border-b border-[var(--line)] bg-[var(--panel-2)] p-3 text-xs font-bold uppercase tracking-widest">1 · Run inputs</h2><div className="p-4 text-sm text-[var(--txt-dim)]">{run?.title ?? "Build a run by describing the work in Chat."}</div></section><section className="mt-4 overflow-hidden rounded-xl border border-[var(--line)] bg-[var(--panel)]"><h2 className="border-b border-[var(--line)] bg-[var(--panel-2)] p-3 text-xs font-bold uppercase tracking-widest">2 · Asset manifest</h2><div className="p-4 text-sm text-[var(--txt-dim)]">{run?.assetManifest.length ?? 0} tagged assets</div></section><div className="mt-4 flex justify-between rounded-xl border border-l-4 border-[var(--red)] border-[var(--line)] bg-[var(--panel)] p-4 text-sm"><span>Estimated cost</span><b>{run?.cost == null ? "Unknown" : `$${run.cost.toFixed(2)}`}</b></div></div>; }
-function CanvasView({ run }: { run: Run | null }) { return <div className="relative min-h-[560px] overflow-hidden bg-[radial-gradient(circle_at_1px_1px,#232020_1px,transparent_0)] bg-[size:26px_26px]"><div className="absolute left-4 top-1/2 flex -translate-y-1/2 flex-col gap-1 rounded-full border border-[var(--line)] bg-[var(--panel)] p-1"><button className="size-9 rounded-full bg-white text-[var(--bg)]">⌁</button>{["+","↖","✋","✂","□","↶","↷"].map((icon) => <button key={icon} className="size-9 rounded-full">{icon}</button>)}</div><div className="absolute left-20 top-4 flex gap-2"><span className="rounded-lg bg-[var(--red)] px-3 py-1 text-xs text-white">Drop pipeline</span><span className="rounded-lg border border-[var(--line)] px-3 py-1 text-xs">+ new</span></div><div className="absolute left-24 top-44 rounded-xl border border-[#2f3d52] bg-[#18202c]/70 p-3"><small className="block -translate-y-7 uppercase tracking-widest text-[var(--txt-mute)]">Reference images</small><div className="grid grid-cols-3 gap-2">{Array.from({length: 6}, (_, i) => <i key={i} className="size-14 rounded bg-[var(--panel-2)]"/>)}</div></div><div className="absolute left-[38%] top-[38%] rounded-xl border border-[#2b3a4d] bg-[#161f30]/70 p-3"><small className="block -translate-y-7 uppercase tracking-widest text-[var(--txt-mute)]">Prompts</small><p className="w-48 text-xs">{run?.title ?? "Create a prompt block"}</p></div><div className="absolute right-[14%] top-[31%] rounded-xl border border-[#5A1414] bg-[#301414]/70 p-3"><small className="block text-[10px] uppercase tracking-widest text-[var(--txt-mute)]">Approval</small><b className="text-sm">You sign off</b></div><p className="absolute bottom-4 left-4 right-4 rounded-lg border-l-4 border-[var(--red)] bg-[var(--panel)] p-3 text-xs text-[var(--txt-dim)] lg:hidden">Read only on phone. Approve and check status here; open on desktop to wire nodes.</p></div>; }
+
+function ChatView({ messages }: { messages: ThreadMessage[] }) { return <div className="marco-chat">{messages.length ? messages.map((message) => <MessageCard key={message.id} message={message} />) : <p className="marco-empty">No messages yet. Start the thread with a concrete brief.</p>}</div>; }
+function BuildView({ run }: { run: Run | null }) { return <div className="marco-build"><BuildBlock n="1" title="Prompt"><p>{run?.title ?? "Describe the work in Chat, then shape its Run here."}</p><div className="marco-rolebar"><span>Rewrite with Voice</span><span>Load from a Run</span></div></BuildBlock><BuildBlock n="2" title={`Asset manifest. ${run?.assetManifest.length ?? 0} items`}><div className="marco-slots">{Array.from({ length: Math.min(run?.assetManifest.length ?? 0, 5) }, (_, index) => <i key={index}>asset<br />{index + 1}</i>)}<i className="is-add">+ add asset</i></div><div className="marco-rolebar"><span><b>Role</b> reference</span><span><b>Order</b> preserved</span></div></BuildBlock><div className="marco-runbar"><span>Cost <b>{run?.cost == null ? "Unknown" : `$${run.cost.toFixed(2)}`}</b></span><button>Run is paused in Phase 4.6</button></div></div>; }
+function BuildBlock({ n, title, children }: { n: string; title: string; children: React.ReactNode }) { return <section className="marco-build-block"><h3><i>{n}</i>{title}</h3><div>{children}</div></section>; }
+function CanvasView({ run }: { run: Run | null }) { return <div className="marco-canvas"><div className="marco-canvas-dock"><button className="is-selected">⌁</button><button>+</button><button>↖</button><button>✋</button><button>✂</button><i /><button>↶</button><button>↷</button></div><div className="marco-canvas-top"><button className="is-active">Drop pipeline</button><button>+ new</button></div><svg className="marco-wires" viewBox="0 0 1000 600" preserveAspectRatio="none"><path d="M250 270 C350 270, 390 310, 480 310 S640 210, 730 220" /><path d="M545 350 C620 390, 660 430, 770 420" /></svg><CanvasGroup className="is-reference" label="Reference images"><div className="marco-canvas-tiles">{Array.from({ length: 6 }, (_, index) => <i key={index} />)}</div></CanvasGroup><CanvasGroup className="is-prompts" label="Prompts"><p>{run?.title ?? "Create a prompt block"}</p><small>Intent and constraints</small></CanvasGroup><CanvasGroup className="is-approval" label="Approval"><p>You sign off</p><small>Before anything external</small></CanvasGroup><div className="marco-canvas-node"><small>VOICE</small><b>Copy direction</b></div><div className="marco-canvas-note">Read-only on phone. Approve and check status here; open on desktop to wire nodes.</div></div>; }
+function CanvasGroup({ className, label, children }: { className: string; label: string; children: React.ReactNode }) { return <section className={cn("marco-canvas-group", className)}><h3>{label}</h3>{children}</section>; }
+function CanvasChat() { return <div className="marco-canvas-chat"><div><h3>Hello, Marcus</h3><p>Describe what you want and I will lay the nodes onto the canvas.</p></div><section><span>Add a reference block</span><span>Generate variants</span><span>Insert an approval gate</span></section><footer><p>What do you want to create?</p><div><button>+</button><button>●</button><button>⚙</button><button className="is-send">↑</button></div></footer></div>; }
+function WorkView({ run, agent, brand }: { run: Run | null; agent?: MarcoAgent; brand?: Brand }) { if (!run) return <div className="marco-work-body"><section className="marco-run-meta"><p><span>Agent</span><b>{agent?.name ?? "MARCO"}</b></p><p><span>Brand</span><b>{brand?.name ?? "None selected"}</b></p><p><span>Open runs</span><b>0</b></p></section><small className="marco-note">The right panel collapses when there is nothing to look at.</small></div>; return <div className="marco-work-body"><div className="marco-work-thumbs"><i>output 01</i><i>output 02</i><i>output 03</i><i>output 04</i></div><section className="marco-run-meta"><p><span>Status</span><b className="is-red">{run.status}</b></p><p><span>Assets in</span><b>{run.assetManifest.length}</b></p><p><span>Outputs</span><b>{run.outputs.length}</b></p><p><span>Cost so far</span><b>{run.cost == null ? "Unknown" : `$${run.cost.toFixed(2)}`}</b></p></section><RunSteps steps={run.steps} /><small className="marco-note">This is the same Run shown in the center pane. Chat, Build, and Canvas are three ways to steer it.</small></div>; }
+function relativeTime(value: string) { const age = Date.now() - new Date(value).getTime(); if (age < 60_000) return "now"; if (age < 3_600_000) return `${Math.floor(age / 60_000)}m`; if (age < 86_400_000) return `${Math.floor(age / 3_600_000)}h`; return `${Math.floor(age / 86_400_000)}d`; }
