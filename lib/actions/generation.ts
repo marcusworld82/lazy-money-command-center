@@ -7,6 +7,14 @@ export async function startGeneration(input: { runId: string; model?: string; as
   return executeRun(input.runId, input);
 }
 
+export async function createRun(input: { agentId: string; threadId: string; brandId?: string | null; title: string }) {
+  const supabase = getSupabaseServerClient();
+  const shortId = `RUN-${Date.now().toString().slice(-6)}`;
+  const { data, error } = await supabase.from("runs").insert({ short_id: shortId, agent_id: input.agentId, thread_id: input.threadId, brand_id: input.brandId ?? null, title: input.title, status: "draft" }).select("*").single();
+  if (error) throw error;
+  return data;
+}
+
 export async function updateRunManifest(runId: string, manifest: unknown[]) {
   const supabase = getSupabaseServerClient();
   const { data, error } = await supabase.from("runs").update({ asset_manifest: manifest }).eq("id", runId).select("*").single();
