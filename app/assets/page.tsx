@@ -118,5 +118,10 @@ export default function AssetsPage() {
 
 function DemoAssets({ notice }: { notice: string }) {
   const assets = ["hoodie-front.png", "campaign-board.pdf", "fall-detail.mp4", "color-study.jpg", "drop-copy.docx", "lookbook-01.jpg", "fabric-note.pdf", "social-crop.png"];
-  return <section className="marco-demo-assets"><p><b>Demo preview</b> {notice}</p><div>{assets.map((name, index) => <article key={name}><span className={`demo-asset-swatch shade-${index % 4}`}><i>{index % 3 === 0 ? "IMG" : index % 3 === 1 ? "DOC" : "VID"}</i></span><b>{name}</b><small>{index % 3 === 0 ? "Image" : index % 3 === 1 ? "Document" : "Video"}</small></article>)}</div></section>;
+  const roles = ["character", "style", "location", "product", "audio", "document"];
+  const [selected, setSelected] = React.useState<string[]>([]);
+  const [role, setRole] = React.useState("character");
+  const [bundles, setBundles] = React.useState<string[]>([]);
+  const toggleAsset = (name: string) => setSelected((current) => current.includes(name) ? current.filter((item) => item !== name) : [...current, name]);
+  return <section className="marco-demo-assets"><p><b>Demo preview</b> {notice}</p><div className="marco-bundle-bar"><span>{selected.length} selected</span><select value={role} onChange={(event) => setRole(event.target.value)}>{roles.map((item) => <option key={item}>{item}</option>)}</select><button type="button" disabled={!selected.length} onClick={() => { setBundles((current) => [...current, `${role} bundle · ${selected.length} assets`]); setSelected([]); }}>Save local bundle</button></div>{bundles.length > 0 && <div className="marco-local-bundles">{bundles.map((bundle, index) => <span key={`${bundle}-${index}`}>{bundle}<small>Local only</small></span>)}</div>}<div>{assets.map((name, index) => <article key={name} className={selected.includes(name) ? "is-selected" : ""} onClick={() => toggleAsset(name)}><span className={`demo-asset-swatch shade-${index % 4}`}><i>{index % 3 === 0 ? "IMG" : index % 3 === 1 ? "DOC" : "VID"}</i></span><b>{name}</b><small>{index % 3 === 0 ? "Image" : index % 3 === 1 ? "Document" : "Video"} · {role}</small></article>)}</div></section>;
 }
