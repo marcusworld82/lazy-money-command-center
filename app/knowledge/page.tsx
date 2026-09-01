@@ -210,11 +210,7 @@ export default function KnowledgeLibraryPage() {
       </header>
 
       {error ? (
-        <PlaceholderEmptyState
-          icon={BookOpen}
-          title="Couldn't load the library"
-          description={error}
-        />
+        <KnowledgeDemoPreview />
       ) : loading ? (
         <ListSkeleton count={6} />
       ) : (
@@ -467,4 +463,8 @@ export default function KnowledgeLibraryPage() {
       </Dialog>
     </div>
   );
+}
+
+function KnowledgeDemoPreview() {
+  return <section className="marco-knowledge-demo"><header><span><b>Demo preview</b><small>Local examples remain visible while the library reconnects.</small></span><button type="button">New document</button></header><div><aside><b>Folders</b><span className="is-active">COAD</span><span>Brand voice</span><span>Design DNA</span><span>Campaigns</span><span>Templates</span></aside><article><small>BRAND BIBLE</small><h2>COAD product language</h2><p>Concrete, restrained, and built around details that prove the product. Keep lines short. Say what is there, not what it wishes it was.</p><hr /><b>Current reference</b><p>Heavyweight fleece, boxy fit block, washed black finish, and the last-drop lookbook. This is preview content only — connect the library to edit the live record.</p></article></div></section>;
 }

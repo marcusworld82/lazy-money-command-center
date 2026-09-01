@@ -4,6 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import { AgentAvatar } from "@/components/marco/agent-avatar";
 import { listBrands, listMarcoAgents } from "@/lib/actions/marco";
+import { demoAgents, demoBrands } from "@/lib/demo-marco-data";
 import type { Brand, MarcoAgent } from "@/lib/marco-types";
 
 const sections = ["Agents", "Providers and keys", "Connections", "Brand records", "Sync", "Appearance"] as const;
@@ -13,7 +14,7 @@ export default function SettingsPage() {
   const [section, setSection] = React.useState<Section>("Agents");
   const [agents, setAgents] = React.useState<MarcoAgent[]>([]);
   const [brands, setBrands] = React.useState<Brand[]>([]);
-  React.useEffect(() => { void Promise.all([listMarcoAgents(), listBrands()]).then(([nextAgents, nextBrands]) => { setAgents(nextAgents); setBrands(nextBrands); }); }, []);
+  React.useEffect(() => { void Promise.all([listMarcoAgents(), listBrands()]).then(([nextAgents, nextBrands]) => { setAgents(nextAgents.length ? nextAgents : demoAgents); setBrands(nextBrands.length ? nextBrands : demoBrands); }).catch(() => { setAgents(demoAgents); setBrands(demoBrands); }); }, []);
   return <div className="marco-library">
     <header className="marco-library-header"><h1>Settings</h1><p>Agents, API keys, MCP servers, CLI runners.</p></header>
     <div className="marco-settings">

@@ -9,11 +9,12 @@ import { AgentAvatar } from "@/components/marco/agent-avatar";
 import { MessageCard, RunSteps } from "@/components/marco/run-cards";
 import { cn } from "@/lib/utils";
 import type { Brand, MarcoAgent, Run, Thread, ThreadMessage } from "@/lib/marco-types";
-import { listBrands, listMarcoAgents, listMessages, listRuns, listThreads, sendThreadMessage } from "@/lib/actions/marco";
+import { listBrands, listMarcoAgents, listMessages, listRuns, listThreads, sendThreadMessage, setActiveBrand } from "@/lib/actions/marco";
+import { demoAgents, demoBrands, demoMessages, demoRun, demoThreads } from "@/lib/demo-marco-data";
 
 const LIBRARY = [
-  ["Calendar", "/calendar", "□"], ["Automations", "/automations", "ϟ"], ["Assets", "/assets", "▣"],
-  ["Knowledge", "/knowledge", "☰"], ["Spend", "/spend-usage", "⋮"], ["Settings", "/settings", "⚙"],
+  ["Calendar", "/calendar", "🗓️"], ["Automations", "/automations", "⚡"], ["Assets", "/assets", "🗂️"],
+  ["Knowledge", "/knowledge", "📚"], ["Spend", "/spend-usage", "⋮"], ["Settings", "/settings", "⚙"],
 ] as const;
 
 export function MarcoShell({ children }: { children: React.ReactNode }) {
@@ -31,41 +32,61 @@ export function MarcoShell({ children }: { children: React.ReactNode }) {
   const [drawer, setDrawer] = React.useState(false);
   const [sheet, setSheet] = React.useState(false);
   const [draft, setDraft] = React.useState("");
+  const [demoMode, setDemoMode] = React.useState(false);
+  const [brandMenu, setBrandMenu] = React.useState(false);
 
   React.useEffect(() => {
     setRail(localStorage.getItem("marco:rail-collapsed") === "true");
     setWork(localStorage.getItem("marco:work-open") !== "false");
     void Promise.all([listMarcoAgents(), listBrands(), listThreads()]).then(([nextAgents, nextBrands, nextThreads]) => {
-      setAgents(nextAgents); setBrands(nextBrands); setThreads(nextThreads);
+      const useDemo = nextAgents.length === 0 || nextThreads.length === 0;
+      const sourceAgents = useDemo ? demoAgents : nextAgents;
+      const sourceBrands = useDemo ? demoBrands : nextBrands;
+      const sourceThreads = useDemo ? demoThreads : nextThreads;
+      setDemoMode(useDemo); setAgents(sourceAgents); setBrands(sourceBrands); setThreads(sourceThreads);
       const requestedThread = searchParams.get("thread");
       const requestedAgent = searchParams.get("agent");
       const requestedView = searchParams.get("view");
-      const selected = nextThreads.find((thread) => thread.id === requestedThread)
-        ?? nextThreads.find((thread) => nextAgents.find((agent) => agent.id === thread.agentId)?.slug === requestedAgent)
-        ?? nextThreads[0] ?? null;
+      const selected = sourceThreads.find((thread) => thread.id === requestedThread)
+        ?? sourceThreads.find((thread) => sourceAgents.find((agent) => agent.id === thread.agentId)?.slug === requestedAgent)
+        ?? sourceThreads[1] ?? sourceThreads[0] ?? null;
       setActiveThread(selected);
-      const selectedAgent = nextAgents.find((agent) => agent.id === selected?.agentId);
+      const selectedAgent = sourceAgents.find((agent) => agent.id === selected?.agentId);
       if (requestedView === "build" || requestedView === "canvas") setView(selectedAgent?.surfaces.includes(requestedView) ? requestedView : "chat");
-    }).catch(() => undefined);
+    }).catch(() => { setDemoMode(true); setAgents(demoAgents); setBrands(demoBrands); setThreads(demoThreads); setActiveThread(demoThreads[1]); });
   }, [searchParams]);
 
   React.useEffect(() => {
     if (!activeThread) return;
+    if (demoMode) { setMessages(activeThread.agentId === "demo-atelier" ? demoMessages : []); setRuns(activeThread.agentId === "demo-atelier" ? [demoRun] : []); return; }
     void Promise.all([listMessages(activeThread.id), listRuns(activeThread.id)]).then(([nextMessages, nextRuns]) => {
       setMessages(nextMessages); setRuns(nextRuns);
     }).catch(() => { setMessages([]); setRuns([]); });
-  }, [activeThread?.id]);
+  }, [activeThread?.id, demoMode]);
 
   const agent = agents.find((item) => item.id === activeThread?.agentId);
   const run = runs[0] ?? null;
-  const brand = brands.find((item) => item.id === activeThread?.brandId) ?? brands.find((item) => item.isActive);
+  const brand = brands.find((item) => item.isActive) ?? brands.find((item) => item.id === activeThread?.brandId);
   const isLibrary = pathname !== "/";
   const setRailOpen = () => { const next = !rail; setRail(next); localStorage.setItem("marco:rail-collapsed", String(next)); };
   const setWorkOpen = () => { const next = !work; setWork(next); localStorage.setItem("marco:work-open", String(next)); };
   const chooseThread = (thread: Thread) => { setActiveThread(thread); setDrawer(false); };
   const chooseView = (next: "chat" | "build" | "canvas") => { if (agent?.surfaces.includes(next)) setView(next); };
+  async function chooseBrand(nextBrand: Brand) {
+    setBrandMenu(false);
+    if (demoMode) {
+      setBrands((current) => current.map((item) => ({ ...item, isActive: item.id === nextBrand.id })));
+      return;
+    }
+    try {
+      const saved = await setActiveBrand(nextBrand.id);
+      setBrands((current) => current.map((item) => ({ ...item, isActive: item.id === saved.id })));
+    } catch {
+      // The current context remains selected if the database cannot be reached.
+    }
+  }
   async function submit() {
-    if (!draft.trim() || !activeThread || !agent) return;
+    if (demoMode || !draft.trim() || !activeThread || !agent) return;
     const message = await sendThreadMessage({ threadId: activeThread.id, agentId: agent.id, body: draft.trim() });
     setMessages((old) => [...old, message]); setDraft("");
   }
@@ -78,9 +99,9 @@ export function MarcoShell({ children }: { children: React.ReactNode }) {
         <div className="marco-brand-copy"><h1>MARCO</h1><p>Command Center</p></div>
         <button className="marco-rail-toggle" onClick={setRailOpen} aria-label="Collapse thread rail">{rail ? <Menu size={13} /> : <X size={13} />}</button>
       </div>
-      <button className="marco-context"><span><small>Brand context</small><b>{brand?.name ?? "No active brand"}</b></span><i>⌄</i></button>
+      <div className="marco-context-wrap"><button className="marco-context" onClick={() => setBrandMenu((open) => !open)} aria-expanded={brandMenu}><span><small>Brand context</small><b>{brand?.name ?? "No active brand"}</b></span><i>⌄</i></button>{brandMenu && <div className="marco-brand-menu">{brands.map((item) => <button key={item.id} className={item.id === brand?.id ? "is-active" : ""} onClick={() => void chooseBrand(item)}>{item.name}<small>{item.kind}</small></button>)}</div>}</div>
       <div className="marco-rail-scroll">
-        <div className="marco-section-title"><span>Threads</span><Link href="/new-agent" aria-label="New agent"><Plus size={15} /></Link></div>
+        <div className="marco-section-title"><span>Threads {demoMode && <em>Demo</em>}</span><Link href="/new-agent" aria-label="New agent"><Plus size={15} /></Link></div>
         <div>{threads.map((thread) => {
           const rowAgent = agents.find((item) => item.id === thread.agentId); if (!rowAgent) return null;
           return <button key={thread.id} className={cn("marco-thread", activeThread?.id === thread.id && "is-active")} onClick={() => chooseThread(thread)}>
@@ -104,7 +125,7 @@ export function MarcoShell({ children }: { children: React.ReactNode }) {
       <section className={cn("marco-stage", view === "canvas" && !isLibrary && "is-canvas")}>
         {isLibrary ? <div className="marco-page-pad">{children}</div> : view === "chat" ? <ChatView messages={messages} /> : view === "build" ? <BuildView run={run} /> : <CanvasView run={run} />}
       </section>
-      {!isLibrary && view !== "canvas" && <form className="marco-composer" onSubmit={(event) => { event.preventDefault(); void submit(); }}><div><input value={draft} onChange={(event) => setDraft(event.target.value)} placeholder={`Message ${agent?.name ?? "MARCO"}`} /><span>Attach</span><span>Bundle</span><button>Send</button></div></form>}
+      {!isLibrary && view !== "canvas" && <form className="marco-composer" onSubmit={(event) => { event.preventDefault(); void submit(); }}><div><input disabled={demoMode} value={draft} onChange={(event) => setDraft(event.target.value)} placeholder={demoMode ? "Demo preview — connect Supabase to send" : `Message ${agent?.name ?? "MARCO"}`} /><span>Attach</span><span>Bundle</span><button disabled={demoMode}>Send</button></div></form>}
     </main>
     {!isLibrary && <aside className="marco-work">
       <header><b>{view === "canvas" ? "Create" : run ? `Run ${run.shortId}` : "Thread context"}</b><span className={run?.status === "needs_approval" ? "needs-approval" : ""}>{view === "canvas" ? "Ready" : run?.status ?? "Idle"}</span><button onClick={() => innerWidth < 900 ? setSheet(false) : setWorkOpen()} aria-label="Close work panel"><X size={14} /></button></header>
@@ -120,5 +141,5 @@ function BuildBlock({ n, title, children }: { n: string; title: string; children
 function CanvasView({ run }: { run: Run | null }) { return <div className="marco-canvas"><div className="marco-canvas-dock"><button className="is-selected">⌁</button><button>+</button><button>↖</button><button>✋</button><button>✂</button><i /><button>↶</button><button>↷</button></div><div className="marco-canvas-top"><button className="is-active">Drop pipeline</button><button>+ new</button></div><svg className="marco-wires" viewBox="0 0 1000 600" preserveAspectRatio="none"><path d="M250 270 C350 270, 390 310, 480 310 S640 210, 730 220" /><path d="M545 350 C620 390, 660 430, 770 420" /></svg><CanvasGroup className="is-reference" label="Reference images"><div className="marco-canvas-tiles">{Array.from({ length: 6 }, (_, index) => <i key={index} />)}</div></CanvasGroup><CanvasGroup className="is-prompts" label="Prompts"><p>{run?.title ?? "Create a prompt block"}</p><small>Intent and constraints</small></CanvasGroup><CanvasGroup className="is-approval" label="Approval"><p>You sign off</p><small>Before anything external</small></CanvasGroup><div className="marco-canvas-node"><small>VOICE</small><b>Copy direction</b></div><div className="marco-canvas-note">Read-only on phone. Approve and check status here; open on desktop to wire nodes.</div></div>; }
 function CanvasGroup({ className, label, children }: { className: string; label: string; children: React.ReactNode }) { return <section className={cn("marco-canvas-group", className)}><h3>{label}</h3>{children}</section>; }
 function CanvasChat() { return <div className="marco-canvas-chat"><div><h3>Hello, Marcus</h3><p>Describe what you want and I will lay the nodes onto the canvas.</p></div><section><span>Add a reference block</span><span>Generate variants</span><span>Insert an approval gate</span></section><footer><p>What do you want to create?</p><div><button>+</button><button>●</button><button>⚙</button><button className="is-send">↑</button></div></footer></div>; }
-function WorkView({ run, agent, brand }: { run: Run | null; agent?: MarcoAgent; brand?: Brand }) { if (!run) return <div className="marco-work-body"><section className="marco-run-meta"><p><span>Agent</span><b>{agent?.name ?? "MARCO"}</b></p><p><span>Brand</span><b>{brand?.name ?? "None selected"}</b></p><p><span>Open runs</span><b>0</b></p></section><small className="marco-note">The right panel collapses when there is nothing to look at.</small></div>; return <div className="marco-work-body"><div className="marco-work-thumbs"><i>output 01</i><i>output 02</i><i>output 03</i><i>output 04</i></div><section className="marco-run-meta"><p><span>Status</span><b className="is-red">{run.status}</b></p><p><span>Assets in</span><b>{run.assetManifest.length}</b></p><p><span>Outputs</span><b>{run.outputs.length}</b></p><p><span>Cost so far</span><b>{run.cost == null ? "Unknown" : `$${run.cost.toFixed(2)}`}</b></p></section><RunSteps steps={run.steps} /><small className="marco-note">This is the same Run shown in the center pane. Chat, Build, and Canvas are three ways to steer it.</small></div>; }
+function WorkView({ run, agent, brand }: { run: Run | null; agent?: MarcoAgent; brand?: Brand }) { if (!run) return <div className="marco-work-body"><section className="marco-run-meta"><p><span>Agent</span><b>{agent?.name ?? "MARCO"}</b></p><p><span>Brand</span><b>{brand?.name ?? "None selected"}</b></p><p><span>Open runs</span><b>0</b></p></section><small className="marco-note">The right panel collapses when there is nothing to look at.</small></div>; return <div className="marco-work-body"><div className="marco-work-thumbs"><i>dir_01</i><i>dir_02</i><i>dir_03</i><i>dir_03b</i></div><section className="marco-run-meta"><p><span>Status</span><b className="is-red">{run.status}</b></p><p><span>Assets in</span><b>{run.assetManifest.length}</b></p><p><span>Outputs</span><b>{run.outputs.length}</b></p><p><span>Cost so far</span><b>{run.cost == null ? "Unknown" : `$${run.cost.toFixed(2)}`}</b></p></section><RunSteps steps={run.steps} /><small className="marco-note">This is the same Run shown in the center pane. Chat, Build, and Canvas are three ways to steer it.</small></div>; }
 function relativeTime(value: string) { const age = Date.now() - new Date(value).getTime(); if (age < 60_000) return "now"; if (age < 3_600_000) return `${Math.floor(age / 60_000)}m`; if (age < 86_400_000) return `${Math.floor(age / 3_600_000)}h`; return `${Math.floor(age / 86_400_000)}d`; }

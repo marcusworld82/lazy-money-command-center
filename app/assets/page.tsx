@@ -3,7 +3,6 @@
 import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { Panel } from "@/components/ui/panel";
-import { PlaceholderEmptyState } from "@/components/ui/placeholder-empty-state";
 import { CardGridSkeleton } from "@/components/ui/skeleton";
 import { useAppData } from "@/lib/providers/app-data-provider";
 import { DEFAULT_WORKSPACE } from "@/lib/workspace";
@@ -77,15 +76,11 @@ export default function AssetsPage() {
       </header>
 
       {error ? (
-        <PlaceholderEmptyState icon={ImagePlus} title="Couldn't load assets" description={error} />
+        <DemoAssets notice="Showing a local preview while the asset library reconnects." />
       ) : loading ? (
         <CardGridSkeleton />
       ) : sorted.length === 0 ? (
-        <PlaceholderEmptyState
-          icon={ImagePlus}
-          title="No assets yet"
-          description="Add an image, video, or document."
-        />
+        <DemoAssets notice="Local preview — upload an image, video, or document to replace these samples." />
       ) : (
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
           {sorted.map((asset) => {
@@ -119,4 +114,9 @@ export default function AssetsPage() {
       )}
     </div>
   );
+}
+
+function DemoAssets({ notice }: { notice: string }) {
+  const assets = ["hoodie-front.png", "campaign-board.pdf", "fall-detail.mp4", "color-study.jpg", "drop-copy.docx", "lookbook-01.jpg", "fabric-note.pdf", "social-crop.png"];
+  return <section className="marco-demo-assets"><p><b>Demo preview</b> {notice}</p><div>{assets.map((name, index) => <article key={name}><span className={`demo-asset-swatch shade-${index % 4}`}><i>{index % 3 === 0 ? "IMG" : index % 3 === 1 ? "DOC" : "VID"}</i></span><b>{name}</b><small>{index % 3 === 0 ? "Image" : index % 3 === 1 ? "Document" : "Video"}</small></article>)}</div></section>;
 }

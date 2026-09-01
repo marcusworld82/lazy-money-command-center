@@ -4,6 +4,7 @@ import { Archivo } from "next/font/google";
 import "./globals.css";
 import "@xyflow/react/dist/style.css";
 import { ThemeProvider } from "@/lib/providers/theme-provider";
+import { AppDataProvider } from "@/lib/providers/app-data-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AppShell } from "@/components/layout/app-shell";
 
@@ -29,7 +30,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body className="flex min-h-full flex-col">
         <ThemeProvider>
           <TooltipProvider delayDuration={200}>
-            <Suspense fallback={null}><AppShell>{children}</AppShell></Suspense>
+            <AppDataProvider><Suspense fallback={null}><AppShell>{children}</AppShell></Suspense></AppDataProvider>
           </TooltipProvider>
         </ThemeProvider>
       </body>

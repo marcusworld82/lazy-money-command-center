@@ -16,6 +16,14 @@ export async function getMarcoAgent(id: string) {
   return mapAgent(data as Record<string, unknown>);
 }
 export async function listBrands() { const { data, error } = await getSupabaseServerClient().from("brands").select("*").order("is_active", { ascending: false }).order("name"); if (error) throw error; return (data ?? []).map((r) => mapBrand(r as Record<string, unknown>)); }
+export async function setActiveBrand(id: string) {
+  const supabase = getSupabaseServerClient();
+  const { error: clearError } = await supabase.from("brands").update({ is_active: false }).neq("id", id);
+  if (clearError) throw clearError;
+  const { data, error } = await supabase.from("brands").update({ is_active: true }).eq("id", id).select("*").single();
+  if (error) throw error;
+  return mapBrand(data as Record<string, unknown>);
+}
 export async function listThreads() { const { data, error } = await getSupabaseServerClient().from("threads").select("*").order("updated_at", { ascending: false }); if (error) throw error; return (data ?? []).map((r) => mapThread(r as Record<string, unknown>)); }
 export async function listMessages(threadId: string) { const { data, error } = await getSupabaseServerClient().from("messages").select("*").eq("thread_id", threadId).order("created_at"); if (error) throw error; return (data ?? []).map((r) => mapMessage(r as Record<string, unknown>)); }
 export async function listRuns(threadId: string) { const { data, error } = await getSupabaseServerClient().from("runs").select("*").eq("thread_id", threadId).order("updated_at", { ascending: false }); if (error) throw error; return (data ?? []).map((r) => mapRun(r as Record<string, unknown>)); }
