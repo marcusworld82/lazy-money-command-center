@@ -12,8 +12,8 @@ const SIZES: Record<NonNullable<LogoProps["size"]>, string> = {
 };
 
 /**
- * Temporary `LM` monogram. Swappable placeholder — future phases can replace
- * this component internals without touching anything that renders <Logo />.
+ * The shared MARCO sticker-head mark. Text is deliberately kept outside the
+ * mark so the component works at small avatar and PWA icon sizes.
  */
 export function Logo({ className, size = "md" }: LogoProps) {
   return (
@@ -24,9 +24,9 @@ export function Logo({ className, size = "md" }: LogoProps) {
         SIZES[size],
         className,
       )}
-      aria-label="Lazy Money OS"
+      aria-label="MARCO"
     >
-      <span className="skew-x-[4deg]">LM</span>
+      <img src="/agent-mark.png" alt="" className="h-[82%] w-[82%] object-contain" />
     </div>
   );
 }

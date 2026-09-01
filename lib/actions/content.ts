@@ -1,8 +1,6 @@
 "use server";
 
 import { getSupabaseServerClient } from "@/lib/supabase/server";
-import { analyzeContent } from "@/lib/content/analyzer";
-import { adaptForPlatform, findMissingFacts } from "@/lib/content/adapters";
 import { CONNECTORS } from "@/lib/content/platforms";
 import { getPublishMode } from "@/lib/actions/settings";
 import type {
@@ -140,6 +138,8 @@ export async function listVersions(): Promise<ContentVersion[]> {
 
 /** Step 1. Extracts the single source of truth before any rewriting happens. */
 export async function runAnalyzer(itemId: string): Promise<ContentItem> {
+  throw new Error("Content analysis is not available in Phase 4.6. Create a Run in the Social thread instead.");
+  /*
   const supabase = getSupabaseServerClient();
   const { data: row, error: readError } = await supabase
     .from("content_items")
@@ -158,7 +158,7 @@ export async function runAnalyzer(itemId: string): Promise<ContentItem> {
     .select("*")
     .single();
   if (error) throw error;
-  return mapItem(data as ItemRow);
+  return mapItem(data as ItemRow); */
 }
 
 /**
@@ -172,6 +172,8 @@ export async function runAdapters(
   platforms: ContentPlatform[],
   brandVoiceId?: string,
 ): Promise<ContentVersion[]> {
+  throw new Error("Content adaptation is not available in Phase 4.6. Create a Run in the Social thread instead.");
+  /*
   const supabase = getSupabaseServerClient();
 
   const { data: row, error: readError } = await supabase
@@ -258,7 +260,7 @@ export async function runAdapters(
   }
 
   await supabase.from("content_items").update({ status: "adapted" }).eq("id", itemId);
-  return created;
+  return created; */
 }
 
 /* ------------------------------------------------------------------ */

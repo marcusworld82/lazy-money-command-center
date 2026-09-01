@@ -1,33 +1,22 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Barlow_Condensed } from "next/font/google";
+import { Suspense } from "react";
+import { Archivo } from "next/font/google";
 import "./globals.css";
 import "@xyflow/react/dist/style.css";
 import { ThemeProvider } from "@/lib/providers/theme-provider";
-import { SidebarProvider } from "@/lib/providers/sidebar-provider";
-import { AppDataProvider } from "@/lib/providers/app-data-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AppShell } from "@/components/layout/app-shell";
 
-const geistSans = Geist({
+const archivo = Archivo({
   variable: "--font-sans",
   subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
-/** Bold condensed display face for headlines (Phase 4.5 typography). */
-const headingFont = Barlow_Condensed({
-  variable: "--font-heading-family",
-  subsets: ["latin"],
-  weight: ["500", "600", "700"],
-});
-
 export const metadata: Metadata = {
-  title: "Lazy Money OS Command Center",
-  description: "Personal operating system for running multiple businesses.",
+  title: "MARCO — Command Center",
+  description: "Thread-first command center for every brand Marcus runs.",
+  manifest: "/manifest.json",
+  icons: { apple: "/apple-touch-icon.png" },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
@@ -35,16 +24,12 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${geistSans.variable} ${geistMono.variable} ${headingFont.variable} h-full antialiased`}
+      className={`${archivo.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col">
         <ThemeProvider>
           <TooltipProvider delayDuration={200}>
-            <SidebarProvider>
-              <AppDataProvider>
-                <AppShell>{children}</AppShell>
-              </AppDataProvider>
-            </SidebarProvider>
+            <Suspense fallback={null}><AppShell>{children}</AppShell></Suspense>
           </TooltipProvider>
         </ThemeProvider>
       </body>

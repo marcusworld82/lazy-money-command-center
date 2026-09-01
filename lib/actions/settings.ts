@@ -1,7 +1,6 @@
 "use server";
 
 import { getSupabaseServerClient } from "@/lib/supabase/server";
-import { hasLLMKey } from "@/lib/llm/openrouter";
 import type { PublishMode } from "@/lib/types";
 
 const PUBLISH_MODE_KEY = "publish_mode";
@@ -37,5 +36,5 @@ export async function setPublishMode(mode: PublishMode): Promise<PublishMode> {
 
 /** Lets the UI explain a missing key without ever exposing its value. */
 export async function getLLMKeyStatus(): Promise<{ configured: boolean }> {
-  return { configured: hasLLMKey() };
+  return { configured: Boolean(process.env.OPENROUTER_API_KEY) };
 }
