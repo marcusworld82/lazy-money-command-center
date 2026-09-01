@@ -3,7 +3,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Menu, PanelRightClose, PanelRightOpen, Plus, Settings, X } from "lucide-react";
 import { AgentAvatar } from "@/components/marco/agent-avatar";
 import { MessageCard, RunSteps } from "@/components/marco/run-cards";
@@ -20,6 +20,7 @@ const LIBRARY = [
 export function MarcoShell({ children }: { children: React.ReactNode }) {
   const searchParams = useSearchParams();
   const pathname = usePathname();
+  const router = useRouter();
   const [agents, setAgents] = React.useState<MarcoAgent[]>([]);
   const [brands, setBrands] = React.useState<Brand[]>([]);
   const [threads, setThreads] = React.useState<Thread[]>([]);
@@ -52,8 +53,19 @@ export function MarcoShell({ children }: { children: React.ReactNode }) {
         ?? sourceThreads[1] ?? sourceThreads[0] ?? null;
       setActiveThread(selected);
       const selectedAgent = sourceAgents.find((agent) => agent.id === selected?.agentId);
-      if (requestedView === "build" || requestedView === "canvas") setView(selectedAgent?.surfaces.includes(requestedView) ? requestedView : "chat");
-    }).catch(() => { setDemoMode(true); setAgents(demoAgents); setBrands(demoBrands); setThreads(demoThreads); setActiveThread(demoThreads[1]); });
+      setView((requestedView === "build" || requestedView === "canvas") && selectedAgent?.surfaces.includes(requestedView) ? requestedView : "chat");
+    }).catch(() => {
+      setDemoMode(true); setAgents(demoAgents); setBrands(demoBrands); setThreads(demoThreads);
+      const requestedThread = searchParams.get("thread");
+      const requestedAgent = searchParams.get("agent");
+      const requestedView = searchParams.get("view");
+      const selected = demoThreads.find((thread) => thread.id === requestedThread)
+        ?? demoThreads.find((thread) => demoAgents.find((agent) => agent.id === thread.agentId)?.slug === requestedAgent)
+        ?? demoThreads[1];
+      setActiveThread(selected);
+      const selectedAgent = demoAgents.find((agent) => agent.id === selected.agentId);
+      setView((requestedView === "build" || requestedView === "canvas") && selectedAgent?.surfaces.includes(requestedView) ? requestedView : "chat");
+    });
   }, [searchParams]);
 
   React.useEffect(() => {
@@ -70,8 +82,8 @@ export function MarcoShell({ children }: { children: React.ReactNode }) {
   const isLibrary = pathname !== "/";
   const setRailOpen = () => { const next = !rail; setRail(next); localStorage.setItem("marco:rail-collapsed", String(next)); };
   const setWorkOpen = () => { const next = !work; setWork(next); localStorage.setItem("marco:work-open", String(next)); };
-  const chooseThread = (thread: Thread) => { setActiveThread(thread); setDrawer(false); };
-  const chooseView = (next: "chat" | "build" | "canvas") => { if (agent?.surfaces.includes(next)) setView(next); };
+  const chooseThread = (thread: Thread) => { setActiveThread(thread); setDrawer(false); router.push(`/?thread=${encodeURIComponent(thread.id)}`); };
+  const chooseView = (next: "chat" | "build" | "canvas") => { if (agent?.surfaces.includes(next) && activeThread) { setView(next); router.replace(`/?thread=${encodeURIComponent(activeThread.id)}&view=${next}`); } };
   async function chooseBrand(nextBrand: Brand) {
     setBrandMenu(false);
     if (demoMode) {
