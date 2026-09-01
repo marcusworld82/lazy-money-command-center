@@ -50,7 +50,7 @@ export default function ProjectsPage() {
   }
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="marco-library flex flex-col gap-6">
       <header className="flex flex-col gap-2">
         <span className="font-heading text-[11px] font-semibold uppercase tracking-[0.2em] text-foreground/50">
           Work

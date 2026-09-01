@@ -1,1 +1,9 @@
-export default function CalendarPage() { return <div className="mx-auto max-w-4xl"><h1 className="text-xl font-black">Calendar</h1><p className="mt-1 text-sm text-[var(--txt-dim)]">Scheduled posts are library state, not Runs. Nothing is published automatically.</p><div className="mt-5 rounded-xl border border-[var(--line)] bg-[var(--panel)] p-5 text-sm text-[var(--txt-mute)]">No staged posts yet.</div></div>; }
+const days = Array.from({ length: 28 }, (_, index) => index + 1);
+
+export default function CalendarPage() {
+  return <div className="marco-library">
+    <header className="marco-library-header"><h1>Calendar</h1><p>Staged posts. Nothing is published automatically.</p></header>
+    <div className="marco-calendar">{["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => <b key={day}>{day}</b>)}{days.map((day) => <div key={day} className={day === 14 ? "is-today" : ""}>{day}{day === 14 && <span>Review next batch</span>}{day === 19 && <span>Caption draft</span>}</div>)}</div>
+    <p className="marco-note">Scheduled posts are library state, not Runs. Platform publishing is unavailable until a connector succeeds.</p>
+  </div>;
+}

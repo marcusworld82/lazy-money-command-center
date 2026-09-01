@@ -1,9 +1,29 @@
 "use client";
+
 import * as React from "react";
 import Link from "next/link";
-import { listMarcoAgents, listBrands } from "@/lib/actions/marco";
-import type { Brand, MarcoAgent } from "@/lib/marco-types";
 import { AgentAvatar } from "@/components/marco/agent-avatar";
+import { listBrands, listMarcoAgents } from "@/lib/actions/marco";
+import type { Brand, MarcoAgent } from "@/lib/marco-types";
+
 const sections = ["Agents", "Providers and keys", "Connections", "Brand records", "Sync", "Appearance"] as const;
-export default function SettingsPage() { const [section, setSection] = React.useState<(typeof sections)[number]>("Agents"); const [agents, setAgents] = React.useState<MarcoAgent[]>([]); const [brands, setBrands] = React.useState<Brand[]>([]); React.useEffect(() => { void Promise.all([listMarcoAgents(), listBrands()]).then(([a,b]) => {setAgents(a);setBrands(b);}); }, []); return <div className="mx-auto grid max-w-5xl gap-4 md:grid-cols-[190px_1fr]"><aside className="rounded-xl border border-[var(--line)] bg-[var(--panel)] p-2">{sections.map((item) => <button key={item} onClick={() => setSection(item)} className={`block w-full rounded-lg p-2 text-left text-sm ${section === item ? "bg-[var(--panel-2)] text-[var(--txt)]" : "text-[var(--txt-dim)]"}`}>{item}</button>)}</aside><section><h1 className="mb-4 text-xl font-black">{section}</h1>{section === "Agents" && <div className="space-y-2">{agents.map((agent) => <Link href={`/new-agent?edit=${agent.id}`} key={agent.id} className="flex items-center gap-3 rounded-xl border border-[var(--line)] bg-[var(--panel)] p-3"><AgentAvatar color={agent.avatarColor} name={agent.name}/><span><b className="block">{agent.name}</b><small className="text-[var(--txt-mute)]">{agent.tagline}</small></span><small className="ml-auto text-[var(--red-hi)]">{agent.status}</small></Link>)}</div>}{section === "Providers and keys" && <Rows rows={["OpenRouter", "fal", "Meta", "TikTok", "YouTube", "Shopify", "Telegram"]} detail="Environment variable status only. Keys are server-side and never shown here."/>}{section === "Connections" && <Rows rows={["MCP servers", "CLI runners"]} detail="UI only in this phase. Per-agent grants arrive in Phase 7."/>}{section === "Brand records" && <Rows rows={brands.map((brand) => brand.name)} detail="Every agent reads the active brand record."/>}{section === "Sync" && <Rows rows={["Obsidian + Supabase"]} detail="Not configured. Supabase is authoritative; Git mirror work begins with the Phase 6 worker."/>}{section === "Appearance" && <Rows rows={["Theme", "Accent", "Work panel auto-hide"]} detail="Dark is the default. MARCO red is the accent."/>}</section></div>; }
-function Rows({ rows, detail }: { rows: string[]; detail: string }) { return <div className="rounded-xl border border-[var(--line)] bg-[var(--panel)] p-4">{rows.map((row) => <div className="flex justify-between border-b border-[var(--line)] py-3 last:border-0" key={row}><span>{row}</span><span className="text-xs text-[var(--txt-mute)]">{row === "Obsidian + Supabase" ? "Not configured" : "Missing / Connected"}</span></div>)}<p className="mt-4 text-sm text-[var(--txt-dim)]">{detail}</p></div>; }
+type Section = (typeof sections)[number];
+
+export default function SettingsPage() {
+  const [section, setSection] = React.useState<Section>("Agents");
+  const [agents, setAgents] = React.useState<MarcoAgent[]>([]);
+  const [brands, setBrands] = React.useState<Brand[]>([]);
+  React.useEffect(() => { void Promise.all([listMarcoAgents(), listBrands()]).then(([nextAgents, nextBrands]) => { setAgents(nextAgents); setBrands(nextBrands); }); }, []);
+  return <div className="marco-library">
+    <header className="marco-library-header"><h1>Settings</h1><p>Agents, API keys, MCP servers, CLI runners.</p></header>
+    <div className="marco-settings">
+      <nav className="marco-settings-nav">{sections.map((item) => <button key={item} className={section === item ? "is-active" : ""} onClick={() => setSection(item)}>{item}</button>)}</nav>
+      <section className="marco-settings-content"><h2>{section}</h2>{section === "Agents" ? <div className="marco-library-card">{agents.map((agent) => <Link href={`/new-agent?edit=${agent.id}`} className="marco-settings-row" key={agent.id}><AgentAvatar color={agent.avatarColor} name={agent.name} size="sm" /><span><b>{agent.name}</b><small>{agent.tagline}</small></span><em className="is-paused">{agent.status}</em></Link>)}</div> : <Rows section={section} brands={brands} />}</section>
+    </div>
+  </div>;
+}
+
+function Rows({ section, brands }: { section: Section; brands: Brand[] }) {
+  const rows = section === "Providers and keys" ? ["OpenRouter", "fal", "Meta", "TikTok", "YouTube", "Shopify", "Telegram"] : section === "Connections" ? ["MCP servers", "CLI runners"] : section === "Brand records" ? brands.map((brand) => brand.name) : section === "Sync" ? ["Obsidian + Supabase"] : ["Theme", "Accent", "Work panel auto-hide"];
+  return <div className="marco-library-card">{rows.map((row) => <div className="marco-settings-row" key={row}><span><b>{row}</b><small>{section === "Sync" ? "Supabase is authoritative; Obsidian is a mirror." : "Configuration remains server-side."}</small></span><em>{section === "Sync" ? "Not configured" : "Missing / Connected"}</em></div>)}</div>;
+}
