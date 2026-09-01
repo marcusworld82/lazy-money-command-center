@@ -64,5 +64,16 @@ export async function pollGeneration(modelId: string, requestId: string): Promis
   const data = await response.json() as { status?: string; error?: string };
   const status = data.status === "COMPLETED" ? "completed" : data.status === "IN_PROGRESS" ? "running" : data.status === "IN_QUEUE" ? "queued" : "failed";
   if (status === "failed") throw new Error(data.error ?? "fal generation failed.");
-  return { jobId: requestId, status, outputs: [], cost: null };
+  if (status !== "completed") return { jobId: requestId, status, outputs: [], cost: null };
+  const resultResponse = await fetch(`${FAL_QUEUE_URL}/${modelId}/requests/${requestId}`, { headers: { Authorization: `Key ${apiKey()}` } });
+  if (!resultResponse.ok) throw new Error(`fal result request failed (${resultResponse.status}).`);
+  const result = await resultResponse.json() as { images?: { url?: string; width?: number; height?: number }[]; video?: { url?: string; width?: number; height?: number }; data?: { images?: { url?: string; width?: number; height?: number }[]; video?: { url?: string; width?: number; height?: number } } };
+  const images = result.images ?? result.data?.images ?? [];
+  const video = result.video ?? result.data?.video;
+  const outputs = [
+    ...images.flatMap((item) => item.url ? [{ url: item.url, type: "image" as const, width: item.width, height: item.height }] : []),
+    ...(video?.url ? [{ url: video.url, type: "video" as const, width: video.width, height: video.height }] : []),
+  ];
+  if (!outputs.length) throw new Error("fal completed without a retrievable output URL.");
+  return { jobId: requestId, status, outputs, cost: null };
 }
