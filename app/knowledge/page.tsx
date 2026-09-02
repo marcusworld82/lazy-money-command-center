@@ -26,6 +26,7 @@ import { BookOpen, FilePlus, FolderPlus, Save, Trash2, Copy, Sparkles } from "lu
 import { KnowledgeTree } from "@/components/features/knowledge-tree";
 import { MarkdownEditor } from "@/components/features/markdown-editor";
 import { BrandKitForm } from "@/components/features/brand-kit-form";
+import { SkillsPanel } from "@/components/marco/skills-panel";
 import {
   listFolders,
   listDocuments,
@@ -208,6 +209,8 @@ export default function KnowledgeLibraryPage() {
           project, asset, and workflow.
         </p>
       </header>
+
+      <SkillsPanel />
 
       {error ? (
         <KnowledgeDemoPreview />
