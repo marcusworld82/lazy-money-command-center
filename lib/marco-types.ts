@@ -1,6 +1,6 @@
 import type { ManifestRole } from "@/lib/manifest-roles";
 
-export type AgentSurface = "chat" | "build" | "canvas";
+export type AgentSurface = "chat" | "build";
 export type PermissionMode = "always" | "ask" | "never";
 export type RunStatus = "draft" | "running" | "needs_approval" | "completed" | "failed" | "cancelled";
 export type StepStatus = "pending" | "running" | "done" | "blocked" | "failed" | "skipped";

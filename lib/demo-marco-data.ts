@@ -8,10 +8,10 @@ export const demoBrands: Brand[] = [
 
 export const demoAgents: MarcoAgent[] = [
   { id: "demo-chief", slug: "chief", name: "Chief", tagline: "routes the work, reports back", instructions: null, avatarColor: "#7FD1B9", surfaces: ["chat"], modelReasoning: null, modelFast: null, modelRender: null, permissions: {}, canHandoffTo: [], status: "paused", sortOrder: 1 },
-  { id: "demo-atelier", slug: "atelier", name: "Atelier", tagline: "apparel design and product", instructions: null, avatarColor: "#AD0000", surfaces: ["chat", "build", "canvas"], modelReasoning: null, modelFast: null, modelRender: null, permissions: {}, canHandoffTo: [], status: "paused", sortOrder: 2 },
-  { id: "demo-studio", slug: "studio", name: "Studio", tagline: "images and video", instructions: null, avatarColor: "#FF3D8A", surfaces: ["chat", "build", "canvas"], modelReasoning: null, modelFast: null, modelRender: null, permissions: {}, canHandoffTo: [], status: "paused", sortOrder: 3 },
+  { id: "demo-atelier", slug: "atelier", name: "Atelier", tagline: "apparel design and product", instructions: null, avatarColor: "#AD0000", surfaces: ["chat", "build"], modelReasoning: null, modelFast: null, modelRender: null, permissions: {}, canHandoffTo: [], status: "paused", sortOrder: 2 },
+  { id: "demo-studio", slug: "studio", name: "Studio", tagline: "images and video", instructions: null, avatarColor: "#FF3D8A", surfaces: ["chat", "build"], modelReasoning: null, modelFast: null, modelRender: null, permissions: {}, canHandoffTo: [], status: "paused", sortOrder: 3 },
   { id: "demo-voice", slug: "voice", name: "Voice", tagline: "every word that ships", instructions: null, avatarColor: "#E8C468", surfaces: ["chat", "build"], modelReasoning: null, modelFast: null, modelRender: null, permissions: {}, canHandoffTo: [], status: "paused", sortOrder: 4 },
-  { id: "demo-social", slug: "social", name: "Social", tagline: "scheduling and platforms", instructions: null, avatarColor: "#6FA8FF", surfaces: ["chat", "build", "canvas"], modelReasoning: null, modelFast: null, modelRender: null, permissions: {}, canHandoffTo: [], status: "paused", sortOrder: 5 },
+  { id: "demo-social", slug: "social", name: "Social", tagline: "scheduling and platforms", instructions: null, avatarColor: "#6FA8FF", surfaces: ["chat", "build"], modelReasoning: null, modelFast: null, modelRender: null, permissions: {}, canHandoffTo: [], status: "paused", sortOrder: 5 },
   { id: "demo-builder", slug: "builder", name: "Builder", tagline: "planner plus executor for code", instructions: null, avatarColor: "#9B8CFF", surfaces: ["chat", "build"], modelReasoning: null, modelFast: null, modelRender: null, permissions: {}, canHandoffTo: [], status: "paused", sortOrder: 6 },
 ];
 

@@ -27,12 +27,14 @@ export function MarcoShell({ children }: { children: React.ReactNode }) {
   const [activeThread, setActiveThread] = React.useState<Thread | null>(null);
   const [messages, setMessages] = React.useState<ThreadMessage[]>([]);
   const [runs, setRuns] = React.useState<Run[]>([]);
-  const [view, setView] = React.useState<"chat" | "build" | "canvas">("chat");
+  const [view, setView] = React.useState<"chat" | "build">("chat");
   const [rail, setRail] = React.useState(false);
   const [work, setWork] = React.useState(true);
   const [drawer, setDrawer] = React.useState(false);
   const [sheet, setSheet] = React.useState(false);
   const [draft, setDraft] = React.useState("");
+  const [enhancing, setEnhancing] = React.useState(false);
+  const [enhanceError, setEnhanceError] = React.useState<string | null>(null);
   const [demoMode, setDemoMode] = React.useState(false);
   const [brandMenu, setBrandMenu] = React.useState(false);
 
@@ -53,7 +55,7 @@ export function MarcoShell({ children }: { children: React.ReactNode }) {
         ?? sourceThreads[1] ?? sourceThreads[0] ?? null;
       setActiveThread(selected);
       const selectedAgent = sourceAgents.find((agent) => agent.id === selected?.agentId);
-      setView((requestedView === "build" || requestedView === "canvas") && selectedAgent?.surfaces.includes(requestedView) ? requestedView : "chat");
+      setView(requestedView === "build" && selectedAgent?.surfaces.includes(requestedView) ? requestedView : "chat");
     }).catch(() => {
       setDemoMode(true); setAgents(demoAgents); setBrands(demoBrands); setThreads(demoThreads);
       const requestedThread = searchParams.get("thread");
@@ -64,7 +66,7 @@ export function MarcoShell({ children }: { children: React.ReactNode }) {
         ?? demoThreads[1];
       setActiveThread(selected);
       const selectedAgent = demoAgents.find((agent) => agent.id === selected.agentId);
-      setView((requestedView === "build" || requestedView === "canvas") && selectedAgent?.surfaces.includes(requestedView) ? requestedView : "chat");
+      setView(requestedView === "build" && selectedAgent?.surfaces.includes(requestedView) ? requestedView : "chat");
     });
   }, [searchParams]);
 
@@ -83,7 +85,7 @@ export function MarcoShell({ children }: { children: React.ReactNode }) {
   const setRailOpen = () => { const next = !rail; setRail(next); localStorage.setItem("marco:rail-collapsed", String(next)); };
   const setWorkOpen = () => { const next = !work; setWork(next); localStorage.setItem("marco:work-open", String(next)); };
   const chooseThread = (thread: Thread) => { setActiveThread(thread); setDrawer(false); router.push(`/?thread=${encodeURIComponent(thread.id)}`); };
-  const chooseView = (next: "chat" | "build" | "canvas") => { if (agent?.surfaces.includes(next) && activeThread) { setView(next); router.replace(`/?thread=${encodeURIComponent(activeThread.id)}&view=${next}`); } };
+  const chooseView = (next: "chat" | "build") => { if (agent?.surfaces.includes(next) && activeThread) { setView(next); router.replace(`/?thread=${encodeURIComponent(activeThread.id)}&view=${next}`); } };
   async function chooseBrand(nextBrand: Brand) {
     setBrandMenu(false);
     if (demoMode) {
@@ -101,6 +103,17 @@ export function MarcoShell({ children }: { children: React.ReactNode }) {
     if (demoMode || !draft.trim() || !activeThread || !agent) return;
     const turn = await createRuntimeTurn({ threadId: activeThread.id, agentId: agent.id, brandId: brand?.id, request: draft.trim() });
     setMessages((old) => [...old, turn.message]); setRuns((old) => [turn.run, ...old]); setDraft("");
+  }
+  async function enhanceDraft() {
+    if (demoMode || !draft.trim() || !agent || enhancing) return;
+    setEnhancing(true); setEnhanceError(null);
+    try {
+      const response = await fetch("/api/prompt-enhance", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ agentId: agent.id, draft }) });
+      const payload = await response.json() as { draft?: string; error?: string };
+      if (!response.ok || !payload.draft) throw new Error(payload.error ?? "Could not enhance this prompt.");
+      setDraft(payload.draft);
+    } catch (error) { setEnhanceError(error instanceof Error ? error.message : "Could not enhance this prompt."); }
+    finally { setEnhancing(false); }
   }
 
   return <div className={cn("marco-shell", rail && "is-mini", !work && "no-work", drawer && "has-drawer", sheet && "has-sheet")}>
@@ -134,16 +147,16 @@ export function MarcoShell({ children }: { children: React.ReactNode }) {
         <Link href="/settings" className="marco-icon-button" aria-label="Agent settings"><Settings size={15} /></Link>
         {!isLibrary && <button className={cn("marco-icon-button marco-panel-toggle", work && "is-active")} onClick={() => innerWidth < 900 ? setSheet(true) : setWorkOpen()} aria-label="Toggle work panel">{work ? <PanelRightClose size={16} /> : <PanelRightOpen size={16} />}</button>}
       </header>
-      <section className={cn("marco-stage", view === "canvas" && !isLibrary && "is-canvas")}>
-        {isLibrary ? <div className="marco-page-pad">{children}</div> : view === "chat" ? <ChatView messages={messages} agentColor={agent?.avatarColor} /> : view === "build" ? <BuildView run={run} onCreate={async () => { if (!activeThread || !agent || demoMode) return; const turn = await createRuntimeTurn({ agentId: agent.id, threadId: activeThread.id, brandId: brand?.id, request: "Create a new Run from the current thread context.", title: "New generation Run" }); setMessages((current) => [...current, turn.message]); setRuns((current) => [turn.run, ...current]); }} /> : <CanvasView run={run} />}
+      <section className="marco-stage">
+        {isLibrary ? <div className="marco-page-pad">{children}</div> : view === "chat" ? <ChatView messages={messages} agentColor={agent?.avatarColor} /> : <BuildView run={run} onCreate={async () => { if (!activeThread || !agent || demoMode) return; const turn = await createRuntimeTurn({ agentId: agent.id, threadId: activeThread.id, brandId: brand?.id, request: "Create a new Run from the current thread context.", title: "New generation Run" }); setMessages((current) => [...current, turn.message]); setRuns((current) => [turn.run, ...current]); }} />}
       </section>
-      {!isLibrary && view !== "canvas" && <form className="marco-composer" onSubmit={(event) => { event.preventDefault(); void submit(); }}><div><input disabled={demoMode} value={draft} onChange={(event) => setDraft(event.target.value)} placeholder={demoMode ? "Demo preview — connect Supabase to send" : `Message ${agent?.name ?? "MARCO"}`} /><span>Attach</span><span>Bundle</span><button disabled={demoMode}>Send</button></div></form>}
+      {!isLibrary && <form className="marco-composer" onSubmit={(event) => { event.preventDefault(); void submit(); }}><div><input disabled={demoMode || enhancing} value={draft} onChange={(event) => setDraft(event.target.value)} placeholder={demoMode ? "Demo preview — connect Supabase to send" : `Message ${agent?.name ?? "MARCO"}`} /><span>Attach</span><span>Bundle</span><button type="button" disabled={demoMode || enhancing || !draft.trim()} onClick={() => void enhanceDraft()}>{enhancing ? "Enhancing…" : "Enhance"}</button><button disabled={demoMode || enhancing || !draft.trim()}>Send</button></div>{enhanceError && <p className="marco-composer-error" role="alert">{enhanceError}</p>}</form>}
     </main>
     {!isLibrary && <aside className="marco-work">
-      <header><b>{view === "canvas" ? "Create" : run ? `Run ${run.shortId}` : "Thread context"}</b><span className={run?.status === "needs_approval" ? "needs-approval" : ""}>{view === "canvas" ? "Ready" : run?.status ?? "Idle"}</span><button onClick={() => innerWidth < 900 ? setSheet(false) : setWorkOpen()} aria-label="Close work panel"><X size={14} /></button></header>
-      {view === "canvas" ? <CanvasChat /> : <WorkView run={run} agent={agent} brand={brand} />}
+      <header><b>{run ? `Run ${run.shortId}` : "Thread context"}</b><span className={run?.status === "needs_approval" ? "needs-approval" : ""}>{run?.status ?? "Idle"}</span><button onClick={() => innerWidth < 900 ? setSheet(false) : setWorkOpen()} aria-label="Close work panel"><X size={14} /></button></header>
+      <WorkView run={run} agent={agent} brand={brand} />
     </aside>}
-    <nav className="marco-tabbar"><button onClick={() => setDrawer(true)}>☰<span>Threads</span></button><button onClick={() => { setSheet(true); }}>●<span>Work</span></button><button onClick={() => setSheet(true)}>▣<span>Output</span></button><Link href="/knowledge">□<span>Library</span></Link></nav>
+    <nav className="marco-tabbar"><button onClick={() => setDrawer(true)}>☰<span>Threads</span></button><button onClick={() => setSheet(true)}>●<span>Work</span></button><Link href="/knowledge">□<span>Library</span></Link></nav>
   </div>;
 }
 
@@ -154,8 +167,5 @@ function BuildView({ run, onCreate }: { run: Run | null; onCreate: () => Promise
   return <div className="marco-build"><BuildBlock n="1" title="Prompt"><p>{run?.title ?? "Describe the work in Chat, then shape its Run here."}</p><div className="marco-rolebar"><span>Rewrite with Voice</span><span>Load from Run</span></div></BuildBlock><BuildBlock n="2" title={`Asset manifest. ${manifestCount} items`}><div className="marco-manifest-buckets">{buckets.map((label, index) => <button type="button" key={label} className={selectedRole === label ? "is-selected" : ""} onClick={() => setSelectedRole(label)}><b>{manifestCount ? Math.max(1, Math.ceil(manifestCount / (index + 2))) : 0}</b><small>{label}</small></button>)}<button type="button" className="is-add">+ add</button></div><div className="marco-rolebar"><span>Role: <b>{selectedRole}</b></span><span>Bundle preview</span><span>Save bundle when connected</span></div></BuildBlock><BuildBlock n="3" title="Model and output"><div className="marco-model-grid"><label>Model <b>Provider pending</b><small>Select models in Settings when connected</small></label><label>Duration <b>Provider controlled</b><small>Available after model selection</small></label><label>Variations <select value={variations} onChange={(event) => setVariations(Number(event.target.value))}>{[1,2,3,4].map((item) => <option key={item}>{item}</option>)}</select><small>Planned outputs</small></label></div><div className="marco-aspect"><span>Aspect ratio</span><div>{["1:1","4:5","9:16","16:9","21:9"].map((item) => <button type="button" key={item} className={aspect === item ? "is-selected" : ""} onClick={() => setAspect(item)}>{item}</button>)}</div></div></BuildBlock><div className="marco-runbar"><span>Provider cost <b>{run?.cost == null ? "Not available" : `$${run.cost.toFixed(2)}`}</b><small>Create a Run before provider execution.</small></span><button type="button" onClick={() => void onCreate()}>Create Run</button></div></div>;
 }
 function BuildBlock({ n, title, children }: { n: string; title: string; children: React.ReactNode }) { return <section className="marco-build-block"><h3><i>{n}</i>{title}</h3><div>{children}</div></section>; }
-function CanvasView({ run }: { run: Run | null }) { const [nodes, setNodes] = React.useState(["Voice direction"]); return <div className="marco-canvas"><div className="marco-canvas-dock"><button className="is-selected">⌁</button><button type="button" onClick={() => setNodes((current) => [...current, `New node ${current.length + 1}`])}>+</button><button>↖</button><button>✋</button><button>✂</button><i /><button>↶</button><button>↷</button></div><div className="marco-canvas-top"><button className="is-active">Drop pipeline</button><button type="button" onClick={() => setNodes(["Voice direction"])}>Reset preview</button></div><svg className="marco-wires" viewBox="0 0 1000 600" preserveAspectRatio="none"><path d="M250 270 C350 270, 390 310, 480 310 S640 210, 730 220" /><path d="M545 350 C620 390, 660 430, 770 420" /></svg><CanvasGroup className="is-reference" label="Reference images"><div className="marco-canvas-tiles">{Array.from({ length: 6 }, (_, index) => <i key={index} />)}</div></CanvasGroup><CanvasGroup className="is-prompts" label="Prompts"><p>{run?.title ?? "Create a prompt block"}</p><small>Intent and constraints</small></CanvasGroup><CanvasGroup className="is-approval" label="Approval"><p>You sign off</p><small>Before anything external</small></CanvasGroup>{nodes.map((node, index) => <div className="marco-canvas-node" style={{ bottom: `${22 - index * 11}%`, left: `${56 + index * 8}%` }} key={node}><small>LOCAL PREVIEW</small><b>{node}</b></div>)}<div className="marco-canvas-note">Canvas nodes are editable locally. Connecting providers enables execution and saved runs.</div></div>; }
-function CanvasGroup({ className, label, children }: { className: string; label: string; children: React.ReactNode }) { return <section className={cn("marco-canvas-group", className)}><h3>{label}</h3>{children}</section>; }
-function CanvasChat() { return <div className="marco-canvas-chat"><div><h3>Hello, Marcus</h3><p>Describe what you want and I will lay the nodes onto the canvas.</p></div><section><span>Add a reference block</span><span>Generate variants</span><span>Insert an approval gate</span></section><footer><p>What do you want to create?</p><div><button>+</button><button>●</button><button>⚙</button><button className="is-send">↑</button></div></footer></div>; }
-function WorkView({ run, agent, brand }: { run: Run | null; agent?: MarcoAgent; brand?: Brand }) { if (!run) return <div className="marco-work-body"><section className="marco-run-meta"><p><span>Agent</span><b>{agent?.name ?? "MARCO"}</b></p><p><span>Brand</span><b>{brand?.name ?? "None selected"}</b></p><p><span>Open runs</span><b>0</b></p></section><small className="marco-note">The right panel collapses when there is nothing to look at.</small></div>; const context = run.inputs.runtime_context; return <div className="marco-work-body"><div className="marco-work-thumbs"><i>dir_01</i><i>dir_02</i><i>dir_03</i><i>dir_03b</i></div><section className="marco-run-meta"><p><span>Status</span><b className="is-red">{run.status}</b></p><p><span>Assets in</span><b>{run.assetManifest.length}</b></p><p><span>Outputs</span><b>{run.outputs.length}</b></p><p><span>Cost so far</span><b>{run.cost == null ? "Unknown" : `$${run.cost.toFixed(2)}`}</b></p></section>{Boolean(context) && <details className="marco-context-inspector"><summary>Show context</summary><pre>{JSON.stringify(context, null, 2)}</pre></details>}<RunSteps steps={run.steps} /><small className="marco-note">This is the same Run shown in the center pane. Chat, Build, and Canvas are three ways to steer it.</small></div>; }
+function WorkView({ run, agent, brand }: { run: Run | null; agent?: MarcoAgent; brand?: Brand }) { if (!run) return <div className="marco-work-body"><section className="marco-run-meta"><p><span>Agent</span><b>{agent?.name ?? "MARCO"}</b></p><p><span>Brand</span><b>{brand?.name ?? "None selected"}</b></p><p><span>Open runs</span><b>0</b></p></section><small className="marco-note">The right panel collapses when there is nothing to look at.</small></div>; const context = run.inputs.runtime_context; return <div className="marco-work-body"><div className="marco-work-thumbs"><i>dir_01</i><i>dir_02</i><i>dir_03</i><i>dir_03b</i></div><section className="marco-run-meta"><p><span>Status</span><b className="is-red">{run.status}</b></p><p><span>Assets in</span><b>{run.assetManifest.length}</b></p><p><span>Outputs</span><b>{run.outputs.length}</b></p><p><span>Cost so far</span><b>{run.cost == null ? "Unknown" : `$${run.cost.toFixed(2)}`}</b></p></section>{Boolean(context) && <details className="marco-context-inspector"><summary>Show context</summary><pre>{JSON.stringify(context, null, 2)}</pre></details>}<RunSteps steps={run.steps} /><small className="marco-note">This is the same Run shown in Chat and Build.</small></div>; }
 function relativeTime(value: string) { const age = Date.now() - new Date(value).getTime(); if (age < 60_000) return "now"; if (age < 3_600_000) return `${Math.floor(age / 60_000)}m`; if (age < 86_400_000) return `${Math.floor(age / 3_600_000)}h`; return `${Math.floor(age / 86_400_000)}d`; }

@@ -109,10 +109,10 @@ select v.slug, v.name, v.tagline, v.color, v.surfaces, 'paused',
   '{"generate":"ask","publish":"never","write_knowledge":"ask","use_cli":"never","mcp_write":"ask","budget_cap_per_run":5}'::jsonb, v.sort_order
 from (values
  ('chief','Chief','routes work, reports back','#7FD1B9',array['chat'],1),
- ('atelier','Atelier','apparel design and product','#AD0000',array['chat','build','canvas'],2),
+ ('atelier','Atelier','apparel design and product','#AD0000',array['chat','build'],2),
  ('voice','Voice','every word that ships','#E8C468',array['chat','build'],3),
- ('studio','Studio','images and video','#FF3D8A',array['chat','build','canvas'],4),
- ('social','Social','scheduling, platforms, automations','#6FA8FF',array['chat','build','canvas'],5),
+ ('studio','Studio','images and video','#FF3D8A',array['chat','build'],4),
+ ('social','Social','scheduling, platforms, automations','#6FA8FF',array['chat','build'],5),
  ('builder','Builder','planner plus executor for code','#9B8CFF',array['chat','build'],6)
 ) as v(slug,name,tagline,color,surfaces,sort_order)
 where not exists (select 1 from agents a where a.slug = v.slug);
