@@ -1,3 +1,3 @@
-import type { RuntimeDispatch } from "@/lib/runtime/types";
-const priority = { user: 0, agent: 1, automation: 2, background: 3 } as const;
-export class Scheduler { private queue: RuntimeDispatch[] = []; enqueue(job: RuntimeDispatch) { this.queue.push(job); this.queue.sort((a, b) => priority[a.lane] - priority[b.lane]); } next() { return this.queue.shift() ?? null; } }
+import { claimNextTurn, failRun, setLaneStatus } from "../lib/runtime/repository";
+import { runTurn } from "./turn-runner";
+export class Scheduler { private running = false; constructor(private readonly workerId: string) {} async drain() { if (this.running) return; this.running = true; try { let lane = await claimNextTurn(this.workerId); while (lane) { try { await runTurn(lane); } catch (error) { const reason = error instanceof Error ? error.message : "Unknown worker error"; await Promise.all([setLaneStatus(String(lane.id), "failed", { error: reason }), failRun(String(lane.run_id), reason)]); } lane = await claimNextTurn(this.workerId); } } finally { this.running = false; } } }

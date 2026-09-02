@@ -1,2 +1,4 @@
 import { NextResponse } from "next/server";
-export async function POST(request: Request) { const secret = process.env.MARCO_WORKER_SECRET; const url = process.env.MARCO_WORKER_URL; if (!secret || !url) return NextResponse.json({ error: "Worker is not configured." }, { status: 503 }); const body = await request.text(); const response = await fetch(`${url}/internal/dispatch`, { method: "POST", headers: { Authorization: `Bearer ${secret}`, "Content-Type": "application/json" }, body }); return NextResponse.json(await response.json(), { status: response.status }); }
+import { notifyWorker } from "@/lib/runtime/dispatch";
+import type { RuntimeDispatch } from "@/lib/runtime/types";
+export async function POST(request: Request) { const body = await request.json() as Partial<RuntimeDispatch>; if (!body.runId || !body.agentId || !body.threadId || !body.request || !["user", "agent", "automation", "background"].includes(body.lane ?? "")) return NextResponse.json({ error: "Invalid runtime dispatch." }, { status: 400 }); const result = await notifyWorker(body as RuntimeDispatch); return NextResponse.json(result, { status: result.delivered ? 202 : 503 }); }
