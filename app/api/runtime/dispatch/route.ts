@@ -1,0 +1,2 @@
+import { NextResponse } from "next/server";
+export async function POST(request: Request) { const secret = process.env.MARCO_WORKER_SECRET; const url = process.env.MARCO_WORKER_URL; if (!secret || !url) return NextResponse.json({ error: "Worker is not configured." }, { status: 503 }); const body = await request.text(); const response = await fetch(`${url}/internal/dispatch`, { method: "POST", headers: { Authorization: `Bearer ${secret}`, "Content-Type": "application/json" }, body }); return NextResponse.json(await response.json(), { status: response.status }); }
