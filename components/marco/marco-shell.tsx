@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils";
 import type { Brand, MarcoAgent, Run, Thread, ThreadMessage } from "@/lib/marco-types";
 import { listBrands, listMarcoAgents, listMessages, listRuns, listThreads, sendThreadMessage, setActiveBrand } from "@/lib/actions/marco";
 import { demoAgents, demoBrands, demoMessages, demoRun, demoThreads } from "@/lib/demo-marco-data";
-import { createRun } from "@/lib/actions/generation";
+import { createRun, startGeneration } from "@/lib/actions/generation";
 
 const LIBRARY = [
   ["Calendar", "/calendar", "🗓️"], ["Automations", "/automations", "⚡"], ["Assets", "/assets", "🗂️"],
@@ -136,7 +136,7 @@ export function MarcoShell({ children }: { children: React.ReactNode }) {
         {!isLibrary && <button className={cn("marco-icon-button marco-panel-toggle", work && "is-active")} onClick={() => innerWidth < 900 ? setSheet(true) : setWorkOpen()} aria-label="Toggle work panel">{work ? <PanelRightClose size={16} /> : <PanelRightOpen size={16} />}</button>}
       </header>
       <section className={cn("marco-stage", view === "canvas" && !isLibrary && "is-canvas")}>
-        {isLibrary ? <div className="marco-page-pad">{children}</div> : view === "chat" ? <ChatView messages={messages} agentColor={agent?.avatarColor} /> : view === "build" ? <BuildView run={run} onCreate={async () => { if (!activeThread || !agent || demoMode) return; const next = await createRun({ agentId: agent.id, threadId: activeThread.id, brandId: brand?.id, title: "New generation Run" }); setRuns((current) => [next as unknown as Run, ...current]); }} /> : <CanvasView run={run} />}
+        {isLibrary ? <div className="marco-page-pad">{children}</div> : view === "chat" ? <ChatView messages={messages} agentColor={agent?.avatarColor} /> : view === "build" ? <BuildView run={run} onCreate={async () => { if (!activeThread || !agent || demoMode) return; const next = await createRun({ agentId: agent.id, threadId: activeThread.id, brandId: brand?.id, title: "New generation Run" }); await startGeneration({ runId: String(next.id), mode: "text", model: "openai/gpt-4.1-nano" }); setRuns((current) => [next as unknown as Run, ...current]); }} /> : <CanvasView run={run} />}
       </section>
       {!isLibrary && view !== "canvas" && <form className="marco-composer" onSubmit={(event) => { event.preventDefault(); void submit(); }}><div><input disabled={demoMode} value={draft} onChange={(event) => setDraft(event.target.value)} placeholder={demoMode ? "Demo preview — connect Supabase to send" : `Message ${agent?.name ?? "MARCO"}`} /><span>Attach</span><span>Bundle</span><button disabled={demoMode}>Send</button></div></form>}
     </main>
