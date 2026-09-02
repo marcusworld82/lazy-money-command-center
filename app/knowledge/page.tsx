@@ -27,6 +27,8 @@ import { KnowledgeTree } from "@/components/features/knowledge-tree";
 import { MarkdownEditor } from "@/components/features/markdown-editor";
 import { BrandKitForm } from "@/components/features/brand-kit-form";
 import { SkillsPanel } from "@/components/marco/skills-panel";
+import { LearningPanel } from "@/components/marco/learning-panel";
+import { BrandRecordsPanel } from "@/components/marco/brand-records-panel";
 import {
   listFolders,
   listDocuments,
@@ -55,6 +57,7 @@ const DOCUMENT_TYPES: { value: DocumentType; label: string }[] = [
 ];
 
 export default function KnowledgeLibraryPage() {
+  const [knowledgeTab, setKnowledgeTab] = React.useState<"library" | "skills" | "brands" | "learning">("library");
   const [folders, setFolders] = React.useState<KnowledgeFolder[]>([]);
   const [documents, setDocuments] = React.useState<KnowledgeDocument[]>([]);
   const [brandKits, setBrandKits] = React.useState<ClientBrandKit[]>([]);
@@ -210,9 +213,12 @@ export default function KnowledgeLibraryPage() {
         </p>
       </header>
 
-      <SkillsPanel />
+      <nav className="marco-knowledge-tabs" aria-label="Knowledge sections">{(["library", "skills", "brands", "learning"] as const).map((tab) => <button key={tab} className={knowledgeTab === tab ? "is-active" : ""} onClick={() => setKnowledgeTab(tab)}>{tab === "library" ? "Library" : tab === "skills" ? "Skills" : tab === "brands" ? "Brand records" : "Learning proposals"}</button>)}</nav>
+      {knowledgeTab === "skills" && <SkillsPanel />}
+      {knowledgeTab === "brands" && <BrandRecordsPanel />}
+      {knowledgeTab === "learning" && <LearningPanel />}
 
-      {error ? (
+      {knowledgeTab === "library" && (error ? (
         <KnowledgeDemoPreview />
       ) : loading ? (
         <ListSkeleton count={6} />
@@ -389,9 +395,9 @@ export default function KnowledgeLibraryPage() {
             )}
           </div>
         </div>
-      )}
+      ))}
 
-      {templateFolder && !loading && !error && (
+      {knowledgeTab === "library" && templateFolder && !loading && !error && (
         <p className="text-xs text-foreground/40">
           Tip: documents inside Templates can be duplicated into any other folder.
         </p>

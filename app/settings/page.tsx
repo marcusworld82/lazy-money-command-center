@@ -6,6 +6,7 @@ import { AgentAvatar } from "@/components/marco/agent-avatar";
 import { listBrands, listMarcoAgents } from "@/lib/actions/marco";
 import { demoAgents, demoBrands } from "@/lib/demo-marco-data";
 import type { Brand, MarcoAgent } from "@/lib/marco-types";
+import { ConnectionsPanel } from "@/components/marco/connections-panel";
 
 const sections = ["Agents", "Providers and keys", "Connections", "Brand records", "Sync", "Appearance"] as const;
 type Section = (typeof sections)[number];
@@ -19,7 +20,7 @@ export default function SettingsPage() {
     <header className="marco-library-header"><h1>Settings</h1><p>Agents, API keys, MCP servers, CLI runners.</p></header>
     <div className="marco-settings">
       <nav className="marco-settings-nav">{sections.map((item) => <button key={item} className={section === item ? "is-active" : ""} onClick={() => setSection(item)}>{item}</button>)}</nav>
-      <section className="marco-settings-content"><h2>{section}</h2>{section === "Agents" ? <div className="marco-library-card">{agents.map((agent) => <Link href={`/new-agent?edit=${agent.id}`} className="marco-settings-row" key={agent.id}><AgentAvatar color={agent.avatarColor} name={agent.name} size="sm" /><span><b>{agent.name}</b><small>{agent.tagline}</small></span><em className="is-paused">{agent.status}</em></Link>)}</div> : <Rows section={section} brands={brands} />}</section>
+      <section className="marco-settings-content"><h2>{section}</h2>{section === "Agents" ? <div className="marco-library-card">{agents.map((agent) => <Link href={`/new-agent?edit=${agent.id}`} className="marco-settings-row" key={agent.id}><AgentAvatar color={agent.avatarColor} name={agent.name} size="sm" /><span><b>{agent.name}</b><small>{agent.tagline}</small></span><em className="is-paused">{agent.status}</em></Link>)}</div> : section === "Connections" ? <ConnectionsPanel /> : <Rows section={section} brands={brands} />}</section>
     </div>
   </div>;
 }
