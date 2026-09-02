@@ -12,7 +12,7 @@ The product is called **MARCO**. The repository remains `lazy-money-command-cent
 - The app is a command center, not a dashboard of disconnected tools.
 - Conversation is the primary interface.
 - Every unit of work is a Run.
-- Chat, Build, and Canvas are three views of the same Run.
+- Chat and Build are two views of the same Run. Canvas is not a Run view — see Phase 6.5.
 - Supabase is the system of record.
 - Obsidian is a mirror only, never a competing source of truth.
 - Agents are database rows. Never hardcode agent names, colors, roles, models, or permissions.

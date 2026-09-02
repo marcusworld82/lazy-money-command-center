@@ -10,7 +10,7 @@ Marcus uses MARCO as a single-user command center while directing work across th
 
 ## Product Purpose
 
-MARCO is a thread-first workspace. A conversation selects an agent and every piece of work belongs to a Run that can be viewed in Chat, Build, or Canvas.
+MARCO is a thread-first workspace. A conversation selects an agent and every piece of work belongs to a Run that can be viewed in Chat or Build.
 
 ## Brand Personality
 
@@ -24,7 +24,7 @@ Do not turn MARCO into a generic card dashboard, a page-per-feature tool suite, 
 
 - Threads lead; tools support the current conversation.
 - Keep the three-pane shell dense, calm, and immediately scannable.
-- Use the active Run as the shared context across Chat, Build, and Canvas.
+- Use the active Run as the shared context across Chat and Build.
 - Make state and authority clear without inventing activity or results.
 
 ## Accessibility & Inclusion

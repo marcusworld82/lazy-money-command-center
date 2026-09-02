@@ -20,11 +20,13 @@ Split by craft, not by topic. The test: split when the model, the knowledge, or 
 | Placeholder | Owns | Hands off to | Surfaces |
 |---|---|---|---|
 | Chief | Routing, status synthesis, one answer instead of six threads. Produces no work of its own | all | chat |
-| Atelier | Apparel design and product. Both clothing lines. Fabric, fit blocks, construction, trim | Voice, Studio | chat, build, canvas |
+| Atelier | Apparel design and product. Both clothing lines. Fabric, fit blocks, construction, trim | Voice, Studio | chat, build |
 | Voice | Every word that ships. Captions, reel scripts, storefront copy, client site copy, email | none | chat, build |
-| Studio | Image and video generation. Owns the manifest and the render models | none | chat, build, canvas |
-| Social | Scheduling, platform adaptation, automations | Voice, Studio | chat, build, canvas |
+| Studio | Image and video generation. Owns the manifest and the render models | none | chat, build |
+| Social | Scheduling, platform adaptation, automations | Voice, Studio | chat, build |
 | Builder | Code. Planner plus executor pair | none | chat, build |
+
+Surfaces are `chat` and `build` only. Canvas was removed as a Run view in Phase 6.5 — Studio's generation controls (aspect ratio, reference tiles, model picks) live inside Build, not a separate pane.
 
 **Why Voice is separate.** One owner for wording, or the brand voice drifts into six versions. Atelier knows stitching. It should not also be the keeper of the register.
 
