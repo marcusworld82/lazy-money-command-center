@@ -6,7 +6,7 @@ export type RunStatus = "draft" | "running" | "needs_approval" | "completed" | "
 export type StepStatus = "pending" | "running" | "done" | "blocked" | "failed" | "skipped";
 export type MessageKind = "text" | "handoff" | "approval" | "manifest" | "plan" | "status";
 
-export interface MarcoAgent { id: string; slug: string; name: string; tagline: string | null; instructions: string | null; avatarColor: string; surfaces: AgentSurface[]; modelReasoning: string | null; modelFast: string | null; modelRender: string | null; permissions: Record<string, PermissionMode | number>; canHandoffTo: string[]; status: string; sortOrder: number; }
+export interface MarcoAgent { id: string; slug: string; name: string; tagline: string | null; instructions: string | null; avatarColor: string; surfaces: AgentSurface[]; modelReasoning: string | null; modelFast: string | null; modelRender: string | null; permissions: Record<string, PermissionMode | number>; canHandoffTo: string[]; roleKey: "chief" | "atelier" | "voice" | "studio" | "social" | "builder" | "custom"; status: string; sortOrder: number; }
 export interface Brand { id: string; name: string; slug: string; kind: string | null; isActive: boolean; colors: Record<string, string> | null; voice: Record<string, unknown> | null; audience: string | null; offers: string | null; restrictions: string | null; }
 export interface Thread { id: string; agentId: string; brandId: string | null; title: string | null; lastMessagePreview: string | null; unread: boolean; updatedAt: string; }
 export interface AssetManifestItem { asset_id: string; role: ManifestRole; order: number; extracted_text_ref?: string; }
