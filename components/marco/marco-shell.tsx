@@ -4,7 +4,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { Menu, PanelRightClose, PanelRightOpen, Plus, Settings, X } from "lucide-react";
+import { Bot, BookOpen, BrainCircuit, CalendarDays, Folder, Menu, MessageCircle, PanelRightClose, PanelRightOpen, Plus, Settings, Sparkles, X, Zap } from "lucide-react";
 import { AgentAvatar } from "@/components/marco/agent-avatar";
 import { MessageCard, RunSteps } from "@/components/marco/run-cards";
 import { cn } from "@/lib/utils";
@@ -14,7 +14,12 @@ import { demoAgents, demoBrands, demoMessages, demoRun, demoThreads } from "@/li
 
 const LIBRARY = [
   ["Calendar", "/calendar", "🗓️"], ["Automations", "/automations", "⚡"], ["Assets", "/assets", "🗂️"],
-  ["Knowledge", "/knowledge", "📚"], ["Spend", "/spend-usage", "⋮"], ["Settings", "/settings", "⚙"],
+  ["Knowledge", "/knowledge", "📚"], ["Memory", "/memory", "🧠"], ["Spend", "/spend-usage", "⋮"], ["Settings", "/settings", "⚙"],
+] as const;
+
+const UTILITY_NAV = [
+  ["Threads", "/", MessageCircle], ["Agents", "/agents", Bot], ["Automations", "/automations", Zap],
+  ["Knowledge", "/knowledge", BookOpen], ["Memory", "/memory", BrainCircuit], ["Assets", "/assets", Folder], ["Calendar", "/calendar", CalendarDays],
 ] as const;
 
 export function MarcoShell({ children }: { children: React.ReactNode }) {
@@ -118,6 +123,11 @@ export function MarcoShell({ children }: { children: React.ReactNode }) {
 
   return <div className={cn("marco-shell", rail && "is-mini", !work && "no-work", drawer && "has-drawer", sheet && "has-sheet")}>
     <div className="marco-scrim" onClick={() => setDrawer(false)} />
+    <aside className="marco-icon-rail" aria-label="Primary navigation">
+      <Link href="/" className="marco-mark" aria-label="MARCO home"><img src="/agent-mark.png" alt="" /></Link>
+      <nav>{UTILITY_NAV.map(([label, href, Icon]) => <Link key={href} href={href} className={pathname === href ? "is-active" : ""} aria-label={label} title={label}><Icon size={17} strokeWidth={1.8} /></Link>)}</nav>
+      <div><button className="marco-utility-toggle" onClick={setRailOpen} aria-label={rail ? "Expand thread list" : "Collapse thread list"}>{rail ? <Menu size={16} /> : <X size={16} />}</button><Link href="/settings" aria-label="Settings" title="Settings"><Settings size={17} strokeWidth={1.8} /></Link></div>
+    </aside>
     <aside className="marco-rail">
       <div className="marco-brand">
         <Link href="/" className="marco-mark"><img src="/agent-mark.png" alt="MARCO" /></Link>
@@ -150,7 +160,7 @@ export function MarcoShell({ children }: { children: React.ReactNode }) {
       <section className="marco-stage">
         {isLibrary ? <div className="marco-page-pad">{children}</div> : view === "chat" ? <ChatView messages={messages} agentColor={agent?.avatarColor} /> : <BuildView run={run} onCreate={async () => { if (!activeThread || !agent || demoMode) return; const turn = await createRuntimeTurn({ agentId: agent.id, threadId: activeThread.id, brandId: brand?.id, request: "Create a new Run from the current thread context.", title: "New generation Run" }); setMessages((current) => [...current, turn.message]); setRuns((current) => [turn.run, ...current]); }} />}
       </section>
-      {!isLibrary && <form className="marco-composer" onSubmit={(event) => { event.preventDefault(); void submit(); }}><div><input disabled={demoMode || enhancing} value={draft} onChange={(event) => setDraft(event.target.value)} placeholder={demoMode ? "Demo preview — connect Supabase to send" : `Message ${agent?.name ?? "MARCO"}`} /><span>Attach</span><span>Bundle</span><button type="button" disabled={demoMode || enhancing || !draft.trim()} onClick={() => void enhanceDraft()}>{enhancing ? "Enhancing…" : "Enhance"}</button><button disabled={demoMode || enhancing || !draft.trim()}>Send</button></div>{enhanceError && <p className="marco-composer-error" role="alert">{enhanceError}</p>}</form>}
+      {!isLibrary && <form className="marco-composer" onSubmit={(event) => { event.preventDefault(); void submit(); }}><div><input disabled={demoMode || enhancing} value={draft} onChange={(event) => setDraft(event.target.value)} placeholder={demoMode ? "Demo preview: connect Supabase to send" : `Message ${agent?.name ?? "MARCO"}`} /><span>Attach</span><span>Bundle</span><button className="marco-enhance" type="button" disabled={demoMode || enhancing || !draft.trim()} onClick={() => void enhanceDraft()}><Sparkles size={14} />{enhancing ? "Enhancing…" : "Enhance"}</button><button disabled={demoMode || enhancing || !draft.trim()}>Send</button></div>{enhanceError && <p className="marco-composer-error" role="alert">{enhanceError}</p>}</form>}
     </main>
     {!isLibrary && <aside className="marco-work">
       <header><b>{run ? `Run ${run.shortId}` : "Thread context"}</b><span className={run?.status === "needs_approval" ? "needs-approval" : ""}>{run?.status ?? "Idle"}</span><button onClick={() => innerWidth < 900 ? setSheet(false) : setWorkOpen()} aria-label="Close work panel"><X size={14} /></button></header>
