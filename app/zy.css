@@ -106,5 +106,30 @@
 .zy-modal footer button[type="submit"] { border: 0; color: white; background: var(--red); }
 .zy-modal footer button[type="submit"]:disabled { opacity: .45; cursor: not-allowed; }
 .zy-modal footer button[type="button"] { border: 1px solid var(--line); color: var(--txt-dim); background: transparent; }
+.zy-agent-modal { width: min(720px, calc(100vw - 24px)); max-height: calc(100svh - 32px); overflow: auto; padding: 22px 22px 16px; border: 1px solid var(--line); border-radius: 22px; background: #161313; position: relative; }
+.zy-agent-modal h1 { margin: 0 0 8px; font-size: 22px; }
+.zy-agent-modal header p { margin: 0 0 16px; color: var(--txt-dim); font-size: 13px; line-height: 1.5; }
+.zy-agent-close { position: absolute; top: 12px; right: 14px; width: 32px; height: 32px; border: 0; border-radius: 8px; color: var(--txt-dim); background: transparent; font-size: 22px; cursor: pointer; }
+.zy-agent-modal label { display: grid; gap: 6px; margin: 12px 0; color: var(--txt-mute); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; }
+.zy-agent-modal input, .zy-agent-modal textarea, .zy-agent-modal select { width: 100%; padding: 10px 12px; border: 1px solid var(--line); border-radius: 12px; color: var(--txt); background: #0c0b0b; font: inherit; letter-spacing: 0; text-transform: none; }
+.zy-avatar-tabs { display: flex; gap: 6px; margin: 8px 0 12px; }
+.zy-avatar-tabs button { padding: 6px 12px; border: 1px solid var(--line); border-radius: 999px; color: var(--txt-dim); background: transparent; cursor: pointer; }
+.zy-avatar-tabs button.is-on { color: white; background: var(--red); border-color: var(--red); }
+.zy-icon-grid { display: grid; grid-template-columns: repeat(4, 48px); gap: 8px; margin-bottom: 10px; }
+.zy-icon-grid button { width: 48px; height: 48px; border: 2px solid transparent; border-radius: 14px; color: white; font-size: 20px; cursor: pointer; }
+.zy-icon-grid button.is-on { border-color: white; }
+.zy-color-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
+.zy-color-row button { width: 22px; height: 22px; border: 2px solid transparent; border-radius: 50%; cursor: pointer; }
+.zy-color-row button.is-on { border-color: white; }
+.zy-advanced-toggle { margin: 8px 0; border: 0; color: var(--txt-dim); background: transparent; cursor: pointer; }
+.zy-advanced { padding: 8px 0 4px; }
+.zy-two { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.zy-agent-note { margin: 0 0 10px; color: var(--txt-mute); font-size: 12px; line-height: 1.5; letter-spacing: 0; text-transform: none; }
+.zy-agent-error { padding: 10px 12px; border: 1px solid var(--red); border-radius: 12px; color: var(--txt); }
+.zy-perm { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--line); color: var(--txt); text-transform: none; letter-spacing: 0; }
+.zy-agent-modal footer { display: flex; justify-content: flex-end; gap: 8px; margin-top: 18px; }
+.zy-agent-modal footer button { padding: 8px 14px; border-radius: 12px; cursor: pointer; }
+.zy-agent-modal footer button[type="submit"] { border: 0; color: white; background: var(--red); }
+.zy-agent-modal footer button[type="button"] { border: 1px solid var(--line); color: var(--txt-dim); background: transparent; }
 @media (max-width: 980px) { .zy-root { padding: 0; background: #0c0b0b; } .zy-window { height: 100svh; border: 0; border-radius: 0; } .zy-imessage, .zy-build { grid-template-columns: 1fr; } .zy-contacts, .zy-build-rail { display: none; } .zy-imessage.is-open .zy-contacts, .zy-build.is-open .zy-build-rail { display: flex; position: absolute; inset: 64px auto 0 0; z-index: 30; width: min(320px, 88vw); } .zy-mobile-only { display: grid; } .zy-studio, .zy-tutorial-row { grid-template-columns: 1fr; } .zy-mode button { min-width: 72px; } }
-@media (max-width: 640px) { .zy-top { padding: 0 10px; } .zy-logo b, .zy-brand-chip { display: none; } .zy-home h1 { font-size: 26px; } .zy-hero-card { min-height: 240px; } }
+@media (max-width: 640px) { .zy-top { padding: 0 10px; } .zy-logo b, .zy-brand-chip { display: none; } .zy-home h1 { font-size: 26px; } .zy-hero-card { min-height: 240px; } .zy-two { grid-template-columns: 1fr; } .zy-icon-grid { grid-template-columns: repeat(4, 1fr); } }
