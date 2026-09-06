@@ -117,9 +117,14 @@ export function MarcoShell({ children }: { children: React.ReactNode }) {
     localStorage.setItem("marco:rail", next ? "on" : "off");
   }
 
+  function closeRail() {
+    setRailOpen(false);
+  }
+
   function switchMode(next: Mode) {
     setMode(next);
     localStorage.setItem("marco:mode", next);
+    closeRail();
     if (next === "chat") {
       setMobileThread(false);
       router.push("/");
@@ -131,6 +136,7 @@ export function MarcoShell({ children }: { children: React.ReactNode }) {
     setMobileThread(true);
     setMode("chat");
     localStorage.setItem("marco:mode", "chat");
+    closeRail();
     router.push(`/?thread=${encodeURIComponent(thread.id)}`);
   }
 
@@ -193,6 +199,7 @@ export function MarcoShell({ children }: { children: React.ReactNode }) {
     setGroupTitle("");
     setMode("chat");
     setMobileThread(true);
+    closeRail();
     router.push(`/?thread=${encodeURIComponent(thread.id)}`);
   }
 
@@ -226,14 +233,19 @@ export function MarcoShell({ children }: { children: React.ReactNode }) {
                 ))}
               </div>
             )}
-            <Link href="/settings" className="zy-icon-btn" aria-label="Settings"><Settings size={16} /></Link>
+            <Link href="/settings" className="zy-icon-btn" aria-label="Settings" onClick={closeRail}><Settings size={16} /></Link>
           </div>
         </header>
 
         <div className={cn("zy-body", mode === "chat" ? "is-chat" : "is-build")}>
+          {railOpen && <button type="button" className="zy-scrim" aria-label="Close sidebar" onClick={closeRail} />}
           <aside className="zy-rail">
             <div className="zy-rail-block">
               <small>Agents</small>
+              <Link href="/new-agent" className="zy-rail-agent" onClick={closeRail}>
+                <Plus size={15} />
+                <span>New agent</span>
+              </Link>
               {agents.map((item) => {
                 const thread = threads.find((row) => row.agentId === item.id && row.kind !== "group") ?? threads.find((row) => row.agentId === item.id);
                 return (
@@ -248,7 +260,7 @@ export function MarcoShell({ children }: { children: React.ReactNode }) {
             <div className="zy-rail-block">
               <small>Library</small>
               {FEATURES.map(([label, href, Icon]) => (
-                <Link key={href} href={href} className={pathname === href ? "is-active" : ""} onClick={() => { setMode("build"); localStorage.setItem("marco:mode", "build"); }}>
+                <Link key={href} href={href} className={pathname === href ? "is-active" : ""} onClick={() => { setMode("build"); localStorage.setItem("marco:mode", "build"); closeRail(); }}>
                   <Icon size={16} />
                   <span>{label}</span>
                 </Link>
@@ -282,14 +294,16 @@ export function MarcoShell({ children }: { children: React.ReactNode }) {
                     if (!rowAgent) return null;
                     return (
                       <button key={thread.id} type="button" className={cn("im-row", activeThread?.id === thread.id && "is-active")} onClick={() => chooseThread(thread)}>
-                        {thread.unread && <i className="im-unread" />}
+                        <i className={cn("im-unread", thread.unread && "is-on")} />
                         <AgentAvatar color={rowAgent.avatarColor} name={thread.kind === "group" ? thread.title ?? rowAgent.name : rowAgent.name} />
-                        <span>
+                        <span className="im-copy">
                           <b>{thread.kind === "group" ? thread.title : rowAgent.name}</b>
                           <small>{thread.lastMessagePreview ?? rowAgent.tagline ?? "New thread"}</small>
                         </span>
-                        <time>{relativeTime(thread.updatedAt)}</time>
-                        <ChevronRight size={16} />
+                        <em>
+                          <time>{relativeTime(thread.updatedAt)}</time>
+                          <ChevronRight size={16} />
+                        </em>
                       </button>
                     );
                   })}
