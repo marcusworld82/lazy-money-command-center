@@ -25,7 +25,9 @@ Do not use purple, lilac, or generic SaaS pastels. Do not invent activity, publi
 - A global Chat / Build toggle at the top center switches the entire layout.
 - Chat shows only people (agents and groups) and the message feed.
 - Build shows agents and features in the left sidebar. Image and Video use the studio generator layout.
-- Group threads are explicit. Shared memory is opt-in per group and never implied.
+- Durable memory writes to Obsidian. Supabase keeps live run state only.
+- Group threads share the room: the brief, the job packet, and decisions made in that thread. They do not share another agent’s private memory or skills.
+- Captain and Creative Director are the first two agents. New agents use the same setup modal: avatar, name, title, description, provider, model, SOUL.md, keys, capabilities.
 - Make state and authority clear without inventing activity or results.
 
 ## Accessibility & Inclusion
