@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import { Archivo } from "next/font/google";
 import "./globals.css";
 import "./zy.css";
+import "./im.css";
 import "@xyflow/react/dist/style.css";
 import { ThemeProvider } from "@/lib/providers/theme-provider";
 import { AppDataProvider } from "@/lib/providers/app-data-provider";
