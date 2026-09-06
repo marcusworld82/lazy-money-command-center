@@ -1,9 +1,2 @@
-/* Zyricon-style MARCO chrome. Purple from the reference becomes red. */
-.zy-root {
-  min-height: 100svh;
-  padding: 18px;
-  background:
-    radial-gradient(circle at 20% 0%, color-mix(in srgb, var(--red) 22%, transparent), transparent 36%),
-    #3a1a1a;
-  color: var(--txt);
-}
+/* placeholder to be replaced */
+.zy-root { min-height: 100svh; }
