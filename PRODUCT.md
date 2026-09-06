@@ -10,21 +10,24 @@ Marcus uses MARCO as a single-user command center while directing work across th
 
 ## Product Purpose
 
-MARCO is a thread-first workspace. A conversation selects an agent and every piece of work belongs to a Run that can be viewed in Chat or Build.
+MARCO is a two-mode workspace. Chat is an iMessage-style agent messenger. Build is the full tool surface (image, video, knowledge, calendar, automations, assets, memory, spend, settings). Work still belongs to a Run.
 
 ## Brand Personality
 
-Direct, deliberate, and editorial. The interface should feel like the supplied MARCO shell wireframe: dark, compact, highly legible, and purpose-built rather than generic dashboard software.
+Direct, deliberate, and editorial. Dark rounded chrome with red accents (never purple). Chat is a contact list plus message feed. Build is a feature sidebar plus a studio-style work surface.
 
 ## Anti-references
 
-Do not turn MARCO into a generic card dashboard, a page-per-feature tool suite, or a light SaaS template. Do not introduce visual patterns that conflict with the supplied wireframe.
+Do not use purple, lilac, or generic SaaS pastels. Do not invent activity, published states, or generation results. Do not collapse Chat and Build into one crowded pane.
 
 ## Design Principles
 
-- Threads lead; tools support the current conversation.
-- Keep the three-pane shell dense, calm, and immediately scannable.
-- Use the active Run as the shared context across Chat and Build.
+- A global Chat / Build toggle at the top center switches the entire layout.
+- Chat shows only people (agents and groups) and the message feed.
+- Build shows agents and features in the left sidebar. Image and Video use the studio generator layout.
+- Durable memory writes to Obsidian. Supabase keeps live run state only.
+- Group threads share the room: the brief, the job packet, and decisions made in that thread. They do not share another agent’s private memory or skills.
+- Captain and Creative Director are the first two agents. New agents use the same setup modal: avatar, name, title, description, provider, model, SOUL.md, keys, capabilities.
 - Make state and authority clear without inventing activity or results.
 
 ## Accessibility & Inclusion

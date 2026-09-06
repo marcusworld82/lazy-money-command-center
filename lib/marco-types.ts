@@ -8,7 +8,19 @@ export type MessageKind = "text" | "handoff" | "approval" | "manifest" | "plan" 
 
 export interface MarcoAgent { id: string; slug: string; name: string; tagline: string | null; instructions: string | null; avatarColor: string; surfaces: AgentSurface[]; modelReasoning: string | null; modelFast: string | null; modelRender: string | null; permissions: Record<string, PermissionMode | number>; canHandoffTo: string[]; status: string; sortOrder: number; }
 export interface Brand { id: string; name: string; slug: string; kind: string | null; isActive: boolean; colors: Record<string, string> | null; voice: Record<string, unknown> | null; audience: string | null; offers: string | null; restrictions: string | null; }
-export interface Thread { id: string; agentId: string; brandId: string | null; title: string | null; lastMessagePreview: string | null; unread: boolean; updatedAt: string; }
+export type ThreadKind = "direct" | "group";
+export interface Thread {
+  id: string;
+  agentId: string;
+  brandId: string | null;
+  title: string | null;
+  lastMessagePreview: string | null;
+  unread: boolean;
+  updatedAt: string;
+  kind?: ThreadKind;
+  participantAgentIds?: string[];
+  sharedMemory?: boolean;
+}
 export interface AssetManifestItem { asset_id: string; role: ManifestRole; order: number; extracted_text_ref?: string; }
 export interface RunStep { n: number; label: string; status: StepStatus; cost: number; blocked_on?: string; }
 export interface Run { id: string; shortId: string; agentId: string | null; brandId: string | null; threadId: string | null; title: string | null; inputs: Record<string, unknown>; assetManifest: AssetManifestItem[]; steps: RunStep[]; outputs: Record<string, unknown>[]; status: RunStatus; approvalState: "pending" | "approved" | "rejected" | null; cost: number | null; }

@@ -1,2 +1,3 @@
-import { redirect } from "next/navigation";
-export default function ImagesPage() { redirect("/?agent=studio"); }
+export default function ImagesPage() {
+  return null;
+}

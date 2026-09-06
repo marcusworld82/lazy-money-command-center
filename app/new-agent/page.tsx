@@ -5,31 +5,219 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { createAgent, createThread, getMarcoAgent, listBrands, listMarcoAgents, updateAgent } from "@/lib/actions/marco";
 import type { AgentSurface, Brand, MarcoAgent, PermissionMode } from "@/lib/marco-types";
 import { PermissionTri } from "@/components/marco/permission-tri";
-import { AgentAvatar } from "@/components/marco/agent-avatar";
 
-const swatches = ["#AD0000", "#FF3D8A", "#E8C468", "#6FA8FF", "#9B8CFF", "#7FD1B9", "#E8A06B", "#5FCB8C"];
-const defaultPermissions = { generate: "ask", publish: "never", write_knowledge: "ask", use_cli: "never", mcp_write: "ask", budget_cap_per_run: 5 } as const;
+const COLORS = ["#E8E0D4", "#6B3A2A", "#AD0000", "#E01414", "#2F6B4F", "#4EA0FF", "#3B4BCC", "#7A3DB8", "#FF3D8A", "#6B6B6B"];
+const ICONS = ["☺", "◔", "▣", "▤", "▲", "◆", "☁", "●"];
+const PROVIDERS = ["Inherit (launch profile)", "OpenRouter", "fal"];
+
+const defaultPermissions = {
+  generate: "ask",
+  publish: "never",
+  write_knowledge: "ask",
+  use_cli: "never",
+  mcp_write: "ask",
+  budget_cap_per_run: 5,
+} as const;
 
 export default function NewAgentPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const editId = searchParams.get("edit");
-  const [name, setName] = React.useState(""); const [tagline, setTagline] = React.useState(""); const [instructions, setInstructions] = React.useState(""); const [color, setColor] = React.useState(swatches[0]);
-  const [surfaces, setSurfaces] = React.useState<AgentSurface[]>(["chat"]); const [models, setModels] = React.useState({ reasoning: "", fast: "", render: "" });
-  const [permissions, setPermissions] = React.useState<Record<string, PermissionMode | number>>({ ...defaultPermissions }); const [handoffs, setHandoffs] = React.useState<string[]>([]);
-  const [agents, setAgents] = React.useState<MarcoAgent[]>([]); const [brands, setBrands] = React.useState<Brand[]>([]); const [saving, setSaving] = React.useState(false); const [loadError, setLoadError] = React.useState<string | null>(null);
+  const [name, setName] = React.useState("");
+  const [title, setTitle] = React.useState("");
+  const [description, setDescription] = React.useState("");
+  const [soul, setSoul] = React.useState("");
+  const [color, setColor] = React.useState(COLORS[2]);
+  const [icon, setIcon] = React.useState(ICONS[0]);
+  const [avatarTab, setAvatarTab] = React.useState<"Bot" | "Generate" | "Upload" | "Pet">("Bot");
+  const [advanced, setAdvanced] = React.useState(true);
+  const [advancedTab, setAdvancedTab] = React.useState<"General" | "Capabilities">("General");
+  const [cloneFrom, setCloneFrom] = React.useState("default");
+  const [provider, setProvider] = React.useState(PROVIDERS[0]);
+  const [model, setModel] = React.useState("");
+  const [shareKeys, setShareKeys] = React.useState(true);
+  const [createEmpty, setCreateEmpty] = React.useState(false);
+  const [surfaces, setSurfaces] = React.useState<AgentSurface[]>(["chat"]);
+  const [permissions, setPermissions] = React.useState<Record<string, PermissionMode | number>>({ ...defaultPermissions });
+  const [handoffs, setHandoffs] = React.useState<string[]>([]);
+  const [agents, setAgents] = React.useState<MarcoAgent[]>([]);
+  const [brands, setBrands] = React.useState<Brand[]>([]);
+  const [saving, setSaving] = React.useState(false);
+  const [loadError, setLoadError] = React.useState<string | null>(null);
 
-  React.useEffect(() => { void Promise.all([listBrands(), listMarcoAgents()]).then(([nextBrands, nextAgents]) => { setBrands(nextBrands); setAgents(nextAgents); }).catch(() => setLoadError("Could not load agent settings.")); }, []);
-  React.useEffect(() => { if (!editId) return; void getMarcoAgent(editId).then((agent) => { setName(agent.name); setTagline(agent.tagline ?? ""); setInstructions(agent.instructions ?? ""); setColor(agent.avatarColor); setSurfaces(agent.surfaces); setModels({ reasoning: agent.modelReasoning ?? "", fast: agent.modelFast ?? "", render: agent.modelRender ?? "" }); setPermissions({ ...defaultPermissions, ...agent.permissions }); setHandoffs(agent.canHandoffTo); }).catch(() => setLoadError("Could not load this agent.")); }, [editId]);
-  const toggleSurface = (surface: AgentSurface) => setSurfaces((old) => old.includes(surface) ? old.filter((item) => item !== surface) : [...old, surface]);
-  const toggleHandoff = (id: string) => setHandoffs((old) => old.includes(id) ? old.filter((item) => item !== id) : [...old, id]);
-  const setPermission = (key: string, value: PermissionMode) => setPermissions((old) => ({ ...old, [key]: value }));
-  async function submit(event: React.FormEvent) { event.preventDefault(); if (!name.trim()) return; setSaving(true); try { const input = { name: name.trim(), tagline, instructions, avatarColor: color, surfaces, modelReasoning: models.reasoning || null, modelFast: models.fast || null, modelRender: models.render || null, permissions, canHandoffTo: handoffs }; if (editId) { await updateAgent(editId, input); router.push("/settings"); } else { const agent = await createAgent(input); const thread = await createThread(agent.id, brands.find((brand) => brand.isActive)?.id ?? null); router.push(`/?thread=${thread.id}`); } } finally { setSaving(false); } }
+  React.useEffect(() => {
+    void Promise.all([listBrands(), listMarcoAgents()])
+      .then(([nextBrands, nextAgents]) => { setBrands(nextBrands); setAgents(nextAgents); })
+      .catch(() => setLoadError("Could not load agent settings."));
+  }, []);
 
-  return <form onSubmit={submit} className="mx-auto grid max-w-6xl gap-4 lg:grid-cols-[1fr_300px]"><div className="space-y-4">{loadError && <p className="rounded-lg border border-[var(--red)] bg-[var(--panel)] p-3 text-sm">{loadError}</p>}<Block n="1" title="Identity"><div className="grid gap-3 sm:grid-cols-2"><Field label="Name"><input required value={name} onChange={(event) => setName(event.target.value)} className="w-full bg-transparent outline-none" placeholder="Merch" /></Field><Field label="One line"><input value={tagline} onChange={(event) => setTagline(event.target.value)} className="w-full bg-transparent outline-none" placeholder="packaging, labels, hang tags" /></Field></div><p className="mt-4 text-xs uppercase tracking-widest text-[var(--txt-mute)]">Avatar background</p><div className="mt-2 flex flex-wrap gap-2">{swatches.map((value) => <button key={value} type="button" onClick={() => setColor(value)} aria-label={`Use ${value} avatar color`} className={`size-9 rounded-full border-2 ${color === value ? "border-white" : "border-transparent"}`} style={{ background: value }}><img src="/agent-mark.png" alt="" className="size-full object-contain" /></button>)}<input type="color" value={color} onChange={(event) => setColor(event.target.value)} aria-label="Custom avatar colour" /></div></Block><Block n="2" title="What it owns"><textarea value={instructions} onChange={(event) => setInstructions(event.target.value)} className="min-h-28 w-full rounded-lg border border-[var(--line)] bg-transparent p-3 outline-none" placeholder="Instructions for this agent" /></Block><Block n="3" title="Surfaces"><Toggle label="Chat" detail="Always on. Every agent has a thread." checked disabled /><Toggle label="Build" detail="A Run form and review surface." checked={surfaces.includes("build")} onChange={() => toggleSurface("build")} /></Block><Block n="4" title="Models"><div className="grid gap-3 sm:grid-cols-3"><Field label="Reasoning"><input value={models.reasoning} onChange={(event) => setModels({ ...models, reasoning: event.target.value })} className="w-full bg-transparent outline-none" placeholder="None in Phase 4.6" /></Field><Field label="Fast"><input value={models.fast} onChange={(event) => setModels({ ...models, fast: event.target.value })} className="w-full bg-transparent outline-none" placeholder="None in Phase 4.6" /></Field><Field label="Render"><input value={models.render} onChange={(event) => setModels({ ...models, render: event.target.value })} className="w-full bg-transparent outline-none" placeholder="Optional" /></Field></div></Block><Block n="5" title="Knowledge and skills"><p className="text-sm text-[var(--txt-dim)]">Pickers are seeded UI in this phase. Every agent automatically reads the active brand record.</p></Block><Block n="6" title="Permissions and handoffs"><PermissionRow label="Generate images and video" value={permissionValue(permissions, "generate")} onChange={(value) => setPermission("generate", value)} /><PermissionRow label="Publish to a platform" value={permissionValue(permissions, "publish")} onChange={(value) => setPermission("publish", value)} /><PermissionRow label="Write to Knowledge" value={permissionValue(permissions, "write_knowledge")} onChange={(value) => setPermission("write_knowledge", value)} /><PermissionRow label="Use CLI" value={permissionValue(permissions, "use_cli")} onChange={(value) => setPermission("use_cli", value)} /><PermissionRow label="MCP write" value={permissionValue(permissions, "mcp_write")} onChange={(value) => setPermission("mcp_write", value)} /><div className="pt-4"><p className="text-xs font-bold uppercase tracking-widest text-[var(--txt-mute)]">Can hand off to</p><div className="mt-2 flex flex-wrap gap-2">{agents.filter((agent) => agent.id !== editId).map((agent) => <label key={agent.id} className="flex items-center gap-2 rounded-full border border-[var(--line)] px-3 py-1 text-xs"><input type="checkbox" checked={handoffs.includes(agent.id)} onChange={() => toggleHandoff(agent.id)} />{agent.name}</label>)}</div></div></Block><button disabled={saving} className="w-full rounded-xl border-l-4 border-[var(--red)] bg-[var(--panel)] p-4 text-right text-sm font-bold">{saving ? "Saving…" : editId ? "Save agent settings" : "Create paused agent"}</button></div><aside className="h-fit rounded-xl border border-[var(--line)] bg-[var(--panel)] p-4"><p className="text-xs font-bold uppercase tracking-widest text-[var(--txt-mute)]">Preview</p><div className="mt-4 flex items-center gap-3"><AgentAvatar color={color} name={name || "New agent"} size="lg" /><div><b>{name || "New agent"}</b><p className="text-xs text-[var(--txt-mute)]">{tagline || "One-line responsibility"}</p></div></div><dl className="mt-5 space-y-2 text-sm text-[var(--txt-dim)]"><div className="flex justify-between"><dt>Surfaces</dt><dd>{surfaces.join(", ")}</dd></div><div className="flex justify-between"><dt>Publish</dt><dd>{permissionValue(permissions, "publish")}</dd></div><div className="flex justify-between"><dt>Status</dt><dd className="text-[var(--red-hi)]">Paused</dd></div></dl></aside></form>;
+  React.useEffect(() => {
+    if (!editId) return;
+    void getMarcoAgent(editId).then((agent) => {
+      setName(agent.slug || agent.name.toLowerCase().replace(/\s+/g, "-"));
+      setTitle(agent.name);
+      setDescription(agent.tagline ?? "");
+      setSoul(agent.instructions ?? "");
+      setColor(agent.avatarColor);
+      setSurfaces(agent.surfaces);
+      setModel(agent.modelReasoning ?? agent.modelFast ?? "");
+      setPermissions({ ...defaultPermissions, ...agent.permissions });
+      setHandoffs(agent.canHandoffTo);
+    }).catch(() => setLoadError("Could not load this agent."));
+  }, [editId]);
+
+  function close() {
+    router.push("/settings");
+  }
+
+  async function submit(event: React.FormEvent) {
+    event.preventDefault();
+    const displayName = title.trim() || name.trim();
+    if (!displayName) return;
+    setSaving(true);
+    try {
+      const instructions = [
+        soul.trim() || description.trim(),
+        "Memory writes to Obsidian. Supabase holds the live run state only.",
+        "Group threads share the room packet only. Private memory and skills stay private.",
+      ].filter(Boolean).join("\n\n");
+      const input = {
+        name: displayName,
+        slug: name.trim() || displayName.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+        tagline: description.trim() || title.trim(),
+        instructions,
+        avatarColor: color,
+        surfaces,
+        modelReasoning: model || null,
+        modelFast: model || null,
+        modelRender: provider === "fal" ? (model || null) : null,
+        permissions,
+        canHandoffTo: handoffs,
+      };
+      if (editId) {
+        await updateAgent(editId, input);
+        router.push("/settings");
+      } else {
+        const agent = await createAgent(input);
+        const thread = await createThread(agent.id, brands.find((brand) => brand.isActive)?.id ?? null);
+        router.push(`/?thread=${thread.id}`);
+      }
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <div className="zy-modal-scrim" onClick={close}>
+      <form className="zy-agent-modal" onClick={(event) => event.stopPropagation()} onSubmit={submit}>
+        <button type="button" className="zy-agent-close" onClick={close} aria-label="Close">×</button>
+        <header>
+          <h1>{editId ? "Edit Agent" : "New Agent"}</h1>
+          <p>A named teammate with its own memory, skills, and chat. Groups share the job in the room — never another agent’s private memory or skills.</p>
+        </header>
+        {loadError && <p className="zy-agent-error">{loadError}</p>}
+        <div className="zy-avatar-tabs">
+          {(["Bot", "Generate", "Upload", "Pet"] as const).map((tab) => (
+            <button key={tab} type="button" className={avatarTab === tab ? "is-on" : ""} onClick={() => setAvatarTab(tab)}>{tab}</button>
+          ))}
+        </div>
+        {avatarTab === "Bot" ? (
+          <>
+            <div className="zy-icon-grid">
+              {ICONS.map((item) => (
+                <button key={item} type="button" className={icon === item ? "is-on" : ""} style={{ background: color }} onClick={() => setIcon(item)}>{item}</button>
+              ))}
+            </div>
+            <div className="zy-color-row">
+              {COLORS.map((item) => (
+                <button key={item} type="button" className={color === item ? "is-on" : ""} style={{ background: item }} onClick={() => setColor(item)} aria-label={item} />
+              ))}
+            </div>
+          </>
+        ) : (
+          <p className="zy-agent-note">{avatarTab} avatars are reserved. Use Bot for now — no fake generated face is stored.</p>
+        )}
+        <label>Name<input value={name} onChange={(event) => setName(event.target.value)} placeholder="captain" required={!title.trim()} /></label>
+        <label>Title<input value={title} onChange={(event) => setTitle(event.target.value)} placeholder="Captain" required={!name.trim()} /></label>
+        <label>Description<textarea value={description} onChange={(event) => setDescription(event.target.value)} placeholder="What should this Bot help with?" rows={3} /></label>
+        <button type="button" className="zy-advanced-toggle" onClick={() => setAdvanced((open) => !open)}>
+          {advanced ? "▾" : "▸"} Advanced
+        </button>
+        {advanced && (
+          <div className="zy-advanced">
+            <div className="zy-avatar-tabs">
+              <button type="button" className={advancedTab === "General" ? "is-on" : ""} onClick={() => setAdvancedTab("General")}>General</button>
+              <button type="button" className={advancedTab === "Capabilities" ? "is-on" : ""} onClick={() => setAdvancedTab("Capabilities")}>Capabilities</button>
+            </div>
+            {advancedTab === "General" ? (
+              <>
+                <label>
+                  Clone from profile
+                  <select value={cloneFrom} onChange={(event) => setCloneFrom(event.target.value)}>
+                    <option value="default">default</option>
+                    {agents.map((agent) => <option key={agent.id} value={agent.id}>{agent.name}</option>)}
+                  </select>
+                </label>
+                <div className="zy-two">
+                  <label>
+                    Provider
+                    <select value={provider} onChange={(event) => setProvider(event.target.value)}>
+                      {PROVIDERS.map((item) => <option key={item}>{item}</option>)}
+                    </select>
+                  </label>
+                  <label>
+                    Model
+                    <input value={model} onChange={(event) => setModel(event.target.value)} placeholder="inherited from launch profile" />
+                  </label>
+                </div>
+                <label>
+                  SOUL.md (optional — replaces the generated persona)
+                  <textarea value={soul} onChange={(event) => setSoul(event.target.value)} rows={5} placeholder="Leave blank to auto-generate from name/title/description + agent-messaging roster." />
+                </label>
+                <label className="zy-check">
+                  <input type="checkbox" checked={shareKeys} onChange={(event) => setShareKeys(event.target.checked)} />
+                  Share keys & accounts with the main profile
+                </label>
+                <p className="zy-agent-note">Subscriptions, OAuth logins, and API keys stay shared (not copied). Keys never enter the browser bundle.</p>
+                <label className="zy-check">
+                  <input type="checkbox" checked={createEmpty} onChange={(event) => setCreateEmpty(event.target.checked)} />
+                  Create empty (skip bundled skills)
+                </label>
+              </>
+            ) : (
+              <>
+                <label className="zy-check">
+                  <input type="checkbox" checked={surfaces.includes("build")} onChange={() => setSurfaces((old) => old.includes("build") ? ["chat"] : ["chat", "build"])} />
+                  Build surface (runs, manifests, generation)
+                </label>
+                {(["generate", "publish", "write_knowledge", "use_cli", "mcp_write"] as const).map((key) => (
+                  <div className="zy-perm" key={key}>
+                    <span>{key.replaceAll("_", " ")}</span>
+                    <PermissionTri value={permissionValue(permissions, key)} onChange={(value) => setPermissions((old) => ({ ...old, [key]: value }))} />
+                  </div>
+                ))}
+                <p className="zy-agent-note">Can hand off work packets — not private memory.</p>
+                <div className="zy-group-picks">
+                  {agents.filter((agent) => agent.id !== editId).map((agent) => (
+                    <button key={agent.id} type="button" className={handoffs.includes(agent.id) ? "is-on" : ""} onClick={() => setHandoffs((old) => old.includes(agent.id) ? old.filter((id) => id !== agent.id) : [...old, agent.id])}>
+                      {agent.name}
+                    </button>
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
+        )}
+        <footer>
+          <button type="button" onClick={close}>Cancel</button>
+          <button type="submit" disabled={saving}>{saving ? "Saving…" : editId ? "Save Agent" : "Create Agent"}</button>
+        </footer>
+      </form>
+    </div>
+  );
 }
-function permissionValue(permissions: Record<string, PermissionMode | number>, key: string): PermissionMode { const value = permissions[key]; return value === "always" || value === "never" ? value : "ask"; }
-function Block({ n, title, children }: { n: string; title: string; children: React.ReactNode }) { return <section className="overflow-hidden rounded-xl border border-[var(--line)] bg-[var(--panel)]"><h2 className="border-b border-[var(--line)] bg-[var(--panel-2)] p-3 text-xs font-bold uppercase tracking-widest"><span className="mr-2 rounded bg-[var(--red)] px-1.5 py-1 text-white">{n}</span>{title}</h2><div className="p-4">{children}</div></section>; }
-function Field({ label, children }: { label: string; children: React.ReactNode }) { return <label className="rounded-lg border border-[var(--line)] p-3 text-sm"><span className="mb-1 block text-[10px] uppercase tracking-widest text-[var(--txt-mute)]">{label}</span>{children}</label>; }
-function Toggle({ label, detail, checked, onChange, disabled }: { label: string; detail: string; checked: boolean; onChange?: () => void; disabled?: boolean }) { return <label className="flex items-center justify-between border-b border-[var(--line)] py-3 last:border-0"><span><b className="block text-sm">{label}</b><small className="text-[var(--txt-mute)]">{detail}</small></span><input type="checkbox" checked={checked} disabled={disabled} onChange={onChange} /></label>; }
-function PermissionRow({ label, value, onChange }: { label: string; value: PermissionMode; onChange: (value: PermissionMode) => void }) { return <div className="flex items-center justify-between border-b border-[var(--line)] py-3 last:border-0"><span className="text-sm">{label}</span><PermissionTri value={value} onChange={onChange} /></div>; }
+
+function permissionValue(permissions: Record<string, PermissionMode | number>, key: string): PermissionMode {
+  const value = permissions[key];
+  return value === "always" || value === "never" ? value : "ask";
+}
