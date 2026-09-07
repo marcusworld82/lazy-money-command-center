@@ -1,5 +1,6 @@
 import "server-only";
 
+import { resolveProviderKey } from "@/lib/provider-keys";
 import { getSupabaseServerClient } from "@/lib/supabase/server";
 
 const OPENROUTER_URL = "https://openrouter.ai/api/v1";
@@ -31,21 +32,22 @@ type CompletionPayload = {
   error?: { message?: string };
 };
 
-function apiKey() {
-  const key = process.env.OPENROUTER_API_KEY;
-  if (!key) throw new Error("OpenRouter is not configured. Add OPENROUTER_API_KEY on the server.");
+async function apiKey() {
+  const key = await resolveProviderKey("openrouter");
+  if (!key) throw new Error("OpenRouter is not configured. Save an API key in Settings.");
   return key;
 }
 
 async function writeUsage(input: { runId?: string; agentId?: string; model: string; tokens?: number; cost?: number | null; status: "ok" | "failed"; error?: string; latencyMs: number }) {
-  const supabase = getSupabaseServerClient();
-  const { error } = await supabase.from("model_usage_log").insert({ provider: "openrouter", model_name: input.model, tokens_used: input.tokens ?? null, cost: input.cost ?? null, request_type: "text", run_id: input.runId ?? null, agent_id: input.agentId ?? null, status: input.status, error: input.error ?? null, latency_ms: input.latencyMs });
-  if (error) throw error;
+  try {
+    const supabase = getSupabaseServerClient();
+    await supabase.from("model_usage_log").insert({ provider: "openrouter", model_name: input.model, tokens_used: input.tokens ?? null, cost: input.cost ?? null, request_type: "text", run_id: input.runId ?? null, agent_id: input.agentId ?? null, status: input.status, error: input.error ?? null, latency_ms: input.latencyMs });
+  } catch { /* usage log is optional */ }
 }
 
 export async function listOpenRouterModels(): Promise<OpenRouterModel[]> {
   if (catalogCache && catalogCache.expiresAt > Date.now()) return catalogCache.models;
-  const response = await fetch(`${OPENROUTER_URL}/models`, { headers: { Authorization: `Bearer ${apiKey()}` }, next: { revalidate: 3600 } });
+  const response = await fetch(`${OPENROUTER_URL}/models`, { headers: { Authorization: `Bearer ${await apiKey()}`, "HTTP-Referer": "https://lazy-money-command-center.vercel.app", "X-Title": "MARCO" }, next: { revalidate: 3600 } });
   if (!response.ok) throw new Error(`OpenRouter model catalog failed (${response.status}).`);
   const data = await response.json() as { data?: { id: string; name?: string; description?: string; context_length?: number }[] };
   const models = (data.data ?? []).filter((model) => /claude|gpt|gemini|grok|kimi/i.test(`${model.id} ${model.name ?? ""}`)).map((model) => ({ id: model.id, name: model.name ?? model.id, description: model.description, contextLength: model.context_length }));
@@ -57,9 +59,10 @@ export async function complete(request: CompletionRequest): Promise<CompletionRe
   const startedAt = Date.now();
   let lastError = "OpenRouter request failed.";
   let retryable = false;
+  const key = await apiKey();
   for (let attempt = 0; attempt < 2; attempt += 1) {
     try {
-      const response = await fetch(`${OPENROUTER_URL}/chat/completions`, { method: "POST", headers: { Authorization: `Bearer ${apiKey()}`, "Content-Type": "application/json", "X-OpenRouter-Metadata": "enabled" }, body: JSON.stringify({ model: request.model, messages: request.messages, temperature: request.temperature, max_tokens: request.maxTokens, response_format: request.jsonMode ? { type: "json_object" } : undefined }) });
+      const response = await fetch(`${OPENROUTER_URL}/chat/completions`, { method: "POST", headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json", "HTTP-Referer": "https://lazy-money-command-center.vercel.app", "X-Title": "MARCO" }, body: JSON.stringify({ model: request.model, messages: request.messages, temperature: request.temperature, max_tokens: request.maxTokens, response_format: request.jsonMode ? { type: "json_object" } : undefined }) });
       const payload = await response.json() as CompletionPayload;
       if (!response.ok) {
         lastError = payload.error?.message ?? `OpenRouter request failed (${response.status}).`;
