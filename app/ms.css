@@ -1,0 +1,31 @@
+.ms { width: min(860px, 100%); color: #f2efef; }
+.ms-pagehead h1 { margin: 0 0 6px; font-size: 28px; line-height: 1.2; }
+.ms-pagehead p { margin: 0 0 22px; color: #8b8383; font-size: 14px; line-height: 1.45; max-width: 640px; }
+.ms-layout { display: flex; gap: 28px; align-items: flex-start; }
+.ms-nav { display: flex; flex-direction: column; gap: 4px; width: 190px; flex: none; }
+.ms-nav button { display: block; width: 100%; padding: 10px 12px; border: 0; border-radius: 12px; color: #8b8383; background: transparent; text-align: left; cursor: pointer; }
+.ms-nav button.is-on { color: #fff; background: #3a1515; }
+.ms-main { flex: 1; min-width: 0; }
+.ms-heading { display: flex; justify-content: space-between; align-items: center; margin: 0 0 16px; }
+.ms-heading h2 { margin: 0; font-size: 20px; line-height: 1.2; }
+.ms-heading a { color: #fff; background: #ad0000; text-decoration: none; padding: 7px 12px; border-radius: 999px; font-size: 13px; }
+.ms-card { display: block; width: 100%; margin: 0; padding: 16px 0; border-bottom: 1px solid #2e2a2a; }
+.ms-card-top, .ms-agent { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+.ms-agent { display: flex; width: 100%; margin: 0; padding: 16px 0; border-bottom: 1px solid #2e2a2a; color: inherit; text-decoration: none; }
+.ms-copy { display: flex; flex-direction: column; gap: 4px; min-width: 0; flex: 1; }
+.ms-copy strong { display: block; font-size: 16px; line-height: 1.3; font-weight: 700; color: #f2efef; }
+.ms-copy span { display: block; font-size: 13px; line-height: 1.4; color: #8b8383; }
+.ms-card em, .ms-agent em { display: block; flex: none; color: #8b8383; font-size: 12px; font-style: normal; padding-top: 3px; white-space: nowrap; }
+.ms-keyrow { display: flex; gap: 8px; width: 100%; margin-top: 12px; }
+.ms-form { display: flex; flex-direction: column; gap: 10px; width: 100%; margin-top: 12px; }
+.ms-keyrow input, .ms-form input { display: block; width: 100%; min-height: 44px; padding: 0 12px; border: 1px solid #3a3434; border-radius: 12px; color: #f2efef; background: #161313; font-size: 14px; }
+.ms-keyrow button, .ms-form button { flex: none; min-height: 44px; padding: 0 14px; border: 0; border-radius: 12px; color: #fff; background: #ad0000; cursor: pointer; }
+.ms-keyrow button:disabled { opacity: .5; cursor: not-allowed; }
+.ms-form label { display: flex; flex-direction: column; gap: 6px; color: #8b8383; font-size: 12px; letter-spacing: 0; text-transform: none; }
+.ms-switch { display: inline-flex; align-items: center; gap: 8px; border: 0; background: transparent; color: #f2efef; cursor: pointer; }
+.ms-switch i { position: relative; display: block; width: 42px; height: 24px; border-radius: 999px; background: #3a3a3c; }
+.ms-switch i::after { content: ""; position: absolute; top: 2px; left: 2px; width: 20px; height: 20px; border-radius: 50%; background: #fff; }
+.ms-switch.is-on i { background: #ad0000; }
+.ms-switch.is-on i::after { left: 20px; }
+.ms-note { margin: 16px 0 0; color: #e01414; font-size: 13px; line-height: 1.4; }
+@media (max-width: 980px) { .ms-layout { flex-direction: column; } .ms-nav { width: 100%; flex-direction: row; overflow: auto; } }
