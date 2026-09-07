@@ -45,7 +45,7 @@ export default function SettingsPage() {
     <div className="ms">
       <header className="ms-pagehead">
         <h1>Settings</h1>
-        <p>OpenRouter and fal are already listed. Type the API key in the box on that row and press Save. Keys go to the Supabase settings table.</p>
+        <p>Paste the OpenRouter key and press Save. MARCO calls OpenRouter immediately. Connected means the key was accepted.</p>
       </header>
       <div className="ms-layout">
         <nav className="ms-nav">
@@ -66,33 +66,31 @@ export default function SettingsPage() {
             </Link>
           ))}
           {section === "Providers and keys" && DEFAULT_PROVIDERS.map((provider) => (
-            <ProviderCard key={provider.id} name={provider.name} blurb={provider.blurb} last4={status.find((item) => item.id === provider.id)?.last4 ?? null} onSave={async (key) => {
-              try {
+            <ProviderCard
+              key={provider.id}
+              name={provider.name}
+              blurb={provider.blurb}
+              status={status.find((item) => item.id === provider.id) ?? null}
+              onSave={async (key) => {
                 const saved = await saveProviderKey(provider.id, key);
                 setStatus((current) => [...current.filter((item) => item.id !== provider.id), saved]);
-                setNote(`${provider.name} key saved to Supabase.`);
-              } catch (error) {
-                setNote(error instanceof Error ? error.message : "Could not save key. Check SUPABASE_SERVICE_ROLE_KEY on Vercel.");
-              }
-            }} />
+                setNote(saved.message ?? `${provider.name} connected.`);
+              }}
+            />
           ))}
           {section === "Connections" && connections.map((item) => (
             <ConnectionCard key={item.id} record={item} onSave={async (record) => {
-              try {
-                const saved = await saveConnection(record);
-                setConnections((current) => [...current.filter((row) => row.id !== saved.id), saved]);
-                setNote(`${saved.name} saved to Supabase.`);
-              } catch (error) {
-                setNote(error instanceof Error ? error.message : "Could not save connection.");
-              }
+              const saved = await saveConnection(record);
+              setConnections((current) => [...current.filter((row) => row.id !== saved.id), saved]);
+              setNote(`${saved.name} saved.`);
             }} />
           ))}
           {section === "Brand records" && <BrandsBlock brands={brands} setBrands={setBrands} setNote={setNote} />}
           {section === "Sync" && (
             <form className="ms-form" onSubmit={async (event) => {
               event.preventDefault();
-              try { await saveSync({ obsidianPath, supabaseUrl }); setNote("Sync paths saved to Supabase."); }
-              catch (error) { setNote(error instanceof Error ? error.message : "Could not save sync."); }
+              await saveSync({ obsidianPath, supabaseUrl });
+              setNote("Sync paths saved.");
             }}>
               <label><span>Obsidian vault path</span><input value={obsidianPath} onChange={(event) => setObsidianPath(event.target.value)} placeholder="/Users/you/Documents/MARCO" /></label>
               <label><span>Supabase project URL</span><input value={supabaseUrl} onChange={(event) => setSupabaseUrl(event.target.value)} placeholder="https://xxxx.supabase.co" /></label>
@@ -112,26 +110,35 @@ export default function SettingsPage() {
   );
 }
 
-function ProviderCard({ name, blurb, last4, onSave }: { name: string; blurb: string; last4: string | null; onSave: (key: string) => Promise<void> }) {
+function ProviderCard({ name, blurb, status, onSave }: { name: string; blurb: string; status: ProviderStatus | null; onSave: (key: string) => Promise<void> }) {
   const [key, setKey] = React.useState("");
   const [busy, setBusy] = React.useState(false);
+  const [error, setError] = React.useState<string | null>(null);
+  const connected = Boolean(status?.configured && status.last4);
   return (
     <article className="ms-card">
       <div className="ms-card-top">
         <div className="ms-copy"><strong>{name}</strong><span>{blurb}</span></div>
-        <em>{last4 ? `Saved ···${last4}` : "Not connected"}</em>
+        <em>{connected ? `Connected ···${status?.last4}` : "Not connected"}</em>
       </div>
       <form className="ms-keyrow" onSubmit={async (event) => {
         event.preventDefault();
         if (!key.trim()) return;
         setBusy(true);
-        await onSave(key);
-        setKey("");
-        setBusy(false);
+        setError(null);
+        try {
+          await onSave(key);
+          setKey("");
+        } catch (saveError) {
+          setError(saveError instanceof Error ? saveError.message : "Could not connect that key.");
+        } finally {
+          setBusy(false);
+        }
       }}>
         <input type="password" value={key} onChange={(event) => setKey(event.target.value)} placeholder={`${name} API key`} autoComplete="off" />
-        <button type="submit" disabled={busy || !key.trim()}>{busy ? "Saving…" : "Save key"}</button>
+        <button type="submit" disabled={busy || !key.trim()}>{busy ? "Checking…" : "Save key"}</button>
       </form>
+      {error && <p className="ms-note">{error}</p>}
     </article>
   );
 }
@@ -184,7 +191,7 @@ function BrandsBlock({ brands, setBrands, setNote }: { brands: Brand[]; setBrand
         try {
           const saved = await saveBrand({ name: name.trim(), slug, kind: kind.trim() || "brand" });
           setBrands((current) => [...current, saved]);
-          setNote(`${saved.name} saved to Supabase.`);
+          setNote(`${saved.name} saved.`);
         } catch { setNote("Could not save brand to Supabase."); }
         setName(""); setKind("");
       }}>
