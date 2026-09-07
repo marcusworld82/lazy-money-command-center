@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { AgentAvatar } from "@/components/marco/agent-avatar";
 import { PermissionTri } from "@/components/marco/permission-tri";
 import { createAgent, createThread, getMarcoAgent, listBrands, listMarcoAgents, updateAgent } from "@/lib/actions/marco";
+import { listProviderModels, type ProviderModel } from "@/lib/actions/workspace-settings";
 import { demoAgents, demoBrands } from "@/lib/demo-marco-data";
 import type { AgentSurface, Brand, MarcoAgent, PermissionMode } from "@/lib/marco-types";
 
@@ -13,6 +14,14 @@ const PROVIDERS = ["Inherit (launch profile)", "OpenRouter", "OpenAI", "Anthropi
 const defaultPermissions = { generate: "ask", publish: "never", write_knowledge: "ask", use_cli: "never", mcp_write: "ask", budget_cap_per_run: 5 } as const;
 
 export default function NewAgentPage() {
+  return (
+    <React.Suspense fallback={<div className="zy-modal-scrim"><div className="zy-agent-modal"><p>Loading agent…</p></div></div>}>
+      <NewAgentForm />
+    </React.Suspense>
+  );
+}
+
+function NewAgentForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const editId = searchParams.get("edit");
@@ -24,8 +33,10 @@ export default function NewAgentPage() {
   const [advanced, setAdvanced] = React.useState(true);
   const [advancedTab, setAdvancedTab] = React.useState<"General" | "Capabilities">("General");
   const [cloneFrom, setCloneFrom] = React.useState("default");
-  const [provider, setProvider] = React.useState(PROVIDERS[0]);
+  const [provider, setProvider] = React.useState(PROVIDERS[1]);
   const [model, setModel] = React.useState("");
+  const [models, setModels] = React.useState<ProviderModel[]>([]);
+  const [modelNote, setModelNote] = React.useState("");
   const [shareKeys, setShareKeys] = React.useState(true);
   const [surfaces, setSurfaces] = React.useState<AgentSurface[]>(["chat"]);
   const [permissions, setPermissions] = React.useState<Record<string, PermissionMode | number>>({ ...defaultPermissions });
@@ -49,17 +60,27 @@ export default function NewAgentPage() {
       setTitle(agent.name);
       setDescription(agent.tagline ?? "");
       setSoul(agent.instructions ?? "");
-      setColor(agent.avatarColor);
+      setColor(agent.avatarColor.startsWith("#") ? agent.avatarColor : COLORS[2]);
       setSurfaces(agent.surfaces);
       setModel(agent.modelReasoning ?? agent.modelFast ?? "");
       setPermissions({ ...defaultPermissions, ...agent.permissions });
       setHandoffs(agent.canHandoffTo);
     }).catch(() => {
-      const agent = demoAgents.find((item) => item.id === editId);
-      if (!agent) return;
+      const agent = demoAgents.find((item) => item.id === editId || item.id.startsWith(editId) || item.slug.startsWith(editId));
+      if (!agent) { setNote("That agent link is a demo stub. Create a new agent instead."); return; }
       setName(agent.slug); setTitle(agent.name); setDescription(agent.tagline ?? ""); setSoul(agent.instructions ?? ""); setColor(agent.avatarColor);
     });
   }, [editId]);
+
+  React.useEffect(() => {
+    if (provider === "Inherit (launch profile)") { setModels([]); setModelNote("Uses the workspace default model."); return; }
+    setModelNote("Loading models…");
+    void listProviderModels(provider).then((result) => {
+      setModels(result.models);
+      setModelNote(result.configured ? `${result.models.length} models from ${provider}.` : `No ${provider} key yet — showing a starter list. Save a key in Settings.`);
+      setModel((current) => current || result.models[0]?.id || "");
+    }).catch(() => setModelNote("Could not load models."));
+  }, [provider]);
 
   function close() { router.push("/settings"); }
 
@@ -71,7 +92,7 @@ export default function NewAgentPage() {
     try {
       const instructions = [soul.trim() || description.trim(), "Memory writes to Obsidian. Supabase holds the live run state only.", "Group threads share the room packet only. Private memory and skills stay private."].filter(Boolean).join("\n\n");
       const input = { name: displayName, slug: name.trim() || displayName.toLowerCase().replace(/[^a-z0-9]+/g, "-"), tagline: description.trim() || title.trim(), instructions, avatarColor: color, surfaces, modelReasoning: model || null, modelFast: model || null, modelRender: provider === "fal" ? (model || null) : null, permissions, canHandoffTo: handoffs };
-      if (editId) { try { await updateAgent(editId, input); } catch { /* local */ } router.push("/settings"); }
+      if (editId && !editId.startsWith("demo-")) { try { await updateAgent(editId, input); } catch { /* local */ } router.push("/settings"); }
       else {
         try { const agent = await createAgent(input); const thread = await createThread(agent.id, brands.find((brand) => brand.isActive)?.id ?? null); router.push(`/?thread=${thread.id}`); }
         catch { setNote("Saved locally in this session. Connect Supabase to persist the agent."); router.push("/"); }
@@ -92,7 +113,7 @@ export default function NewAgentPage() {
           <AgentAvatar color={color} name={title || name || "Agent"} size="lg" />
           <div className="zy-color-row">
             {COLORS.map((item) => <button key={item} type="button" className={color === item ? "is-on" : ""} style={{ background: item }} onClick={() => setColor(item)} aria-label={item} />)}
-            <input type="color" value={color} onChange={(event) => setColor(event.target.value)} aria-label="Custom background color" />
+            <input type="color" value={color.startsWith("#") ? color : COLORS[2]} onChange={(event) => setColor(event.target.value)} aria-label="Custom background color" />
           </div>
         </div>
         <label>Name<input value={name} onChange={(event) => setName(event.target.value)} placeholder="captain" required={!title.trim()} /></label>
@@ -109,9 +130,15 @@ export default function NewAgentPage() {
               <>
                 <label>Clone from profile<select value={cloneFrom} onChange={(event) => setCloneFrom(event.target.value)}><option value="default">default</option>{agents.map((agent) => <option key={agent.id} value={agent.id}>{agent.name}</option>)}</select></label>
                 <div className="zy-two">
-                  <label>Provider<select value={provider} onChange={(event) => setProvider(event.target.value)}>{PROVIDERS.map((item) => <option key={item}>{item}</option>)}</select></label>
-                  <label>Model<input value={model} onChange={(event) => setModel(event.target.value)} placeholder="claude-sonnet or gpt-4.1" /></label>
+                  <label>Provider<select value={provider} onChange={(event) => { setProvider(event.target.value); setModel(""); }}>{PROVIDERS.map((item) => <option key={item}>{item}</option>)}</select></label>
+                  <label>Model
+                    <select value={model} onChange={(event) => setModel(event.target.value)}>
+                      {models.length === 0 && <option value="">Select a provider first</option>}
+                      {models.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}
+                    </select>
+                  </label>
                 </div>
+                <p className="zy-agent-note">{modelNote}</p>
                 <label>SOUL.md<textarea value={soul} onChange={(event) => setSoul(event.target.value)} rows={5} placeholder="Standing instructions for this agent." /></label>
                 <label className="zy-check"><input type="checkbox" checked={shareKeys} onChange={(event) => setShareKeys(event.target.checked)} /> Share keys with the main profile</label>
               </>
