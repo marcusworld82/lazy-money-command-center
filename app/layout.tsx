@@ -4,6 +4,7 @@ import { Archivo } from "next/font/google";
 import "./globals.css";
 import "./zy.css";
 import "./im.css";
+import "./ms.css";
 import "@xyflow/react/dist/style.css";
 import { ThemeProvider } from "@/lib/providers/theme-provider";
 import { AppDataProvider } from "@/lib/providers/app-data-provider";
@@ -24,11 +25,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html
-      lang="en"
-      suppressHydrationWarning
-      className={`${archivo.variable} h-full antialiased`}
-    >
+    <html lang="en" suppressHydrationWarning className={`${archivo.variable} h-full antialiased`}>
       <body className="flex min-h-full flex-col">
         <ThemeProvider>
           <TooltipProvider delayDuration={200}>
