@@ -1,6 +1,7 @@
 "use server";
 
 import { getSupabaseServerClient } from "@/lib/supabase/server";
+import { demoAgents } from "@/lib/demo-marco-data";
 import type { Brand, MarcoAgent, Run, Thread, ThreadMessage } from "@/lib/marco-types";
 import { notifyWorker } from "@/lib/runtime/dispatch";
 import { queueTurn } from "@/lib/runtime/repository";
@@ -11,13 +12,46 @@ const mapThread = (r: Record<string, unknown>): Thread => ({ id: String(r.id), a
 const mapRun = (r: Record<string, unknown>): Run => ({ id: String(r.id), shortId: String(r.short_id), agentId: r.agent_id as string | null, brandId: r.brand_id as string | null, threadId: r.thread_id as string | null, title: r.title as string | null, inputs: (r.inputs as Run["inputs"]) ?? {}, assetManifest: (r.asset_manifest as Run["assetManifest"]) ?? [], steps: (r.steps as Run["steps"]) ?? [], outputs: (r.outputs as Run["outputs"]) ?? [], status: r.status as Run["status"], approvalState: r.approval_state as Run["approvalState"], cost: r.cost == null ? null : Number(r.cost) });
 const mapMessage = (r: Record<string, unknown>): ThreadMessage => ({ id: String(r.id), threadId: String(r.thread_id), runId: r.run_id as string | null, role: r.role as ThreadMessage["role"], agentId: r.agent_id as string | null, kind: r.kind as ThreadMessage["kind"], body: r.body as string | null, payload: r.payload as Record<string, unknown> | null, createdAt: String(r.created_at) });
 
-export async function listMarcoAgents() { const { data, error } = await getSupabaseServerClient().from("agents").select("*").order("sort_order"); if (error) throw error; return (data ?? []).map((r) => mapAgent(r as Record<string, unknown>)); }
-export async function getMarcoAgent(id: string) {
-  const { data, error } = await getSupabaseServerClient().from("agents").select("*").eq("id", id).single();
-  if (error) throw error;
-  return mapAgent(data as Record<string, unknown>);
+function demoAgent(id: string) {
+  return demoAgents.find((item) => item.id === id || item.slug === id || item.id.startsWith(id) || item.slug.startsWith(id)) ?? null;
 }
-export async function listBrands() { const { data, error } = await getSupabaseServerClient().from("brands").select("*").order("is_active", { ascending: false }).order("name"); if (error) throw error; return (data ?? []).map((r) => mapBrand(r as Record<string, unknown>)); }
+
+export async function listMarcoAgents() {
+  try {
+    const { data, error } = await getSupabaseServerClient().from("agents").select("*").order("sort_order");
+    if (error) return demoAgents;
+    return (data ?? []).length ? (data ?? []).map((r) => mapAgent(r as Record<string, unknown>)) : demoAgents;
+  } catch {
+    return demoAgents;
+  }
+}
+export async function getMarcoAgent(id: string) {
+  const local = demoAgent(id);
+  if (id.startsWith("demo-") || id.startsWith("local-")) {
+    if (local) return local;
+    throw new Error("Unknown demo agent.");
+  }
+  try {
+    const { data, error } = await getSupabaseServerClient().from("agents").select("*").eq("id", id).maybeSingle();
+    if (error || !data) {
+      if (local) return local;
+      throw new Error("Agent not found.");
+    }
+    return mapAgent(data as Record<string, unknown>);
+  } catch {
+    if (local) return local;
+    throw new Error("Agent not found.");
+  }
+}
+export async function listBrands() {
+  try {
+    const { data, error } = await getSupabaseServerClient().from("brands").select("*").order("is_active", { ascending: false }).order("name");
+    if (error) return [];
+    return (data ?? []).map((r) => mapBrand(r as Record<string, unknown>));
+  } catch {
+    return [];
+  }
+}
 export async function setActiveBrand(id: string) {
   const supabase = getSupabaseServerClient();
   const { error: clearError } = await supabase.from("brands").update({ is_active: false }).neq("id", id);
